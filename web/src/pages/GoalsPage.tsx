@@ -1171,6 +1171,7 @@ export function GoalsPage() {
                 <PersonalMemory
                   key={userId}
                   ownerId={userId}
+                  activeWorkspace={goal?.workspace_jid || workspaceJid}
                   workspaces={Object.entries(groups)
                     .filter(([jid]) => jid.startsWith('web:'))
                     .map(([jid, group]) => ({

@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
-import { getPersonalGoal } from '../personal-agent/goal-store.js';
+import { readApprovedArtifact } from '../personal-agent/artifact-effect.js';
+import { getPersonalGoal, type GoalEvidence } from '../personal-agent/goal-store.js';
 import {
   confirmPersonalMemoryMethodEntry,
   createUnconfirmedPersonalMemoryEntry,
@@ -330,13 +331,24 @@ export function confirmRsiMethod(
   ownerId: string,
   memoryItemId: string,
   idempotencyKey: string,
+  currentWorkspaceJid?: string | null,
 ) {
   const method = getRsiMethodByMemoryItemId(ownerId, memoryItemId);
   if (!method) {
     throw new PersonalMemoryError('MEMORY_NOT_FOUND');
   }
   const sourceWorkspace = resolveMethodSourceWorkspace(ownerId, method);
-  const extraWorkspaces = sourceWorkspace ? [sourceWorkspace] : [];
+  const extraWorkspaces = method.source_goal_id
+    ? sourceWorkspace
+      ? [sourceWorkspace]
+      : []
+    : [
+        ...new Set(
+          [currentWorkspaceJid?.trim(), sourceWorkspace].filter(
+            (jid): jid is string => Boolean(jid),
+          ),
+        ),
+      ];
   const confirmed = confirmPersonalMemoryMethodEntry(
     ownerId,
     memoryItemId,
@@ -430,6 +442,45 @@ export function selectSnapshotMethods(
   return selected;
 }
 
+export function selectSatisfiedSnapshotMethodIds(
+  ownerId: string,
+  snapshot: PersonalGoalExecutionSnapshot,
+  evidence: readonly GoalEvidence[],
+): string[] {
+  const methods = snapshot.methods;
+  if (!methods?.length || !evidence.length) return [];
+
+  const artifactContents: string[] = [];
+  for (const ev of evidence) {
+    try {
+      artifactContents.push(readApprovedArtifact(ev.artifact_id, ownerId));
+    } catch {
+      // Synthetic unit-test evidence may not have a physical artifact file on disk.
+    }
+  }
+
+  return methods
+    .filter((method) => {
+      if (!method.criteria.length) {
+        return true;
+      }
+      return method.criteria.every((criterion) => {
+        if (!criterion.startsWith('artifact_contains:')) return false;
+        const token = criterion.slice('artifact_contains:'.length).trim();
+        if (!token) return false;
+        if (artifactContents.some((content) => content.includes(token))) {
+          return true;
+        }
+        return snapshot.completion_criteria.some(
+          (goalCriterion, index) =>
+            goalCriterion === criterion &&
+            evidence.some((item) => Boolean(item.criteria_matches[index])),
+        );
+      });
+    })
+    .map((method) => method.id);
+}
+
 export function recordMethodsUsed(methodIds: readonly string[]): void {
   if (!methodIds.length) return;
   const now = new Date().toISOString();
@@ -453,12 +504,11 @@ export function approachMentionsFailKind(
 ): boolean {
   const kind = failKind.trim();
   if (!kind) return false;
-  if (approach.includes(`失败类别：${kind}`)) return true;
-  const tokenPattern = new RegExp(
-    `(?:^|[^a-z0-9_])${escapeRegExp(kind)}(?:$|[^a-z0-9_])`,
+  const pattern = new RegExp(
+    `失败类别：${escapeRegExp(kind)}(?:$|[^a-z0-9_])`,
     'i',
   );
-  return tokenPattern.test(approach);
+  return pattern.test(approach);
 }
 
 export function markMatchingSnapshotMethodsFailed(

@@ -53,10 +53,12 @@ const field =
 export function PersonalMemory({
   ownerId,
   workspaces,
+  activeWorkspace,
   artifacts,
 }: {
   ownerId: string;
   workspaces: { jid: string; name: string }[];
+  activeWorkspace?: string;
   artifacts: string[];
 }) {
   const [enabled, setEnabled] = useState(false),
@@ -462,7 +464,7 @@ export function PersonalMemory({
                     void send(
                       `/api/personal-memory/${entry.item.id}/confirm`,
                       'POST',
-                      {},
+                      activeWorkspace ? { workspace_jid: activeWorkspace } : {},
                     )
                   }
                 >

@@ -435,7 +435,7 @@ describe('RSI M4 snapshot and method lifecycle', () => {
     }
   });
 
-  test('5. method in snapshot matching fail_kind becomes verification=failed and is excluded from next snapshot until reverify', async () => {
+  test('5. method in snapshot matching fail_kind template becomes verification=failed while incidental word match is untouched', async () => {
     const corr = rsiMethods.createMethodFromUserCorrection({
       ownerId: 'alice',
       workspaceJid: projectJid,
@@ -444,21 +444,38 @@ describe('RSI M4 snapshot and method lifecycle', () => {
       score: -1,
       comment: '避开上一次的失败类别：provider，改用轻量请求参数',
     });
+    const incidental = rsiMethods.createMethodFromUserCorrection({
+      ownerId: 'alice',
+      workspaceJid: projectJid,
+      sessionId: 's-fail-kind',
+      messageId: `m-incidental-${randomUUID()}`,
+      score: -1,
+      comment: '先检查 provider 配置并打印上下文后再执行任务',
+    });
     const itemId = corr.method!.memory_item_id;
     const methodId = corr.method!.id;
-    expect(
-      (
-        await pmRoutes.request(`/${itemId}/confirm`, {
-          method: 'POST',
-          headers: { cookie: cookies.get('alice')! },
-        })
-      ).status,
-    ).toBe(200);
+    const incidentalItemId = incidental.method!.memory_item_id;
+    const incidentalMethodId = incidental.method!.id;
+    for (const id of [itemId, incidentalItemId]) {
+      expect(
+        (
+          await pmRoutes.request(`/${id}/confirm`, {
+            method: 'POST',
+            headers: {
+              cookie: cookies.get('alice')!,
+              'content-type': 'application/json',
+            },
+            body: JSON.stringify({ workspace_jid: projectJid }),
+          })
+        ).status,
+      ).toBe(200);
+    }
 
-    // Ensure this newly confirmed method (last_used_at IS NULL) enters the next snapshot
+    // Ensure both newly confirmed methods (last_used_at IS NULL) enter the next snapshot
     const g1 = setupGoal({ objective: '验证同类失败停用' });
     const s1 = startRunWithSnapshot(g1.task, g1.sessionId, g1.goal.id);
     expect(s1.snapshot.methods?.some((m) => m.id === methodId)).toBe(true);
+    expect(s1.snapshot.methods?.some((m) => m.id === incidentalMethodId)).toBe(true);
 
     // Fail g1 with 'provider' failure (model_error)
     failClaimedRun(
@@ -474,10 +491,18 @@ describe('RSI M4 snapshot and method lifecycle', () => {
     expect(afterFail.verification).toBe('failed');
     expect(afterFail.verified_at).toBeTruthy();
 
-    // Next Goal snapshot must exclude the failed method
+    // Incidental mention of "provider" without the template prefix must remain active/unfailed
+    const incidentalAfter = rsiMethods.getRsiMethodByMemoryItemId(
+      'alice',
+      incidentalItemId,
+    )!;
+    expect(incidentalAfter.verification).toBe('none');
+
+    // Next Goal snapshot must exclude the failed method while keeping the incidental one
     const g2 = setupGoal({ objective: '下一次目标不应包含已失败方法' });
     const s2 = goals.snapshotPersonalGoalExecution(g2.task.id)!;
     expect(s2.methods?.some((m) => m.id === methodId) ?? false).toBe(false);
+    expect(s2.methods?.some((m) => m.id === incidentalMethodId)).toBe(true);
 
     // Reverify resets verification back to 'passed'
     const reverifyRes = await pmRoutes.request(`/${itemId}/reverify`, {
@@ -537,5 +562,147 @@ describe('RSI M4 snapshot and method lifecycle', () => {
       'artifact_contains:KEEP_CRITERION_INTACT',
     ]);
     expect(rendered.context.methods?.some((m) => m.id === 'm-2')).toBeFalsy();
+  });
+
+  test('7. confirming a proposed goal_completed method grants source non-home workspace at new revision, enters snapshot, and use_count increments only when criteria are satisfied', async () => {
+    // Clear existing methods for alice so only our two test methods are selected
+    rsiBranches
+      .rsiDb()
+      .prepare("DELETE FROM rsi_methods WHERE owner_user_id = 'alice'")
+      .run();
+
+    // Create two completed Goals in projectJid (non-home workspace) with distinct criteria
+    const makeCompletedMethodGoal = (token: string, nextAction: string) => {
+      const g = setupGoal({
+        objective: `生成含 ${token} 的产物`,
+        criteria: [`artifact_contains:${token}`],
+        nextAction,
+      });
+      const started = startRunWithSnapshot(g.task, g.sessionId, g.goal.id);
+      const settled = goals.settlePersonalGoalExecution(
+        {
+          runId: started.run.id,
+          sessionId: g.sessionId,
+          leaseOwner: started.claim.lease_owner,
+          leaseToken: started.claim.lease_token,
+          modelCompleted: true,
+          evidence: [
+            {
+              artifact_id: randomUUID(),
+              content_digest: 'sha256-seed',
+              criteria_matches: [true],
+            },
+          ],
+        },
+        () =>
+          db.completeTaskRun(
+            started.claim.id,
+            started.claim.lease_owner,
+            started.claim.lease_token,
+            { status: 'success', result: 'ok', notificationStatus: 'skipped' },
+          ),
+        () => undefined,
+      );
+      expect(settled).toBe(true);
+      return rsiMethods.getRsiMethodForGoal('alice', g.goal.id)!;
+    };
+
+    const matchedMethod = makeCompletedMethodGoal(
+      'MATCHED_METHOD_TOKEN',
+      '输出含 MATCHED_METHOD_TOKEN 的结果',
+    );
+    const unmatchedMethod = makeCompletedMethodGoal(
+      'UNMATCHED_METHOD_TOKEN',
+      '输出含 UNMATCHED_METHOD_TOKEN 的结果',
+    );
+
+    // Before confirm: neither is in snapshot
+    const probeBefore = setupGoal({ objective: '确认前不应进快照' });
+    expect(goals.snapshotPersonalGoalExecution(probeBefore.task.id)!.methods).toBeUndefined();
+
+    // Confirm both (once, from proposed -> active) and verify personal_memory_grants revision matches new revision
+    for (const method of [matchedMethod, unmatchedMethod]) {
+      const res = await pmRoutes.request(`/${method.memory_item_id}/confirm`, {
+        method: 'POST',
+        headers: { cookie: cookies.get('alice')! },
+      });
+      expect(res.status).toBe(200);
+      const body = (await res.json()) as {
+        entry: {
+          item: { status: string; revision: number };
+          allowed_workspaces: string[];
+        };
+      };
+      expect(body.entry.item.status).toBe('active');
+      expect(body.entry.allowed_workspaces).toContain(projectJid);
+
+      const grantRow = rsiBranches
+        .rsiDb()
+        .prepare(
+          'SELECT workspace_jid, approved_revision FROM personal_memory_grants WHERE item_id = ?',
+        )
+        .get(method.memory_item_id) as
+        | { workspace_jid: string; approved_revision: number }
+        | undefined;
+      expect(grantRow).toEqual({
+        workspace_jid: projectJid,
+        approved_revision: body.entry.item.revision,
+      });
+    }
+
+    // Next Goal in projectJid MUST include both confirmed methods in its snapshot
+    const consumer = setupGoal({
+      objective: '验证确认后立即进入非 Home 工作区快照且仅满足条件者计入使用次数',
+      criteria: ['artifact_contains:MATCHED_METHOD_TOKEN'],
+    });
+    const consumerRun = startRunWithSnapshot(
+      consumer.task,
+      consumer.sessionId,
+      consumer.goal.id,
+    );
+    expect(consumerRun.snapshot.methods?.map((m) => m.id)).toEqual(
+      expect.arrayContaining([matchedMethod.id, unmatchedMethod.id]),
+    );
+
+    // Complete consumer Goal with criteria matching ONLY MATCHED_METHOD_TOKEN
+    const settled = goals.settlePersonalGoalExecution(
+      {
+        runId: consumerRun.run.id,
+        sessionId: consumer.sessionId,
+        leaseOwner: consumerRun.claim.lease_owner,
+        leaseToken: consumerRun.claim.lease_token,
+        modelCompleted: true,
+        evidence: [
+          {
+            artifact_id: randomUUID(),
+            content_digest: 'sha256-consumer',
+            criteria_matches: [true],
+          },
+        ],
+      },
+      () =>
+        db.completeTaskRun(
+          consumerRun.claim.id,
+          consumerRun.claim.lease_owner,
+          consumerRun.claim.lease_token,
+          { status: 'success', result: 'ok', notificationStatus: 'skipped' },
+        ),
+      () => undefined,
+    );
+    expect(settled).toBe(true);
+
+    const matchedAfter = rsiBranches
+      .rsiDb()
+      .prepare('SELECT use_count, last_used_at FROM rsi_methods WHERE id = ?')
+      .get(matchedMethod.id) as { use_count: number; last_used_at: string | null };
+    const unmatchedAfter = rsiBranches
+      .rsiDb()
+      .prepare('SELECT use_count, last_used_at FROM rsi_methods WHERE id = ?')
+      .get(unmatchedMethod.id) as { use_count: number; last_used_at: string | null };
+
+    expect(matchedAfter.use_count).toBe(1);
+    expect(matchedAfter.last_used_at).toBeTruthy();
+    expect(unmatchedAfter.use_count).toBe(0);
+    expect(unmatchedAfter.last_used_at).toBeNull();
   });
 });

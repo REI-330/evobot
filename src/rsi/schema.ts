@@ -64,4 +64,19 @@ export function createRsiSchema(connection: RsiDatabase): void {
     CREATE INDEX IF NOT EXISTS idx_rsi_methods_owner
       ON rsi_methods(owner_user_id, created_at DESC);
   `);
+  const hasWorkspaceMemoryItems = connection
+    .prepare(
+      "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'workspace_memory_items'",
+    )
+    .get();
+  if (hasWorkspaceMemoryItems) {
+    connection.exec(`
+      CREATE TRIGGER IF NOT EXISTS rsi_methods_cleanup_on_memory_forget
+      AFTER UPDATE OF status ON workspace_memory_items
+      WHEN NEW.status = 'deleted' AND OLD.status != 'deleted'
+      BEGIN
+        DELETE FROM rsi_methods WHERE memory_item_id = NEW.id;
+      END;
+    `);
+  }
 }

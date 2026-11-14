@@ -29,6 +29,7 @@ vi.mock('../src/logger.js', () => ({
 const db = await import('../src/db.js');
 const auth = await import('../src/auth.js');
 const goals = await import('../src/personal-agent/goal-store.js');
+const memoryService = await import('../src/memory-service.js');
 const productRuntimeStore = await import(
   '../src/personal-agent/product-runtime-store.js'
 );
@@ -551,5 +552,44 @@ describe('RSI M3 methods', () => {
     expect(
       listAfter.entries.some((e) => e.item.id === createdMethod.memory_item_id),
     ).toBe(false);
+
+    // Direct workspace memory forget also cleans up rsi_methods (no orphan rows)
+    const directGoal = setupGoalAndRun({
+      objective: '直接遗忘工作区记忆也清理方法记录',
+      criteria: ['artifact_contains:CLEANUP_DIRECT'],
+      nextAction: '直接执行检查',
+    });
+    expect(settleAsCompleted(directGoal.claim, directGoal.sessionId, 1)).toBe(true);
+    const directMethod = rsiMethods.getRsiMethodForGoal('alice', directGoal.goal.id)!;
+    expect(directMethod).toBeTruthy();
+
+    memoryService.forgetWorkspaceMemory({
+      actor: { id: 'alice', role: 'admin' },
+      workspaceJid: homeJid,
+      sourceType: 'web_user',
+      itemId: directMethod.memory_item_id,
+      expectedRevision: 1,
+      idempotencyKey: randomUUID(),
+    });
+    expect(
+      rsiMethods.getRsiMethodByMemoryItemId('alice', directMethod.memory_item_id),
+    ).toBeUndefined();
+
+    // Physical DELETE FROM workspace_memory_items cascades through personal_memory_entries to rsi_methods
+    const cascadeGoal = setupGoalAndRun({
+      objective: '物理删除记忆条目级联删除方法',
+      criteria: ['artifact_contains:CLEANUP_CASCADE'],
+      nextAction: '物理级联检查',
+    });
+    expect(settleAsCompleted(cascadeGoal.claim, cascadeGoal.sessionId, 1)).toBe(true);
+    const cascadeMethod = rsiMethods.getRsiMethodForGoal('alice', cascadeGoal.goal.id)!;
+    expect(cascadeMethod).toBeTruthy();
+    rsiBranches
+      .rsiDb()
+      .prepare('DELETE FROM workspace_memory_items WHERE id = ?')
+      .run(cascadeMethod.memory_item_id);
+    expect(
+      rsiMethods.getRsiMethodByMemoryItemId('alice', cascadeMethod.memory_item_id),
+    ).toBeUndefined();
   });
 });

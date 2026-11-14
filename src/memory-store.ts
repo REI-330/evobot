@@ -863,6 +863,19 @@ export function deleteWorkspaceMemoryData(workspaceJid: string): void {
        SELECT id FROM workspace_memory_items WHERE store_id = ?
      )`,
   ).run(store.id);
+  const hasRsiMethods = db
+    .prepare(
+      "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'rsi_methods'",
+    )
+    .get();
+  if (hasRsiMethods) {
+    db.prepare(
+      `DELETE FROM rsi_methods
+       WHERE memory_item_id IN (
+         SELECT id FROM workspace_memory_items WHERE store_id = ?
+       )`,
+    ).run(store.id);
+  }
   db.prepare('DELETE FROM workspace_memory_items WHERE store_id = ?').run(
     store.id,
   );
@@ -1630,6 +1643,16 @@ export function forgetWorkspaceMemoryItem(input: {
       );
     }
     const store = bumpStore(initialStore.id, at);
+    const hasRsiMethods = db
+      .prepare(
+        "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'rsi_methods'",
+      )
+      .get();
+    if (hasRsiMethods) {
+      db.prepare('DELETE FROM rsi_methods WHERE memory_item_id = ?').run(
+        current.id,
+      );
+    }
     const versionItem = requireItem(store, current.id);
     appendVersion(versionItem, 'forget', input.context, at);
     const item = requireItem(store, current.id);

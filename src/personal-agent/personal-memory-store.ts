@@ -403,7 +403,17 @@ export function confirmPersonalMemoryMethodEntry(
     ].sort();
 
     if (item.status === 'active') {
-      if (validExtra.some((jid) => !existing.allowed_workspaces.includes(jid))) {
+      const existingGrants = db()
+        .prepare(
+          'SELECT workspace_jid, approved_revision FROM personal_memory_grants WHERE item_id = ?',
+        )
+        .all(itemId) as { workspace_jid: string; approved_revision: number }[];
+      const hasAllAtRevision = mergedScopes.every((jid) =>
+        existingGrants.some(
+          (g) => g.workspace_jid === jid && g.approved_revision === item.revision,
+        ),
+      );
+      if (!hasAllAtRevision) {
         setGrants(ownerId, item, mergedScopes);
       }
       return {
@@ -428,7 +438,20 @@ export function confirmPersonalMemoryMethodEntry(
         scopes: mergedScopes,
       }),
     });
-    if (!result.replayed) {
+    const currentGrants = db()
+      .prepare(
+        'SELECT workspace_jid, approved_revision FROM personal_memory_grants WHERE item_id = ?',
+      )
+      .all(itemId) as { workspace_jid: string; approved_revision: number }[];
+    const needsGrantSync = mergedScopes.some(
+      (jid) =>
+        !currentGrants.some(
+          (g) =>
+            g.workspace_jid === jid &&
+            g.approved_revision === result.item.revision,
+        ),
+    );
+    if (!result.replayed || needsGrantSync) {
       setGrants(ownerId, result.item, mergedScopes);
     }
     return {

@@ -133,15 +133,22 @@ routes.post('/:id/forget', async (c) =>
     ),
   ),
 );
-routes.post('/:id/confirm', (c) =>
-  c.json(
+const confirmMethodSchema = z
+  .object({
+    workspace_jid: z.string().startsWith('web:').max(256).optional(),
+  })
+  .strict();
+routes.post('/:id/confirm', async (c) => {
+  const body = confirmMethodSchema.parse(await c.req.json().catch(() => ({})));
+  return c.json(
     confirmRsiMethod(
       c.get('user').id,
       c.req.param('id'),
       optionalKey(c.req.header('Idempotency-Key')),
+      body.workspace_jid,
     ),
-  ),
-);
+  );
+});
 routes.post('/:id/reverify', (c) =>
   c.json({
     method: reverifyRsiMethod(c.get('user').id, c.req.param('id')),

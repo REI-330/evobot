@@ -33,6 +33,7 @@ import {
 import {
   createMethodFromCompletedGoal,
   recordMethodsUsed,
+  selectSatisfiedSnapshotMethodIds,
   selectSnapshotMethods,
 } from '../rsi/method-store.js';
 
@@ -1144,7 +1145,14 @@ export function settlePersonalGoalExecution(
     settledOutcome = {
       goalId: goal.id,
       status,
-      snapshotMethodIds: (context.methods ?? []).map((item) => item.id),
+      snapshotMethodIds:
+        status === 'completed'
+          ? selectSatisfiedSnapshotMethodIds(
+              goal.owner_user_id,
+              context,
+              input.evidence,
+            )
+          : [],
     };
     if (status === 'pending') continueRun();
     return true;
