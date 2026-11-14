@@ -283,6 +283,14 @@ export function ProviderList({
 
                   {/* 第二行：关键信息摘要 */}
                   <div className="mt-1.5 ml-4 flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
+                    {provider.type === 'third_party' && (
+                      <span className="rounded bg-muted px-1.5 py-0.5 text-[11px] text-muted-foreground">
+                        {provider.customEnv?.EVOBOT_MODEL_API ===
+                        'openai-completions'
+                          ? 'OpenAI 兼容'
+                          : 'Anthropic 兼容'}
+                      </span>
+                    )}
                     {provider.type === 'third_party' &&
                       provider.anthropicBaseUrl && (
                         <span

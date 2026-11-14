@@ -13,7 +13,10 @@ import type {
   ModelRuntime,
   AgentSessionEvent,
 } from '@earendil-works/pi-coding-agent';
-import { getClaudeProviderConfig } from './runtime-config.js';
+import {
+  getActiveProfileCustomEnv,
+  getClaudeProviderConfig,
+} from './runtime-config.js';
 import { DATA_DIR } from './config.js';
 import { logger } from './logger.js';
 
@@ -33,12 +36,20 @@ async function resolveModel(
   const custom = !!config.anthropicBaseUrl.trim();
   if (custom) {
     if (!modelRef) throw new Error('Custom provider requires a model');
-    const split = splitModelRef(modelRef);
+    const customEnv = getActiveProfileCustomEnv();
+    const api =
+      customEnv.EVOBOT_MODEL_API?.trim() === 'openai-completions'
+        ? 'openai-completions'
+        : 'anthropic-messages';
+    const split =
+      api === 'openai-completions'
+        ? { providerId: 'openai', modelId: modelRef }
+        : splitModelRef(modelRef);
     const providerId = `evobot-${split.providerId}`;
     runtime.registerProvider(providerId, {
       name: `EvoBot ${split.providerId} compatible provider`,
       baseUrl: config.anthropicBaseUrl.trim(),
-      api: 'anthropic-messages',
+      api,
       ...(config.anthropicApiKey || config.anthropicAuthToken
         ? { apiKey: config.anthropicApiKey || config.anthropicAuthToken }
         : {}),
@@ -46,12 +57,12 @@ async function resolveModel(
         {
           id: split.modelId,
           name: split.modelId,
-          api: 'anthropic-messages',
-          reasoning: true,
+          api,
+          reasoning: api === 'anthropic-messages',
           input: ['text', 'image'],
           cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
           contextWindow: 200_000,
-          maxTokens: 32_000,
+          maxTokens: api === 'openai-completions' ? 8192 : 32_000,
         },
       ],
     });

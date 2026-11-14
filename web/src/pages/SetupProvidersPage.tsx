@@ -13,6 +13,7 @@ import { getErrorMessage } from '../components/settings/types';
 import { useAuthStore } from '../stores/auth';
 
 type ProviderMode = 'official' | 'third_party';
+type ModelApiProtocol = 'anthropic-messages' | 'openai-completions';
 
 const RESERVED_ENV_KEYS = new Set([
   'ANTHROPIC_BASE_URL',
@@ -20,6 +21,7 @@ const RESERVED_ENV_KEYS = new Set([
   'ANTHROPIC_API_KEY',
   'CLAUDE_CODE_OAUTH_TOKEN',
   'ANTHROPIC_MODEL',
+  'EVOBOT_MODEL_API',
 ]);
 
 function buildCustomEnv(rows: EnvRow[]): { customEnv: Record<string, string>; error: string | null } {
@@ -72,6 +74,8 @@ export function SetupProvidersPage() {
   const [oauthDone, setOauthDone] = useState(false);
 
   // Third-party mode
+  const [modelApi, setModelApi] =
+    useState<ModelApiProtocol>('anthropic-messages');
   const [baseUrl, setBaseUrl] = useState('');
   const [authToken, setAuthToken] = useState('');
   const [model, setModel] = useState('');
@@ -150,11 +154,15 @@ export function SetupProvidersPage() {
     let customEnv: Record<string, string> = {};
     if (providerMode === 'third_party') {
       if (!baseUrl.trim()) {
-        setError('第三方渠道必须填写 ANTHROPIC_BASE_URL');
+        setError('第三方渠道必须填写 API 端点');
+        return;
+      }
+      if (modelApi === 'openai-completions' && !model.trim()) {
+        setError('OpenAI 兼容协议必须填写模型名称');
         return;
       }
       if (!authToken.trim()) {
-        setError('第三方渠道必须填写 ANTHROPIC_AUTH_TOKEN');
+        setError('第三方渠道必须填写 API 密钥');
         return;
       }
       const envResult = buildCustomEnv(customEnvRows);
@@ -162,7 +170,12 @@ export function SetupProvidersPage() {
         setError(envResult.error);
         return;
       }
-      customEnv = envResult.customEnv;
+      customEnv = {
+        ...envResult.customEnv,
+        ...(modelApi === 'openai-completions'
+          ? { EVOBOT_MODEL_API: 'openai-completions' }
+          : {}),
+      };
     } else if (!officialToken.trim() && !apiKey.trim() && !oauthDone) {
       setError('官方渠道请通过一键登录、填写 API Key 或手动填写 setup-token / .credentials.json');
       return;
@@ -495,40 +508,94 @@ export function SetupProvidersPage() {
             </div>
           ) : (
             <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-1">接口协议</label>
+                <div className="inline-flex rounded-lg border border-border p-1 bg-muted">
+                  <button
+                    type="button"
+                    onClick={() => setModelApi('anthropic-messages')}
+                    className={`px-3 py-1.5 text-sm rounded-md transition-colors cursor-pointer ${
+                      modelApi === 'anthropic-messages'
+                        ? 'bg-background text-primary shadow-sm'
+                        : 'text-muted-foreground'
+                    }`}
+                  >
+                    Anthropic 兼容
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setModelApi('openai-completions')}
+                    className={`px-3 py-1.5 text-sm rounded-md transition-colors cursor-pointer ${
+                      modelApi === 'openai-completions'
+                        ? 'bg-background text-primary shadow-sm'
+                        : 'text-muted-foreground'
+                    }`}
+                  >
+                    OpenAI 兼容
+                  </button>
+                </div>
+              </div>
+
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <Server className="w-4 h-4 text-primary" />
-                第三方渠道会写入系统全局默认环境变量。必填项为 ANTHROPIC_BASE_URL 和 ANTHROPIC_AUTH_TOKEN。
+                {modelApi === 'openai-completions'
+                  ? '将通过 OpenAI Chat Completions 协议请求模型接口。必填项为 Base URL、模型名称和 API Key。'
+                  : '第三方渠道会写入系统全局默认环境变量。必填项为 ANTHROPIC_BASE_URL 和 ANTHROPIC_AUTH_TOKEN。'}
               </div>
 
               <div className="grid grid-cols-1 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-1">ANTHROPIC_BASE_URL（必填）</label>
+                  <label className="block text-sm font-medium text-foreground mb-1">
+                    {modelApi === 'openai-completions'
+                      ? 'Base URL（必填）'
+                      : 'ANTHROPIC_BASE_URL（必填）'}
+                  </label>
                   <Input
                     type="text"
                     value={baseUrl}
                     onChange={(e) => setBaseUrl(e.target.value)}
-                    placeholder="https://your-relay.example.com/v1"
+                    placeholder={
+                      modelApi === 'openai-completions'
+                        ? 'https://api.openai.com/v1'
+                        : 'https://your-relay.example.com/v1'
+                    }
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-1">ANTHROPIC_MODEL（可选）</label>
+                  <label className="block text-sm font-medium text-foreground mb-1">
+                    {modelApi === 'openai-completions'
+                      ? '模型名称（必填）'
+                      : 'ANTHROPIC_MODEL（可选）'}
+                  </label>
                   <Input
                     type="text"
                     value={model}
                     onChange={(e) => setModel(e.target.value)}
-                    placeholder="opus[1m] / opus / sonnet[1m] / sonnet / haiku"
+                    placeholder={
+                      modelApi === 'openai-completions'
+                        ? 'gpt-4o / deepseek-chat / qwen-max'
+                        : 'opus[1m] / opus / sonnet[1m] / sonnet / haiku'
+                    }
                     className="font-mono"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-1">ANTHROPIC_AUTH_TOKEN（必填）</label>
+                  <label className="block text-sm font-medium text-foreground mb-1">
+                    {modelApi === 'openai-completions'
+                      ? 'API Key（必填）'
+                      : 'ANTHROPIC_AUTH_TOKEN（必填）'}
+                  </label>
                   <Input
                     type="password"
                     value={authToken}
                     onChange={(e) => setAuthToken(e.target.value)}
-                    placeholder="输入第三方网关 Token"
+                    placeholder={
+                      modelApi === 'openai-completions'
+                        ? '输入 OpenAI 兼容 API Key'
+                        : '输入第三方网关 Token'
+                    }
                   />
                 </div>
               </div>

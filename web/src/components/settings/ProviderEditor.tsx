@@ -31,8 +31,10 @@ import type { ProviderWithHealth, EnvRow } from './types';
 import { getErrorMessage } from './types';
 
 type ProviderType = 'official' | 'third_party';
+type ModelApiProtocol = 'anthropic-messages' | 'openai-completions';
 type OfficialAuthTab = 'oauth' | 'setup_token' | 'api_key';
 const VISION_INPUT_KEY = 'EVOBOT_MODEL_VISION_INPUT';
+const MODEL_API_KEY = 'EVOBOT_MODEL_API';
 
 const RESERVED_ENV_KEYS = new Set([
   'ANTHROPIC_BASE_URL',
@@ -83,6 +85,12 @@ function buildCustomEnv(
         error: '请使用“模型支持图片输入”开关设置图片能力',
       };
     }
+    if (key === MODEL_API_KEY) {
+      return {
+        customEnv: {},
+        error: '请使用“接口协议”选择 API 协议',
+      };
+    }
     if (
       RESERVED_ENV_KEYS.has(key) ||
       (manageThirdPartyDefaults && DEFAULTED_THIRD_PARTY_ENV_KEYS.has(key))
@@ -123,6 +131,8 @@ export function ProviderEditor({
 
   // 基础字段
   const [providerType, setProviderType] = useState<ProviderType>('third_party');
+  const [modelApi, setModelApi] =
+    useState<ModelApiProtocol>('anthropic-messages');
   const [name, setName] = useState('');
   const [baseUrl, setBaseUrl] = useState('');
   const [model, setModel] = useState('');
@@ -167,6 +177,7 @@ export function ProviderEditor({
 
     if (isCreate) {
       setProviderType('third_party');
+      setModelApi('anthropic-messages');
       setName('');
       setBaseUrl('');
       setModel('');
@@ -185,11 +196,25 @@ export function ProviderEditor({
       setProviderEnvOverrides({});
     } else {
       setProviderType(provider.type);
+      const providerCustomEnv = provider.customEnv || {};
+      const loadedApi: ModelApiProtocol =
+        providerCustomEnv[MODEL_API_KEY] === 'openai-completions'
+          ? 'openai-completions'
+          : 'anthropic-messages';
+      setModelApi(loadedApi);
       setName(provider.name);
       setBaseUrl(provider.anthropicBaseUrl || '');
       const modelSelection = parseProviderModel(provider.anthropicModel || '');
-      setModel(modelSelection.model);
-      setOneMillionContext(modelSelection.oneMillionContext);
+      setModel(
+        loadedApi === 'openai-completions'
+          ? (provider.anthropicModel || '').trim()
+          : modelSelection.model,
+      );
+      setOneMillionContext(
+        loadedApi === 'openai-completions'
+          ? false
+          : modelSelection.oneMillionContext,
+      );
       setAuthTab('oauth');
       setSetupToken('');
       setApiKey('');
@@ -198,7 +223,6 @@ export function ProviderEditor({
       setAuthToken('');
       setAuthTokenDirty(false);
       setClearTokenOnSave(false);
-      const providerCustomEnv = provider.customEnv || {};
       setMaxOutputTokens(
         providerCustomEnv.EVOBOT_MODEL_MAX_OUTPUT_TOKENS ?? '',
       );
@@ -227,6 +251,7 @@ export function ProviderEditor({
           ([key]) =>
             key !== 'EVOBOT_MODEL_MAX_OUTPUT_TOKENS' &&
             key !== VISION_INPUT_KEY &&
+            key !== MODEL_API_KEY &&
             (provider.type !== 'third_party' ||
               !DEFAULTED_THIRD_PARTY_ENV_KEYS.has(key)),
         )
@@ -319,7 +344,9 @@ export function ProviderEditor({
   const handleSave = async () => {
     const normalizedModel =
       providerType === 'third_party'
-        ? buildProviderModel(model, oneMillionContext)
+        ? modelApi === 'openai-completions'
+          ? model.trim()
+          : buildProviderModel(model, oneMillionContext)
         : model.trim();
     if (providerType === 'third_party' && !normalizedModel) {
       setError('请填写第三方 API 支持的模型名称');
@@ -328,7 +355,9 @@ export function ProviderEditor({
     const trimmedName =
       name.trim() ||
       (providerType === 'third_party'
-        ? parseProviderModel(normalizedModel).model
+        ? modelApi === 'openai-completions'
+          ? normalizedModel
+          : parseProviderModel(normalizedModel).model
         : '');
     if (!trimmedName) {
       setError('请填写模型配置名称');
@@ -362,6 +391,9 @@ export function ProviderEditor({
     const savedCustomEnv = {
       ...envResult.customEnv,
       ...(providerType === 'third_party' ? providerEnvOverrides : {}),
+      ...(providerType === 'third_party' && modelApi === 'openai-completions'
+        ? { [MODEL_API_KEY]: 'openai-completions' }
+        : {}),
       ...(outputLimit
         ? { EVOBOT_MODEL_MAX_OUTPUT_TOKENS: String(Number(outputLimit)) }
         : {}),
@@ -810,10 +842,51 @@ export function ProviderEditor({
           {providerType === 'third_party' && (
             <div className="space-y-5">
               <div>
+                <label className="mb-1.5 block text-xs font-medium text-foreground">
+                  接口协议
+                </label>
+                <div className="inline-flex rounded-lg border border-border bg-muted p-1">
+                  <button
+                    type="button"
+                    aria-pressed={modelApi === 'anthropic-messages'}
+                    onClick={() => setModelApi('anthropic-messages')}
+                    disabled={saving}
+                    className={`min-h-9 cursor-pointer rounded-md px-3 py-1.5 text-sm transition-colors ${
+                      modelApi === 'anthropic-messages'
+                        ? 'bg-background text-primary shadow-sm'
+                        : 'text-muted-foreground'
+                    }`}
+                  >
+                    Anthropic 兼容
+                  </button>
+                  <button
+                    type="button"
+                    aria-pressed={modelApi === 'openai-completions'}
+                    onClick={() => setModelApi('openai-completions')}
+                    disabled={saving}
+                    className={`min-h-9 cursor-pointer rounded-md px-3 py-1.5 text-sm transition-colors ${
+                      modelApi === 'openai-completions'
+                        ? 'bg-background text-primary shadow-sm'
+                        : 'text-muted-foreground'
+                    }`}
+                  >
+                    OpenAI 兼容
+                  </button>
+                </div>
+                <p className="mt-1.5 text-xs text-muted-foreground">
+                  {modelApi === 'openai-completions'
+                    ? '使用 OpenAI Chat Completions 协议（/chat/completions），适用于 OpenAI、DeepSeek、OpenRouter、vLLM 等兼容接口。'
+                    : '使用 Anthropic Messages 协议，适用于 Claude 第三方中转与兼容网关。'}
+                </p>
+              </div>
+
+              <div>
                 <label className="mb-1.5 flex items-center justify-between gap-3 text-xs font-medium text-foreground">
                   <span>API 端点</span>
                   <span className="font-normal text-muted-foreground">
-                    ANTHROPIC_BASE_URL
+                    {modelApi === 'openai-completions'
+                      ? 'Base URL'
+                      : 'ANTHROPIC_BASE_URL'}
                   </span>
                 </label>
                 <Input
@@ -822,11 +895,17 @@ export function ProviderEditor({
                   value={baseUrl}
                   onChange={(e) => setBaseUrl(e.target.value)}
                   disabled={saving}
-                  placeholder="https://api.example.com/anthropic"
+                  placeholder={
+                    modelApi === 'openai-completions'
+                      ? 'https://api.openai.com/v1'
+                      : 'https://api.example.com/anthropic'
+                  }
                   autoComplete="off"
                 />
                 <p className="mt-1.5 text-xs text-muted-foreground">
-                  填写 Anthropic 兼容接口的完整地址。
+                  {modelApi === 'openai-completions'
+                    ? '填写 OpenAI 兼容接口的 Base URL（通常以 /v1 结尾）。'
+                    : '填写 Anthropic 兼容接口的完整地址。'}
                 </p>
               </div>
 
@@ -836,7 +915,9 @@ export function ProviderEditor({
                   <span className="font-normal text-muted-foreground">
                     {!isCreate && provider?.hasAnthropicAuthToken
                       ? `当前 ${provider.anthropicAuthTokenMasked}`
-                      : 'ANTHROPIC_AUTH_TOKEN'}
+                      : modelApi === 'openai-completions'
+                        ? 'API Key / Bearer Token'
+                        : 'ANTHROPIC_AUTH_TOKEN'}
                   </span>
                 </label>
                 <Input
@@ -876,12 +957,20 @@ export function ProviderEditor({
                 )}
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_13rem] sm:items-end">
+              <div
+                className={
+                  modelApi === 'anthropic-messages'
+                    ? 'grid gap-3 sm:grid-cols-[minmax(0,1fr)_13rem] sm:items-end'
+                    : 'grid gap-3'
+                }
+              >
                 <div className="min-w-0">
                   <label className="mb-1.5 flex items-center justify-between gap-3 text-xs font-medium text-foreground">
                     <span>模型名称</span>
                     <span className="font-normal text-muted-foreground">
-                      ANTHROPIC_MODEL
+                      {modelApi === 'openai-completions'
+                        ? 'Model ID'
+                        : 'ANTHROPIC_MODEL'}
                     </span>
                   </label>
                   <Input
@@ -889,31 +978,37 @@ export function ProviderEditor({
                     value={model}
                     onChange={(e) => setModel(e.target.value)}
                     disabled={saving}
-                    placeholder="例如 glm-5.2、k3、qwen3.7-max"
+                    placeholder={
+                      modelApi === 'openai-completions'
+                        ? '例如 gpt-4o、deepseek-chat、qwen-max'
+                        : '例如 glm-5.2、k3、qwen3.7-max'
+                    }
                     autoComplete="off"
                   />
                 </div>
 
-                <div className="flex min-h-16 items-center justify-between gap-3 rounded-xl border border-border/80 bg-muted/35 px-3.5 py-2.5">
-                  <label
-                    htmlFor="provider-one-million-context"
-                    className="min-w-0"
-                  >
-                    <span className="block text-xs font-medium text-foreground">
-                      1M 上下文
-                    </span>
-                    <span className="mt-0.5 block text-[11px] leading-4 text-muted-foreground">
-                      自动添加 [1m]
-                    </span>
-                  </label>
-                  <Switch
-                    id="provider-one-million-context"
-                    checked={oneMillionContext}
-                    onCheckedChange={setOneMillionContext}
-                    disabled={saving}
-                    aria-label="启用 1M 上下文"
-                  />
-                </div>
+                {modelApi === 'anthropic-messages' && (
+                  <div className="flex min-h-16 items-center justify-between gap-3 rounded-xl border border-border/80 bg-muted/35 px-3.5 py-2.5">
+                    <label
+                      htmlFor="provider-one-million-context"
+                      className="min-w-0"
+                    >
+                      <span className="block text-xs font-medium text-foreground">
+                        1M 上下文
+                      </span>
+                      <span className="mt-0.5 block text-[11px] leading-4 text-muted-foreground">
+                        自动添加 [1m]
+                      </span>
+                    </label>
+                    <Switch
+                      id="provider-one-million-context"
+                      checked={oneMillionContext}
+                      onCheckedChange={setOneMillionContext}
+                      disabled={saving}
+                      aria-label="启用 1M 上下文"
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="rounded-xl border border-primary/15 bg-primary/[0.035] px-3.5 py-3">
@@ -921,20 +1016,30 @@ export function ProviderEditor({
                   <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
                   <div className="min-w-0">
                     <div className="text-xs font-medium text-foreground">
-                      系统预填 Claude Code 运行环境
+                      {modelApi === 'openai-completions'
+                        ? 'OpenAI 兼容协议已启用'
+                        : '系统预填 Claude Code 运行环境'}
                     </div>
                     <p className="mt-1 text-xs leading-5 text-muted-foreground">
                       实际模型：
                       <code className="break-all font-medium text-foreground">
-                        {buildProviderModel(model, oneMillionContext) ||
+                        {(modelApi === 'openai-completions'
+                          ? model.trim()
+                          : buildProviderModel(model, oneMillionContext)) ||
                           '填写模型后生成'}
                       </code>
-                      {' · '}
-                      上下文窗口：
-                      {oneMillionContext ? '1,000,000' : '200,000'} tokens
+                      {modelApi === 'anthropic-messages' && (
+                        <>
+                          {' · '}
+                          上下文窗口：
+                          {oneMillionContext ? '1,000,000' : '200,000'} tokens
+                        </>
+                      )}
                     </p>
                     <p className="mt-0.5 text-[11px] leading-4 text-muted-foreground">
-                      默认同步模型映射、压缩窗口、请求超时与兼容参数；可在高级设置中调整。
+                      {modelApi === 'openai-completions'
+                        ? '将通过 EVOBOT_MODEL_API=openai-completions 调用 OpenAI Chat Completions 接口；可在高级设置中调整输出上限或附加环境变量。'
+                        : '默认同步模型映射、压缩窗口、请求超时与兼容参数；可在高级设置中调整。'}
                     </p>
                   </div>
                 </div>
