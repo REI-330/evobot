@@ -473,4 +473,217 @@ describe('RSI routes', () => {
       auto_retry: false,
     });
   });
+
+  test('stops with same_failure when the same Goal fails twice with 429 and adds no branch', async () => {
+    const { goal, task } = await createGoalWithTask(5);
+    const sessionId = attachManagedRuntimeSession(goal.id);
+
+    failGoalViaRuntime(
+      goal,
+      task,
+      sessionId,
+      'model_error',
+      '429 too many requests',
+    );
+    const firstDetail = (await (await request(`/${goal.id}`)).json()) as {
+      rsi: { decision: { action: string; reason: string | null } };
+    };
+    expect(firstDetail.rsi.decision).toEqual({ action: 'allow', reason: null });
+
+    const goalAfterFirst = goals.getPersonalGoal('alice', goal.id)!;
+    goals.patchPersonalGoal('alice', goal.id, {
+      expected_revision: goalAfterFirst.revision,
+      status: 'pending',
+    });
+
+    failGoalViaRuntime(
+      goals.getPersonalGoal('alice', goal.id)!,
+      task,
+      sessionId,
+      'model_error',
+      '429 too many requests',
+    );
+
+    const secondDetail = (await (await request(`/${goal.id}`)).json()) as {
+      rsi: {
+        decision: { action: string; reason: string | null };
+        branches: unknown[];
+      };
+    };
+    expect(secondDetail.rsi.decision).toEqual({
+      action: 'stop',
+      reason: 'same_failure',
+    });
+    expect(secondDetail.rsi.branches).toHaveLength(0);
+
+    const retryRes = await request(`/${goal.id}/retry`, 'POST');
+    expect(retryRes.status).toBe(409);
+    expect(await retryRes.json()).toEqual({ error: 'same_failure' });
+    expect(rsiBranches.listBranches('alice', goal.id)).toHaveLength(0);
+  });
+
+  test('auto_retry stops on consecutive same_failure after branch 1 fails with 429', async () => {
+    const { goal, task } = await createGoalWithTask(5);
+    const sessionId = attachManagedRuntimeSession(goal.id);
+
+    const putRes = await request('/rsi-settings', 'PUT', {
+      workspace_jid: 'web:alice',
+      auto_retry: true,
+    });
+    expect(putRes.status).toBe(200);
+
+    try {
+      failGoalViaRuntime(
+        goal,
+        task,
+        sessionId,
+        'model_error',
+        '429 too many requests',
+      );
+
+      const branchesAfterFirst = rsiBranches.listBranches('alice', goal.id);
+      expect(branchesAfterFirst).toHaveLength(1);
+      expect(branchesAfterFirst[0].trigger).toBe('auto');
+      expect(branchesAfterFirst[0].status).toBe('running');
+      const branchRunId = branchesAfterFirst[0].run_id!;
+
+      const currentGoal = goals.getPersonalGoal('alice', goal.id)!;
+      const digest = goals.personalGoalContentDigest(currentGoal);
+      goals.registerPersonalGoalRun(branchRunId, task.id, {
+        goal_id: goal.id,
+        goal_revision: currentGoal.revision,
+        owner_user_id: currentGoal.owner_user_id,
+        workspace_jid: currentGoal.workspace_jid,
+        session_id: sessionId,
+        objective: currentGoal.objective,
+        completion_criteria: currentGoal.completion_criteria,
+        next_action: currentGoal.next_action,
+        content_digest: digest,
+        budget_remaining_runs: currentGoal.budget_max_runs - 1,
+        capabilities: ['read_workspace_file'],
+        delivery: 'session_and_workspace',
+        previous_results: [],
+      });
+      const admitted = productRuntimeStore.admitProductInput(
+        sessionId,
+        `goal-run:${branchRunId}`,
+        {
+          sender: 'alice',
+          senderName: 'Personal Goal',
+          content: 'retry run',
+          execution: {
+            goalId: goal.id,
+            runId: branchRunId,
+            contextDigest: digest,
+          },
+        },
+        () => undefined,
+      );
+      productRuntimeStore.finishProductInput(
+        admitted.id,
+        false,
+        () => undefined,
+        classifyDurableFailure('model_error', '429 too many requests'),
+      );
+
+      const claim = db
+        .getTaskRunsForTask(task.id, 10)
+        .find((row) => row.id === branchRunId)!;
+      expect(
+        goals.failPersonalGoalRun(branchRunId, () =>
+          db.completeTaskRun(claim.id, claim.lease_owner!, claim.lease_token, {
+            status: 'failed',
+            error: '429 too many requests',
+            notificationStatus: 'skipped',
+          }),
+        ),
+      ).toBe(true);
+
+      const branchesAfterSecond = rsiBranches.listBranches('alice', goal.id);
+      expect(branchesAfterSecond).toHaveLength(1);
+      expect(branchesAfterSecond[0].status).toBe('failed');
+      expect(branchesAfterSecond[0].fail_kind).toBe('provider');
+
+      const detail = (await (await request(`/${goal.id}`)).json()) as {
+        rsi: { decision: { action: string; reason: string | null } };
+      };
+      expect(detail.rsi.decision).toEqual({
+        action: 'stop',
+        reason: 'same_failure',
+      });
+    } finally {
+      await request('/rsi-settings', 'PUT', {
+        workspace_jid: 'web:alice',
+        auto_retry: false,
+      });
+    }
+  });
+
+  test('records rsi_retry_error event when auto_retry fails to start and rolls back own branch/goal on beginRetry failure', async () => {
+    const { goal, task } = await createGoalWithTask(5);
+    const sessionId = attachManagedRuntimeSession(goal.id);
+
+    await request('/rsi-settings', 'PUT', {
+      workspace_jid: 'web:alice',
+      auto_retry: true,
+    });
+    trigger.mockImplementationOnce(() => ({
+      success: false,
+      error: 'scheduler busy',
+    }));
+
+    try {
+      const firstRunId = failGoalViaRuntime(
+        goal,
+        task,
+        sessionId,
+        'model_error',
+        '429 too many requests',
+      );
+
+      const branchesAfterAutoFail = rsiBranches.listBranches('alice', goal.id);
+      expect(branchesAfterAutoFail).toHaveLength(1);
+      expect(branchesAfterAutoFail[0].status).toBe('stopped');
+      expect(branchesAfterAutoFail[0].run_id).toBeNull();
+      expect(goals.getPersonalGoal('alice', goal.id)?.status).toBe('failed');
+
+      const events = goals.listPersonalGoalEvents('alice', goal.id);
+      const retryErrors = events.filter(
+        (entry) => entry.kind === 'rsi_retry_error',
+      );
+      expect(retryErrors).toHaveLength(1);
+      expect(retryErrors[0].detail).toEqual({
+        run_id: firstRunId,
+        error: 'scheduler busy',
+      });
+      const decisions = events.filter((entry) => entry.kind === 'rsi_decision');
+      expect(decisions).toHaveLength(1);
+      expect(decisions[0].detail).toMatchObject({
+        run_id: firstRunId,
+        action: 'allow',
+        reason: null,
+      });
+
+      // Manual beginRetry rollback when triggerTaskRun throws
+      trigger.mockImplementationOnce(() => {
+        throw new Error('trigger boom');
+      });
+      const retryFailRes = await request(`/${goal.id}/retry`, 'POST');
+      expect(retryFailRes.status).toBe(500);
+      const branchesAfterManualFail = rsiBranches.listBranches(
+        'alice',
+        goal.id,
+      );
+      expect(branchesAfterManualFail).toHaveLength(2);
+      expect(
+        branchesAfterManualFail.every((branch) => branch.status === 'stopped'),
+      ).toBe(true);
+      expect(goals.getPersonalGoal('alice', goal.id)?.status).toBe('failed');
+    } finally {
+      await request('/rsi-settings', 'PUT', {
+        workspace_jid: 'web:alice',
+        auto_retry: false,
+      });
+    }
+  });
 });

@@ -184,96 +184,99 @@ export function beginRetry(
   goalId: string,
   trigger: RsiBranchTrigger,
 ): RsiBranch {
-  const goal = requireOwnedGoal(ownerId, goalId);
-  if (goal.status !== 'failed') {
-    throw new GoalConflict('GOAL_NOT_FAILED', 'Goal is not failed');
-  }
-  const taskRow = rsiDb()
-    .prepare(
-      `SELECT t.id
-       FROM personal_goal_tasks gt
-       JOIN scheduled_tasks t ON t.id = gt.task_id
-       WHERE gt.goal_id = ?
-         AND t.created_by = ?
-         AND t.chat_jid = ?
-         AND t.deleted_at IS NULL
-       ORDER BY gt.automatic DESC, gt.linked_at ASC, gt.task_id ASC
-       LIMIT 1`,
-    )
-    .get(goalId, goal.owner_user_id, goal.workspace_jid) as
-    | { id: string }
-    | undefined;
-  if (!taskRow) {
-    throw new Error('No linked task found for Goal retry');
-  }
-  const deps = getWebDeps();
-  if (!deps?.triggerTaskRun) {
-    throw new Error('Scheduler not available');
-  }
-  const branch = startBranch(ownerId, goalId, {
-    approach: DEFAULT_RSI_APPROACH,
-    trigger,
-  });
-
-  const restoreGoalFailed = () => {
-    const current = getPersonalGoal(ownerId, goalId);
-    if (current && current.status === 'pending') {
-      patchPersonalGoal(ownerId, goalId, {
-        expected_revision: current.revision,
-        status: 'failed',
-      });
+  const { taskId, branch } = rsiDb().transaction(() => {
+    const goal = requireOwnedGoal(ownerId, goalId);
+    if (goal.status !== 'failed') {
+      throw new GoalConflict('GOAL_NOT_FAILED', 'Goal is not failed');
     }
-  };
+    const taskRow = rsiDb()
+      .prepare(
+        `SELECT t.id
+         FROM personal_goal_tasks gt
+         JOIN scheduled_tasks t ON t.id = gt.task_id
+         WHERE gt.goal_id = ?
+           AND t.created_by = ?
+           AND t.chat_jid = ?
+           AND t.deleted_at IS NULL
+         ORDER BY gt.automatic DESC, gt.linked_at ASC, gt.task_id ASC
+         LIMIT 1`,
+      )
+      .get(goalId, goal.owner_user_id, goal.workspace_jid) as
+      | { id: string }
+      | undefined;
+    if (!taskRow) {
+      throw new Error('No linked task found for Goal retry');
+    }
+    const deps = getWebDeps();
+    if (!deps?.triggerTaskRun) {
+      throw new Error('Scheduler not available');
+    }
 
-  try {
+    // Self-heal any orphaned running branch that never received a run_id.
+    rsiDb()
+      .prepare(
+        "UPDATE rsi_branches SET status = 'stopped', finished_at = ? WHERE goal_id = ? AND status = 'running' AND run_id IS NULL",
+      )
+      .run(new Date().toISOString(), goalId);
+
+    const createdBranch = startBranch(ownerId, goalId, {
+      approach: DEFAULT_RSI_APPROACH,
+      trigger,
+    });
+
     patchPersonalGoal(ownerId, goalId, {
       expected_revision: goal.revision,
       status: 'pending',
     });
-  } catch (error) {
-    finishBranch(ownerId, branch.id, {
-      status: 'stopped',
-      failKind: null,
-      retryable: null,
-    });
-    throw error;
+
+    return { taskId: taskRow.id, branch: createdBranch };
+  })();
+
+  const rollbackOwnRetry = () => {
+    rsiDb().transaction(() => {
+      const currentBranch = rsiDb()
+        .prepare('SELECT status FROM rsi_branches WHERE id = ?')
+        .get(branch.id) as { status: RsiBranchStatus } | undefined;
+      if (currentBranch?.status === 'running') {
+        finishBranch(ownerId, branch.id, {
+          status: 'stopped',
+          failKind: null,
+          retryable: null,
+        });
+      }
+      const currentGoal = getPersonalGoal(ownerId, goalId);
+      if (currentGoal && currentGoal.status === 'pending') {
+        patchPersonalGoal(ownerId, goalId, {
+          expected_revision: currentGoal.revision,
+          status: 'failed',
+        });
+      }
+    })();
+  };
+
+  const deps = getWebDeps();
+  if (!deps?.triggerTaskRun) {
+    rollbackOwnRetry();
+    throw new Error('Scheduler not available');
   }
 
   let triggered: { success: boolean; error?: string; runId?: string };
   try {
-    triggered = deps.triggerTaskRun(
-      taskRow.id,
-      `rsi:${goalId}:${branch.id}`,
-    );
+    triggered = deps.triggerTaskRun(taskId, `rsi:${goalId}:${branch.id}`);
   } catch (error) {
-    finishBranch(ownerId, branch.id, {
-      status: 'stopped',
-      failKind: null,
-      retryable: null,
-    });
-    restoreGoalFailed();
+    rollbackOwnRetry();
     throw error;
   }
 
   if (!triggered.success || !triggered.runId) {
-    finishBranch(ownerId, branch.id, {
-      status: 'stopped',
-      failKind: null,
-      retryable: null,
-    });
-    restoreGoalFailed();
+    rollbackOwnRetry();
     throw new Error(triggered.error || 'Failed to start retry task run');
   }
 
   try {
     return attachRun(ownerId, branch.id, triggered.runId);
   } catch (error) {
-    finishBranch(ownerId, branch.id, {
-      status: 'stopped',
-      failKind: null,
-      retryable: null,
-    });
-    restoreGoalFailed();
+    rollbackOwnRetry();
     throw error;
   }
 }

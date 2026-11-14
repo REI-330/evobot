@@ -61,7 +61,10 @@ export function latestGoalRunId(goalId: string): string | null {
   return charged?.run_id ?? null;
 }
 
-function priorFailureKindBeforeRun(goalId: string, runId: string): string | null {
+function priorFailureKindBeforeRun(
+  goalId: string,
+  runId: string | null,
+): string | null {
   const rows = rsiDb()
     .prepare(
       "SELECT detail FROM personal_goal_events WHERE goal_id = ? AND kind = 'rsi_decision' ORDER BY id DESC LIMIT 10",
@@ -73,7 +76,7 @@ function priorFailureKindBeforeRun(goalId: string, runId: string): string | null
         run_id?: string | null;
         fail_kind?: string | null;
       };
-      if (parsed.run_id !== runId) {
+      if (runId === null || parsed.run_id !== runId) {
         return parsed.fail_kind ?? null;
       }
     } catch {
@@ -97,21 +100,23 @@ export function evaluateGoalRetry(
     ? branches.findIndex((branch) => branch.run_id === runId)
     : -1;
 
+  const priorFromEvent = priorFailureKindBeforeRun(goal.id, runId);
+  const priorFromBranches =
+    (matchingIndex >= 0 ? branches.slice(0, matchingIndex) : branches)
+      .map((branch) => branch.fail_kind)
+      .filter((kind): kind is string => kind !== null)
+      .at(-1) ?? null;
+  const lastFailKind = priorFromEvent ?? priorFromBranches;
+
   let previous: { fail_kind: string | null }[];
-  if (matchingIndex >= 0) {
-    const priorKind =
-      matchingIndex > 0
-        ? branches[matchingIndex - 1].fail_kind
-        : runId
-          ? priorFailureKindBeforeRun(goal.id, runId)
-          : null;
+  if (branches.length > 0) {
     previous = branches.map((branch, index) =>
-      index === matchingIndex
-        ? { fail_kind: priorKind }
+      index === branches.length - 1
+        ? { fail_kind: lastFailKind }
         : { fail_kind: branch.fail_kind },
     );
   } else {
-    previous = branches.map((branch) => ({ fail_kind: branch.fail_kind }));
+    previous = lastFailKind !== null ? [{ fail_kind: lastFailKind }] : [];
   }
 
   const decision = decideRetry({
@@ -169,8 +174,14 @@ export function recordFailureDecision(goalId: string, runId: string): void {
   if (decision.action === 'allow' && getAutoRetry(goal.workspace_jid)) {
     try {
       beginRetry(goal.owner_user_id, goalId, 'auto');
-    } catch {
-      // Do not fail persistence of the original run failure if auto-retry cannot start.
+    } catch (error) {
+      recordPersonalGoalEvent(goalId, 'rsi_retry_error', {
+        run_id: runId,
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Failed to start auto retry',
+      });
     }
   }
 }
