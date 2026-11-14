@@ -1,19 +1,14 @@
 import {
-  CreditCard,
-  Gauge,
   Info,
   MessageSquare,
   Palette,
   Shield,
   ShieldCheck,
   Bot,
-  Brain,
   ServerCog,
   Settings2,
   SlidersHorizontal,
   User,
-  UserCog,
-  UserPlus,
 } from 'lucide-react';
 
 import {
@@ -36,11 +31,6 @@ const accountItems: NavItem[] = [
   { key: 'device-control', label: '电脑与浏览器', icon: <ServerCog className="size-4" /> },
   { key: 'profile', label: '个人资料', icon: <User className="size-4" /> },
   {
-    key: 'mem0-private',
-    label: 'Dot 记忆',
-    icon: <Brain className="size-4" />,
-  },
-  {
     key: 'preferences',
     label: '常规',
     icon: <Settings2 className="size-4" />,
@@ -54,7 +44,6 @@ const accountItems: NavItem[] = [
 ];
 
 const systemItems: NavItem[] = [
-  { key: 'observability', label: 'Langfuse 观测', icon: <Gauge className="size-4" /> },
   {
     key: 'appearance',
     label: '常规与品牌',
@@ -80,21 +69,6 @@ const systemItems: NavItem[] = [
     label: '宿主机集成',
     icon: <ServerCog className="size-4" />,
   },
-  {
-    key: 'billing',
-    label: '计费管理',
-    icon: <CreditCard className="size-4" />,
-  },
-];
-
-const managementItems: NavItem[] = [
-  {
-    key: 'registration',
-    label: '注册策略',
-    icon: <UserPlus className="size-4" />,
-  },
-  { key: 'users', label: '用户与访问', icon: <UserCog className="size-4" /> },
-  { key: 'monitor', label: '运行状态', icon: <Gauge className="size-4" /> },
 ];
 
 const aboutItem: NavItem = {
@@ -107,8 +81,8 @@ interface SettingsNavProps {
   activeTab?: SettingsTab;
   onTabChange: (tab: SettingsTab) => void;
   canManageSystemConfig: boolean;
-  canManageBilling: boolean;
-  canManageUsers: boolean;
+  canManageBilling?: boolean;
+  canManageUsers?: boolean;
   isAdmin: boolean;
   mustChangePassword: boolean;
   open?: boolean;
@@ -122,8 +96,6 @@ export function SettingsNav({
   activeTab,
   onTabChange,
   canManageSystemConfig,
-  canManageBilling,
-  canManageUsers,
   isAdmin,
   mustChangePassword,
   open,
@@ -133,20 +105,14 @@ export function SettingsNav({
   drawerActions,
 }: SettingsNavProps) {
   const system = systemItems.filter((item) => {
-    if (item.key === 'billing') return canManageBilling;
-    if (item.key === 'main-agent' || item.key === 'host-integration' || item.key === 'observability') {
+    if (item.key === 'main-agent' || item.key === 'host-integration') {
       return isAdmin;
     }
-    return canManageSystemConfig;
-  });
-  const management = managementItems.filter((item) => {
-    if (item.key === 'users') return canManageUsers;
     return canManageSystemConfig;
   });
   const sections = [
     { label: '账户设置', items: accountItems },
     ...(system.length ? [{ label: '高级设置', items: system }] : []),
-    ...(management.length ? [{ label: '管理与访问', items: management }] : []),
   ];
 
   const disabled = (item: NavItem) =>

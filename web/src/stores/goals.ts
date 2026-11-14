@@ -28,6 +28,7 @@ export interface PersonalGoal {
   budget_used_runs: number;
   revision: number;
   updated_at: string;
+  pending_method?: boolean;
 }
 export const goalStatusLabels: Record<GoalStatus, string> = {
   pending: '待开始',

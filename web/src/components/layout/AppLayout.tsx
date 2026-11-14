@@ -14,7 +14,6 @@ import { wsManager } from '../../api/ws';
 import { useTheme } from '../../hooks/useTheme';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { useRouteRestore } from '../../hooks/useRouteRestore';
-import { useBillingStore } from '../../stores/billing';
 import { useGroupsStore } from '../../stores/groups';
 import { useChatStore } from '../../stores/chat';
 import { useAuthStore } from '../../stores/auth';
@@ -71,24 +70,6 @@ export function AppLayout() {
   useEffect(() => {
     wsManager.connect();
     return () => wsManager.disconnect();
-  }, []);
-
-  // 加载计费状态（控制导航栏是否显示账单入口）
-  const loadBillingStatus = useBillingStore((s) => s.loadBillingStatus);
-  useEffect(() => {
-    loadBillingStatus();
-  }, [loadBillingStatus]);
-
-  // 监听 WebSocket 计费更新
-  useEffect(() => {
-    const unsub = wsManager.on('billing_update', (data: any) => {
-      if (data.usage) {
-        useBillingStore.getState().handleBillingUpdate(data.usage);
-      }
-    });
-    return () => {
-      unsub();
-    };
   }, []);
 
   // Process lifecycle (legacy) plus logical query lifecycle. A conversation

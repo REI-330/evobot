@@ -25,10 +25,16 @@ import {
   CLOUD_GOAL_RUN_LIMIT,
   GoalContextLimit,
 } from './goal-context.js';
+import { logger } from '../logger.js';
 import {
   finishActiveBranchForRun,
   recordFailureDecision,
 } from '../rsi/record.js';
+import {
+  createMethodFromCompletedGoal,
+  recordMethodsUsed,
+  selectSnapshotMethods,
+} from '../rsi/method-store.js';
 
 interface Statement {
   run(...args: unknown[]): { changes: number };
@@ -760,6 +766,22 @@ export function snapshotPersonalGoalExecution(
       'SELECT binding_json FROM product_cloud_sessions WHERE session_id=?',
     )
     .get(goal.session_id) as { binding_json: string } | undefined;
+  let retryApproach = '';
+  let snapshotMethods: { id: string; approach: string; criteria: string[] }[] = [];
+  try {
+    const runningBranch = db()
+      .prepare(
+        "SELECT approach FROM rsi_branches WHERE goal_id=? AND status='running' ORDER BY ordinal DESC LIMIT 1",
+      )
+      .get(goal.id) as { approach: string } | undefined;
+    retryApproach = runningBranch?.approach ?? '';
+    snapshotMethods = selectSnapshotMethods(
+      goal.owner_user_id,
+      goal.workspace_jid,
+    );
+  } catch {
+    // Partial schema unit tests may initialize personal_goals without RSI tables.
+  }
   return {
     goal_id: goal.id,
     goal_revision: goal.revision,
@@ -793,6 +815,8 @@ export function snapshotPersonalGoalExecution(
       ...row,
       result: row.result?.slice(0, 16000) ?? null,
     })),
+    retry_approach: retryApproach,
+    ...(snapshotMethods.length ? { methods: snapshotMethods } : {}),
   };
 }
 /** Runs in the same Goal transaction before admission/content edits commit. */
@@ -1016,7 +1040,11 @@ export function settlePersonalGoalExecution(
   continueRun: () => void,
 ) {
   let teamUpdate: ReturnType<typeof projectGoalTeamOutcome>;
-  let settledOutcome: { goalId: string; status: GoalStatus } | null = null;
+  let settledOutcome: {
+    goalId: string;
+    status: GoalStatus;
+    snapshotMethodIds: string[];
+  } | null = null;
   const settled = db().transaction(() => {
     const current = activeGoalExecution(input.sessionId);
     if (
@@ -1113,13 +1141,21 @@ export function settlePersonalGoalExecution(
       status,
       input.evidence,
     );
-    settledOutcome = { goalId: goal.id, status };
+    settledOutcome = {
+      goalId: goal.id,
+      status,
+      snapshotMethodIds: (context.methods ?? []).map((item) => item.id),
+    };
     if (status === 'pending') continueRun();
     return true;
   })();
   if (settled && teamUpdate) notifyBotGroupUpdate(teamUpdate);
   if (settled && settledOutcome) {
-    const outcome: { goalId: string; status: GoalStatus } = settledOutcome;
+    const outcome = settledOutcome as {
+      goalId: string;
+      status: GoalStatus;
+      snapshotMethodIds: string[];
+    };
     if (outcome.status === 'failed') {
       recordFailureDecision(outcome.goalId, input.runId);
     } else {
@@ -1128,6 +1164,32 @@ export function settlePersonalGoalExecution(
         failKind: null,
         retryable: null,
       });
+      if (outcome.status === 'completed') {
+        try {
+          const created = createMethodFromCompletedGoal(
+            outcome.goalId,
+            input.runId,
+          );
+          if (created.full) {
+            event(outcome.goalId, 'rsi_methods_full', {
+              run_id: input.runId,
+            });
+          }
+        } catch (error) {
+          logger.warn(
+            { error, goalId: outcome.goalId, runId: input.runId },
+            'Failed to record RSI method from completed Goal',
+          );
+        }
+        try {
+          recordMethodsUsed(outcome.snapshotMethodIds);
+        } catch (error) {
+          logger.warn(
+            { error, goalId: outcome.goalId, runId: input.runId },
+            'Failed to update RSI method usage counters',
+          );
+        }
+      }
     }
   }
   return settled;

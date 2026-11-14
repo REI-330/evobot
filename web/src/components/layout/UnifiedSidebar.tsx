@@ -9,6 +9,7 @@ import {
   PanelLeftClose,
   LogOut,
   Plus,
+  Puzzle,
   UserCog,
   Settings,
   Search,
@@ -25,7 +26,6 @@ import { EmojiAvatar } from '../common/EmojiAvatar';
 import { BotIdentityAvatar } from '../common/BotIdentityAvatar';
 import { profileIdentity } from '../common/bot-avatar/product-state';
 import { useAgentProfilesStore } from '../../stores/agent-profiles';
-import { AdvancedNavigation } from './AdvancedNavigation';
 import {
   Tooltip,
   TooltipContent,
@@ -338,15 +338,15 @@ export function UnifiedSidebar({
             <div className="conversation-search">
               <button
                 type="button"
-                aria-label="Dot 和对话"
+                aria-label="助手与对话"
                 onClick={quickBot?.browse}
                 className="flex min-h-11 min-w-0 flex-1 items-center gap-2 text-left text-sm text-muted-foreground"
               >
                 <Search size={16} />
-                <span className="truncate">Dot 和对话</span>
+                <span className="truncate">助手与对话</span>
               </button>
               <button
-                aria-label="新建 Dot"
+                aria-label="新建助手"
                 onClick={quickBot?.show}
                 className="product-icon-action"
               >
@@ -357,7 +357,9 @@ export function UnifiedSidebar({
           {navItems
             .filter((item) =>
               collapsed
-                ? item.section !== 'WORK' && item.path !== '/chat'
+                ? item.section !== 'WORK' &&
+                  item.path !== '/chat' &&
+                  item.path !== '/capabilities'
                 : !BOT_FIRST_HOME_ENABLED && item.path === '/chat',
             )
             .map(({ path, icon: Icon, label, section }) => {
@@ -397,10 +399,10 @@ export function UnifiedSidebar({
             <div className="conversation-rail-list">
               <NavLink
                 to="/bots?view=team"
-                aria-label="我的 Dot"
+                aria-label="我的助手"
                 className="product-nav-section block"
               >
-                DOTS
+                ASSISTANTS
               </NavLink>
               {profiles
                 .filter(
@@ -540,7 +542,7 @@ export function UnifiedSidebar({
           <Link
             to={workRailPath(goalsEnabled, 'work')}
             className="product-nav-link"
-            aria-label="我的工作"
+            aria-label="进化与工作"
             aria-current={
               productNavActive(
                 workRailPath(goalsEnabled, 'work'),
@@ -552,7 +554,7 @@ export function UnifiedSidebar({
             }
           >
             <Target />
-            <span className="nav-label">我的工作</span>
+            <span className="nav-label">进化与工作</span>
           </Link>
           <Link
             to={workRailPath(goalsEnabled, 'attention')}
@@ -576,7 +578,23 @@ export function UnifiedSidebar({
                 <span className="attention-count">{secondary.attention}</span>
               )}
           </Link>
-          <AdvancedNavigation />
+          <NavLink
+            to="/capabilities"
+            className="product-nav-link"
+            aria-label="能力与用量"
+            aria-current={
+              productNavActive(
+                '/capabilities',
+                location.pathname,
+                location.search,
+              )
+                ? 'page'
+                : undefined
+            }
+          >
+            <Puzzle />
+            <span className="nav-label">能力与用量</span>
+          </NavLink>
           <NavLink
             to="/settings"
             className="product-nav-link"

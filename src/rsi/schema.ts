@@ -46,5 +46,22 @@ export function createRsiSchema(connection: RsiDatabase): void {
       OR NEW.ordinal != OLD.ordinal OR NEW.trigger != OLD.trigger
       OR NEW.started_at != OLD.started_at
     BEGIN SELECT RAISE(ABORT, 'RSI branch identity is immutable'); END;
+
+    CREATE TABLE IF NOT EXISTS rsi_methods (
+      id                  TEXT PRIMARY KEY,
+      owner_user_id       TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      memory_item_id      TEXT NOT NULL UNIQUE REFERENCES personal_memory_entries(item_id) ON DELETE CASCADE,
+      source_goal_id      TEXT REFERENCES personal_goals(id) ON DELETE SET NULL,
+      source_run_id       TEXT,
+      source_kind         TEXT NOT NULL CHECK(source_kind IN ('goal_completed','user_correction')),
+      approach            TEXT NOT NULL CHECK(length(approach) BETWEEN 1 AND 200),
+      verification        TEXT NOT NULL CHECK(verification IN ('none','passed','failed')),
+      verified_at         TEXT,
+      last_used_at        TEXT,
+      use_count           INTEGER NOT NULL DEFAULT 0 CHECK(use_count >= 0),
+      created_at          TEXT NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS idx_rsi_methods_owner
+      ON rsi_methods(owner_user_id, created_at DESC);
   `);
 }

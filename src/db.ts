@@ -147,7 +147,7 @@ let db: InstanceType<typeof Database>;
  * restating the number. Hardcoding it meant every schema bump edited a dozen
  * unrelated test files, which is churn that hides real assertion changes.
  */
-export const CURRENT_SCHEMA_VERSION = 108;
+export const CURRENT_SCHEMA_VERSION = 109;
 
 export function isDatabaseInitialized(): boolean {
   return Boolean(db?.open);
@@ -2574,6 +2574,7 @@ export function initDatabase(): void {
   createGroupDiscussionSchema(db);
   bindGroupDiscussionDatabase(db);
   // v107 -> v108: RSI failure-gate branches.
+  // v108 -> v109: RSI verified methods table.
   createRsiSchema(db);
   bindRsiDatabase(db);
 

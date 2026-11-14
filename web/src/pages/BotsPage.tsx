@@ -297,12 +297,12 @@ export function BotsPage() {
       </main>
     );
   return (
-    <main ref={home} className="chief-page" aria-label="我的 Dot">
+    <main ref={home} className="chief-page" aria-label="我的助手">
       {teamView ? (
         <header className="team-page-heading">
           <div>
             <p className="product-metadata">MY TEAM</p>
-            <h1 className="product-page-title">我的 Dot</h1>
+            <h1 className="product-page-title">我的助手</h1>
           </div>
           <Link
             to="/agent-profiles?create=1"
@@ -339,7 +339,7 @@ export function BotsPage() {
         {!teamView && (
           <div className="flex items-center justify-between">
             <h2 id="bots-heading" className="product-section-title">
-              我的 Dot
+              我的助手
             </h2>
             <Link
               to="/agent-profiles?create=1"

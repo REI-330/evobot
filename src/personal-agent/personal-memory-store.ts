@@ -285,6 +285,159 @@ export function createPersonalMemoryEntry(
     };
   })();
 }
+
+/**
+ * Internal RSI helper: creates an unconfirmed Personal Memory item (`status='proposed'`)
+ * without relaxing PersonalMemoryCreateSchema's `confirmed: z.literal(true)` guard.
+ * Note: workspace_memory_items CHECK constraint permits ('active','proposed','conflicted','superseded','deleted');
+ * 'proposed' is the existing unconfirmed/inactive state excluded from read_personal_memory.
+ */
+export function createUnconfirmedPersonalMemoryEntry(input: {
+  ownerId: string;
+  key: string;
+  title: string;
+  content: string;
+  kind?: 'fact' | 'decision' | 'lesson' | 'open_loop';
+  sourceGoalId?: string | null;
+  sourceType?: WorkspaceMemoryMutationContext['sourceType'];
+  sourceId?: string | null;
+  sessionId?: string | null;
+}) {
+  const title = input.title.trim().slice(0, 500);
+  const content = input.content.trim().slice(0, 32768);
+  if (!content) throw new PersonalMemoryError('INVALID_MEMORY_CONTENT');
+  const kind = input.kind ?? 'lesson';
+  return db().transaction(() => {
+    const jid = personalMemoryHome(input.ownerId);
+    const idempotencyKey = requestKey('rsi_create', input.key);
+    const requestHash = digest({
+      op: 'rsi_create',
+      ownerId: input.ownerId,
+      title,
+      content,
+      kind,
+      sourceGoalId: input.sourceGoalId ?? null,
+    });
+    const result = createWorkspaceMemoryItem({
+      workspaceJid: jid,
+      idempotencyKey,
+      requestHash,
+      context: {
+        actorId: input.ownerId,
+        sourceType: input.sourceType ?? 'agent_runtime',
+        sourceId: input.sourceId ?? 'rsi_method',
+        sessionId: input.sessionId ?? null,
+        observedAt: new Date().toISOString(),
+      },
+      value: {
+        content,
+        title,
+        kind,
+        expiresAt: null,
+        status: 'proposed',
+      },
+    });
+    if (result.replayed) {
+      requireEntry(input.ownerId, result.item.id);
+    } else {
+      db()
+        .prepare(
+          'INSERT INTO personal_memory_entries(item_id,owner_user_id,home_workspace_jid,source_goal_id,source_artifact_id,source_artifact_digest,captured_content_digest,captured_revision,created_at) VALUES (?,?,?,?,?,?,?,?,?)',
+        )
+        .run(
+          result.item.id,
+          input.ownerId,
+          jid,
+          input.sourceGoalId ?? null,
+          null,
+          null,
+          createHash('sha256').update(content).digest('hex'),
+          result.item.revision,
+          new Date().toISOString(),
+        );
+    }
+    return {
+      entry: getPersonalMemoryEntry(input.ownerId, result.item.id),
+      replayed: result.replayed,
+      applied_revision: result.item.revision,
+    };
+  })();
+}
+
+function isOwnedActiveWorkspace(ownerId: string, jid: string): boolean {
+  return Boolean(
+    db()
+      .prepare(
+        `SELECT 1 FROM registered_groups w
+         JOIN workspaces p ON p.jid = w.jid AND p.status = 'active' AND p.owner_user_id = w.created_by
+         JOIN users u ON u.id = w.created_by AND u.status = 'active' AND u.deleted_at IS NULL
+         WHERE w.jid = ? AND w.created_by = ?`,
+      )
+      .get(jid, ownerId),
+  );
+}
+
+export function confirmPersonalMemoryMethodEntry(
+  ownerId: string,
+  itemId: string,
+  key: string,
+  extraWorkspaceJids: string[] = [],
+) {
+  return db().transaction(() => {
+    const { row, item } = requireEntry(ownerId, itemId);
+    if (item.status === 'deleted') {
+      throw new PersonalMemoryError('MEMORY_NOT_FOUND');
+    }
+    const existing = getPersonalMemoryEntry(ownerId, itemId);
+    const validExtra = extraWorkspaceJids.filter(
+      (jid) =>
+        jid !== row.home_workspace_jid && isOwnedActiveWorkspace(ownerId, jid),
+    );
+    const mergedScopes = [
+      ...new Set([
+        ...existing.allowed_workspaces.filter(
+          (jid) => jid !== row.home_workspace_jid,
+        ),
+        ...validExtra,
+      ]),
+    ].sort();
+
+    if (item.status === 'active') {
+      if (validExtra.some((jid) => !existing.allowed_workspaces.includes(jid))) {
+        setGrants(ownerId, item, mergedScopes);
+      }
+      return {
+        entry: getPersonalMemoryEntry(ownerId, itemId),
+        replayed: true,
+        applied_revision: item.revision,
+      };
+    }
+
+    const result = updateWorkspaceMemoryItem({
+      workspaceJid: row.home_workspace_jid,
+      itemId,
+      expectedRevision: item.revision,
+      patch: {
+        status: 'active',
+      },
+      context: context(ownerId),
+      idempotencyKey: requestKey('rsi_confirm', key),
+      requestHash: digest({
+        op: 'rsi_confirm',
+        itemId,
+        scopes: mergedScopes,
+      }),
+    });
+    if (!result.replayed) {
+      setGrants(ownerId, result.item, mergedScopes);
+    }
+    return {
+      entry: getPersonalMemoryEntry(ownerId, itemId),
+      replayed: result.replayed,
+      applied_revision: result.item.revision,
+    };
+  })();
+}
 export function updatePersonalMemoryEntry(
   ownerId: string,
   itemId: string,
@@ -337,10 +490,21 @@ export function forgetPersonalMemoryEntry(
       idempotencyKey: requestKey('mutation', key),
       requestHash: digest({ op: 'forget', itemId, ...input }),
     });
-    if (!result.replayed)
+    if (!result.replayed) {
       db()
         .prepare('DELETE FROM personal_memory_grants WHERE item_id=?')
         .run(itemId);
+      const hasRsiMethods = db()
+        .prepare(
+          "SELECT 1 FROM sqlite_master WHERE type='table' AND name='rsi_methods'",
+        )
+        .get();
+      if (hasRsiMethods) {
+        db()
+          .prepare('DELETE FROM rsi_methods WHERE memory_item_id=?')
+          .run(itemId);
+      }
+    }
     return {
       entry: getPersonalMemoryEntry(ownerId, itemId),
       replayed: result.replayed,

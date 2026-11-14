@@ -26,8 +26,20 @@ export function productNavActive(
       (current.get('view') === 'team') === expected.has('view')
     );
   if (base === '/goals' || base === '/tasks') {
+    if (base === '/goals' && pathname === '/tasks' && !expected.has('view')) {
+      return true;
+    }
     if (pathname !== base) return false;
     return (current.get('view') ?? '') === (expected.get('view') ?? '');
+  }
+  if (base === '/capabilities') {
+    return (
+      pathname === '/capabilities' ||
+      pathname.startsWith('/capabilities/') ||
+      pathname === '/usage' ||
+      pathname === '/agent-profiles' ||
+      pathname === '/memory'
+    );
   }
   return pathname === base || pathname.startsWith(`${base}/`);
 }

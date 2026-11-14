@@ -283,7 +283,9 @@ function failGoalViaRuntime(
 describe('RSI routes', () => {
   test('returns 409 when retrying a non-failed Goal', async () => {
     const { goal } = await createGoalWithTask();
-    const res = await request(`/${goal.id}/retry`, 'POST');
+    const res = await request(`/${goal.id}/retry`, 'POST', {
+      approach: '换一种方式执行',
+    });
     expect(res.status).toBe(409);
     expect(await res.json()).toEqual({ error: 'Goal is not failed' });
   });
@@ -293,7 +295,9 @@ describe('RSI routes', () => {
     const sessionId = attachManagedRuntimeSession(goal.id);
     failGoalViaRuntime(goal, task, sessionId, 'model_error', 'unauthorized');
 
-    const res = await request(`/${goal.id}/retry`, 'POST');
+    const res = await request(`/${goal.id}/retry`, 'POST', {
+      approach: '换一种方式执行',
+    });
     expect(res.status).toBe(409);
     expect(await res.json()).toEqual({ error: 'not_retryable' });
     expect(rsiBranches.listBranches('alice', goal.id)).toHaveLength(0);
@@ -324,7 +328,9 @@ describe('RSI routes', () => {
     });
     expect(bodyBefore.rsi.branches).toEqual([]);
 
-    const retryRes = await request(`/${goal.id}/retry`, 'POST');
+    const retryRes = await request(`/${goal.id}/retry`, 'POST', {
+      approach: '先检查接口限流再重试',
+    });
     expect(retryRes.status).toBe(201);
     const retryBody = (await retryRes.json()) as {
       branch: { id: string; run_id: string | null; ordinal: number; trigger: string; status: string };
@@ -516,7 +522,9 @@ describe('RSI routes', () => {
     });
     expect(secondDetail.rsi.branches).toHaveLength(0);
 
-    const retryRes = await request(`/${goal.id}/retry`, 'POST');
+    const retryRes = await request(`/${goal.id}/retry`, 'POST', {
+      approach: '改用备用步骤',
+    });
     expect(retryRes.status).toBe(409);
     expect(await retryRes.json()).toEqual({ error: 'same_failure' });
     expect(rsiBranches.listBranches('alice', goal.id)).toHaveLength(0);
@@ -668,7 +676,9 @@ describe('RSI routes', () => {
       trigger.mockImplementationOnce(() => {
         throw new Error('trigger boom');
       });
-      const retryFailRes = await request(`/${goal.id}/retry`, 'POST');
+      const retryFailRes = await request(`/${goal.id}/retry`, 'POST', {
+        approach: '重试并记录回滚',
+      });
       expect(retryFailRes.status).toBe(500);
       const branchesAfterManualFail = rsiBranches.listBranches(
         'alice',

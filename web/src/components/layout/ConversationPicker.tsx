@@ -134,7 +134,7 @@ export function ConversationPicker({
           onClick={onCreate}
           className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-primary px-3 text-sm font-medium text-primary-foreground"
         >
-          <Plus className="size-5" aria-hidden="true" /> 新建 Dot
+          <Plus className="size-5" aria-hidden="true" /> 新建助手
         </button>
         <button
           type="button"
@@ -145,11 +145,11 @@ export function ConversationPicker({
         </button>
         <label className="flex min-h-11 items-center gap-2 rounded-xl border bg-background px-3 focus-within:ring-2 focus-within:ring-ring">
           <Search className="size-4 shrink-0 text-muted-foreground" />
-          <span className="sr-only">搜索 Dot 和对话</span>
+          <span className="sr-only">搜索助手与对话</span>
           <input
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="搜索 Dot 和对话"
+            placeholder="搜索助手与对话"
             className="min-w-0 flex-1 bg-transparent text-base outline-none"
           />
         </label>
@@ -160,9 +160,9 @@ export function ConversationPicker({
             {profilesError}
           </p>
         )}
-        <section aria-label="我的 Dot">
+        <section aria-label="我的助手">
           <h3 className="px-2 pb-2 text-xs font-medium text-muted-foreground">
-            我的 Dot
+            我的助手
           </h3>
           {visibleDots.map(({ profile, destination }) => {
             const name = getAgentProfileDisplayName(profile.name);

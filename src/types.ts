@@ -612,6 +612,12 @@ export interface PersonalGoalExecutionSnapshot {
     result: string | null;
     outcome: string | null;
   }[];
+  retry_approach?: string;
+  methods?: {
+    id: string;
+    approach: string;
+    criteria: string[];
+  }[];
 }
 
 /** Durable state for one scheduled/manual occurrence. */

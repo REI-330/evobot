@@ -39,6 +39,7 @@ import {
   saveMessageFeedback,
   queueFeedbackScore,
 } from '../personal-agent/message-feedback.js';
+import { createMethodFromUserCorrection } from '../rsi/method-store.js';
 import { getHostObservability } from '../personal-agent/host-observability.js';
 import { wakeFeedbackScoreExport } from '../personal-agent/feedback-score-export.js';
 import { DATA_DIR } from '../config.js';
@@ -853,6 +854,21 @@ router.put(
         requestId: parsed.data.requestId,
         projectRef: getHostObservability()?.projectRef,
       });
+      try {
+        createMethodFromUserCorrection({
+          ownerId: user.id,
+          workspaceJid: jid,
+          sessionId,
+          messageId,
+          score: parsed.data.score,
+          comment: parsed.data.comment ?? null,
+        });
+      } catch (error) {
+        logger.warn(
+          { error, messageId, sessionId },
+          'Failed to create RSI method from user correction feedback',
+        );
+      }
       try {
         const projectRef = getHostObservability()?.projectRef;
         if (

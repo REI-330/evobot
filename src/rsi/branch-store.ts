@@ -183,7 +183,15 @@ export function beginRetry(
   ownerId: string,
   goalId: string,
   trigger: RsiBranchTrigger,
+  approach: string,
 ): RsiBranch {
+  const normalizedApproach = approach.trim();
+  if (!normalizedApproach || normalizedApproach.length > 200) {
+    throw new GoalConflict(
+      'INVALID_RSI_APPROACH',
+      'Retry approach must be between 1 and 200 characters',
+    );
+  }
   const { taskId, branch } = rsiDb().transaction(() => {
     const goal = requireOwnedGoal(ownerId, goalId);
     if (goal.status !== 'failed') {
@@ -220,7 +228,7 @@ export function beginRetry(
       .run(new Date().toISOString(), goalId);
 
     const createdBranch = startBranch(ownerId, goalId, {
-      approach: DEFAULT_RSI_APPROACH,
+      approach: normalizedApproach,
       trigger,
     });
 

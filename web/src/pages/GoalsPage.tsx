@@ -65,6 +65,13 @@ type Detail = {
   rsi?: {
     decision: { action: 'allow' | 'stop'; reason: string | null } | null;
     branches: RsiBranch[];
+    method?: {
+      id: string;
+      memory_item_id: string;
+      status: string;
+      verification: 'none' | 'passed' | 'failed';
+    } | null;
+    methods_full?: boolean;
   };
 };
 const rsiStopLabels: Record<string, string> = {
@@ -133,6 +140,8 @@ export function GoalsPage() {
   const [cloudAvailable, setCloudAvailable] = useState(false);
   const [cloudMaxRuns, setCloudMaxRuns] = useState(100);
   const [autoRetry, setAutoRetry] = useState(false);
+  const [retryApproach, setRetryApproach] = useState('');
+  const [connectionsOpen, setConnectionsOpen] = useState(false);
   const [confirm, setConfirm] = useState<'cancelled' | 'completed' | null>(
     null,
   );
@@ -361,7 +370,12 @@ export function GoalsPage() {
   }, [detailWorkspaceJid]);
   async function retryGoal() {
     if (!goal) return;
-    await mutate(() => api.post(`/api/goals/${goal.id}/retry`));
+    const approach = retryApproach.trim();
+    if (!approach) return;
+    await mutate(async () => {
+      await api.post(`/api/goals/${goal.id}/retry`, { approach });
+      setRetryApproach('');
+    });
   }
   async function toggleAutoRetry(next: boolean) {
     if (!goal) return;
@@ -406,8 +420,8 @@ export function GoalsPage() {
     <main className="min-h-full p-4 sm:p-6">
       <div className="mx-auto max-w-6xl space-y-5">
         <PageHeader
-          title="我的工作"
-          subtitle="持续推进的目标、需要你处理的事项与成果"
+          title="进化与工作"
+          subtitle="持续推进的目标、需要你处理的事项、重试策略与学到的方法"
           actions={
             <>
               <Button
@@ -678,6 +692,7 @@ export function GoalsPage() {
                         detailOrigin.current = event.currentTarget;
                         setDetail(null);
                         selected.current = item.id;
+                        setRetryApproach('');
                         setDetailOpen(true);
                         void reload();
                       }}
@@ -690,6 +705,11 @@ export function GoalsPage() {
                         {goalStatusLabels[item.status]} · 已开始{' '}
                         {item.budget_used_runs}/{item.budget_max_runs} 次
                       </span>
+                      {item.pending_method && (
+                        <span className="mt-1 block text-xs text-primary">
+                          已记下一种做法，待确认
+                        </span>
+                      )}
                     </button>
                   ))
                 )}
@@ -730,6 +750,35 @@ export function GoalsPage() {
                         {goalStatusLabels[goal.status]} · 执行预算{' '}
                         {goal.budget_used_runs}/{goal.budget_max_runs}
                       </p>
+                      {goal.status === 'completed' &&
+                        detail.rsi?.method &&
+                        detail.rsi.method.status !== 'active' && (
+                          <p className="text-sm text-muted-foreground">
+                            已记下一种做法，待确认 ·{' '}
+                            <button
+                              type="button"
+                              className="text-primary underline"
+                              onClick={() => {
+                                setConnectionsOpen(true);
+                                setDetailOpen(false);
+                                requestAnimationFrame(() => {
+                                  document
+                                    .getElementById('personal-memory-methods')
+                                    ?.scrollIntoView({ behavior: 'smooth' });
+                                });
+                              }}
+                            >
+                              前往方法列表确认
+                            </button>
+                          </p>
+                        )}
+                      {goal.status === 'completed' &&
+                        detail.rsi?.methods_full &&
+                        !detail.rsi?.method && (
+                          <p className="text-sm text-amber-600 dark:text-amber-400">
+                            方法已满，请先删除旧的
+                          </p>
+                        )}
                       {goal.status === 'failed' && detail.rsi?.decision && (
                         <div className="space-y-2 rounded-lg border p-3 text-sm">
                           <p>
@@ -740,13 +789,27 @@ export function GoalsPage() {
                                 ] ?? '已停止重试')}
                           </p>
                           {detail.rsi.decision.action === 'allow' && (
-                            <Button
-                              size="sm"
-                              disabled={busy}
-                              onClick={() => void retryGoal()}
-                            >
-                              换种方法再试
-                            </Button>
+                            <div className="space-y-2">
+                              <input
+                                type="text"
+                                aria-label="这次换的做法"
+                                placeholder="填写这次换的做法（最多 200 字）"
+                                maxLength={200}
+                                value={retryApproach}
+                                disabled={busy}
+                                onChange={(event) =>
+                                  setRetryApproach(event.target.value)
+                                }
+                                className={fieldClass}
+                              />
+                              <Button
+                                size="sm"
+                                disabled={busy || !retryApproach.trim()}
+                                onClick={() => void retryGoal()}
+                              >
+                                换种方法再试
+                              </Button>
+                            </div>
                           )}
                         </div>
                       )}
@@ -1077,7 +1140,13 @@ export function GoalsPage() {
                   </WorkDetailSurface>
                 )}
             </div>
-            <details className="work-connections">
+            <details
+              className="work-connections"
+              open={connectionsOpen || undefined}
+              onToggle={(event) =>
+                setConnectionsOpen(event.currentTarget.open)
+              }
+            >
               <summary>资料、设备与例行任务</summary>
               <GithubRoutines
                 key={userId}

@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { Hono } from 'hono';
 import { bodyLimit } from 'hono/body-limit';
 import { z, ZodError } from 'zod';
@@ -18,6 +19,11 @@ import {
   personalMemoryCandidate,
   validatePersonalMemorySource,
 } from '../personal-agent/personal-memory.js';
+import {
+  confirmRsiMethod,
+  listRsiMethodsMetadataByItem,
+  reverifyRsiMethod,
+} from '../rsi/method-store.js';
 
 const routes = new Hono<{ Variables: Variables }>();
 routes.use('*', authMiddleware);
@@ -63,12 +69,22 @@ routes.onError((error, c) => {
 });
 const key = (raw: string | undefined) =>
   z.string().trim().min(1).max(128).parse(raw);
-routes.get('/', (c) =>
-  c.json({
-    entries: listPersonalMemoryEntries(c.get('user').id),
-    home_workspace_jid: personalMemoryHome(c.get('user').id),
-  }),
-);
+const optionalKey = (raw: string | undefined) => {
+  if (!raw?.trim()) return randomUUID();
+  return key(raw);
+};
+routes.get('/', (c) => {
+  const userId = c.get('user').id;
+  const entries = listPersonalMemoryEntries(userId);
+  const rsiByItem = listRsiMethodsMetadataByItem(userId);
+  return c.json({
+    entries: entries.map((entry) => {
+      const rsi = rsiByItem.get(entry.item.id);
+      return rsi ? { ...entry, rsi } : entry;
+    }),
+    home_workspace_jid: personalMemoryHome(userId),
+  });
+});
 routes.post('/', async (c) =>
   c.json(
     createPersonalMemoryEntry(
@@ -116,5 +132,19 @@ routes.post('/:id/forget', async (c) =>
       await c.req.json().catch(() => ({})),
     ),
   ),
+);
+routes.post('/:id/confirm', (c) =>
+  c.json(
+    confirmRsiMethod(
+      c.get('user').id,
+      c.req.param('id'),
+      optionalKey(c.req.header('Idempotency-Key')),
+    ),
+  ),
+);
+routes.post('/:id/reverify', (c) =>
+  c.json({
+    method: reverifyRsiMethod(c.get('user').id, c.req.param('id')),
+  }),
 );
 export default routes;

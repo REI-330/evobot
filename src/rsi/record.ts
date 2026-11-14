@@ -1,3 +1,4 @@
+import { logger } from '../logger.js';
 import type { DurableFailure } from '../personal-agent/durable-failure.js';
 import {
   getPersonalGoal,
@@ -12,6 +13,7 @@ import {
   rsiDb,
 } from './branch-store.js';
 import { decideRetry, type RetryDecision } from './failure-gate.js';
+import { markMatchingSnapshotMethodsFailed } from './method-store.js';
 import { getAutoRetry } from './settings.js';
 
 export const MAX_RSI_BRANCHES = 3;
@@ -162,6 +164,15 @@ export function recordFailureDecision(goalId: string, runId: string): void {
     retryable: failure.retryable,
   });
 
+  try {
+    markMatchingSnapshotMethodsFailed(goalId, runId, failure.kind);
+  } catch (error) {
+    logger.warn(
+      { error, goalId, runId },
+      'Failed to update RSI method verification status after failure',
+    );
+  }
+
   const { decision } = evaluateGoalRetry(goal, runId, failure);
   recordPersonalGoalEvent(goalId, 'rsi_decision', {
     run_id: runId,
@@ -172,8 +183,13 @@ export function recordFailureDecision(goalId: string, runId: string): void {
   });
 
   if (decision.action === 'allow' && getAutoRetry(goal.workspace_jid)) {
+    const autoApproach =
+      `避开上一次的失败类别：${failure.kind}，改用不同的步骤完成同一目标`.slice(
+        0,
+        200,
+      );
     try {
-      beginRetry(goal.owner_user_id, goalId, 'auto');
+      beginRetry(goal.owner_user_id, goalId, 'auto', autoApproach);
     } catch (error) {
       recordPersonalGoalEvent(goalId, 'rsi_retry_error', {
         run_id: runId,

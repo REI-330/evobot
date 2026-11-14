@@ -1112,7 +1112,7 @@ export function ChatView({ groupJid, onBack, headerLeft }: ChatViewProps) {
             <button
               onClick={handleBackAction}
               className="md:hidden flex size-11 shrink-0 items-center justify-center hover:bg-muted rounded-lg transition-colors cursor-pointer"
-              aria-label={navigation ? 'Dot 和对话' : '返回'}
+              aria-label={navigation ? '助手与对话' : '返回'}
             >
               {navigation ? (
                 <PanelLeft className="w-5 h-5 text-foreground/70" />
@@ -1124,8 +1124,8 @@ export function ChatView({ groupJid, onBack, headerLeft }: ChatViewProps) {
           {navigation && (
             <button
               type="button"
-              aria-label="新建 Dot"
-              title="新建 Dot"
+              aria-label="新建助手"
+              title="新建助手"
               onClick={navigation.show}
               className="flex size-11 shrink-0 items-center justify-center rounded-lg hover:bg-muted md:hidden"
             >

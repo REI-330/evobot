@@ -219,8 +219,8 @@ describe('RSI branch store and settings', () => {
     );
   });
 
-  test('migrates a v107 database to v108 and creates rsi_branches automatically', () => {
-    expect(db.CURRENT_SCHEMA_VERSION).toBe(108);
+  test('migrates a v107 database to current schema and creates rsi_branches and rsi_methods automatically', () => {
+    expect(db.CURRENT_SCHEMA_VERSION).toBe(109);
     db.closeDatabase();
 
     const raw = new Database(dbFile);
@@ -228,24 +228,30 @@ describe('RSI branch store and settings', () => {
       DROP TRIGGER IF EXISTS rsi_branch_identity_immutable;
       DROP INDEX IF EXISTS idx_rsi_branches_goal;
       DROP TABLE IF EXISTS rsi_branches;
+      DROP INDEX IF EXISTS idx_rsi_methods_owner;
+      DROP TABLE IF EXISTS rsi_methods;
       UPDATE router_state SET value = '107' WHERE key = 'schema_version';
     `);
     raw.close();
 
     db.initDatabase();
-    expect(db.getRouterState('schema_version')).toBe('108');
+    expect(db.getRouterState('schema_version')).toBe(
+      String(db.CURRENT_SCHEMA_VERSION),
+    );
 
-    const tableRow = rsiBranches
+    const tables = rsiBranches
       .rsiDb()
       .prepare(
-        "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'rsi_branches'",
+        "SELECT name FROM sqlite_master WHERE type = 'table' AND name IN ('rsi_branches', 'rsi_methods') ORDER BY name",
       )
-      .get() as { name: string } | undefined;
-    expect(tableRow?.name).toBe('rsi_branches');
+      .all() as { name: string }[];
+    expect(tables.map((t) => t.name)).toEqual(['rsi_branches', 'rsi_methods']);
 
     const backups = fs
       .readdirSync(path.join(store, 'migration-backups'))
-      .filter((name) => name.startsWith('messages-v107-to-v108-'));
+      .filter((name) =>
+        name.startsWith(`messages-v107-to-v${db.CURRENT_SCHEMA_VERSION}-`),
+      );
     expect(backups).toHaveLength(1);
   });
 });

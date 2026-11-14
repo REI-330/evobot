@@ -1230,7 +1230,7 @@ export function AgentProfilesPage() {
       <aside className="border-b border-border bg-muted/20 min-[1101px]:sticky min-[1101px]:top-0 min-[1101px]:flex min-[1101px]:h-dvh min-[1101px]:w-64 min-[1101px]:flex-none min-[1101px]:flex-col min-[1101px]:border-b-0 min-[1101px]:border-r">
         <div className="flex items-center gap-3 px-4 py-4 lg:px-5 lg:pt-6">
           <div className="min-w-0 flex-1">
-            <h1 className="text-lg font-medium text-foreground">Dot 配置</h1>
+            <h1 className="text-lg font-medium text-foreground">助手配置</h1>
             <p className="mt-0.5 text-xs text-muted-foreground">
               {customProfiles.length} 个智能体
             </p>

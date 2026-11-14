@@ -133,7 +133,7 @@ function GroupList() {
       aria-label="Bot 群聊"
     >
       <Link to="/bots" className="text-sm text-muted-foreground">
-        返回我的 Dot
+        返回我的助手
       </Link>
       <div className="flex items-center justify-between gap-3">
         <h1 className="product-page-title">团队群聊</h1>

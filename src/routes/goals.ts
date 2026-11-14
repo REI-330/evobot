@@ -55,6 +55,10 @@ import {
 } from '../personal-agent/goal-team-store.js';
 import { BotGroupError } from '../bot-groups/protocol.js';
 import { beginRetry, listBranches } from '../rsi/branch-store.js';
+import {
+  getRsiMethodForGoal,
+  listPendingRsiMethodGoalIds,
+} from '../rsi/method-store.js';
 import { evaluateGoalRetry, latestGoalRunId } from '../rsi/record.js';
 import { getAutoRetry, setAutoRetry } from '../rsi/settings.js';
 
@@ -74,6 +78,11 @@ const rsiSettingsPutSchema = z
   .object({
     workspace_jid: workspaceJidSchema,
     auto_retry: z.boolean(),
+  })
+  .strict();
+const rsiRetrySchema = z
+  .object({
+    approach: z.string().trim().min(1).max(200),
   })
   .strict();
 
@@ -180,10 +189,15 @@ routes.get('/team-options', (c) => {
 });
 routes.get('/', (c) => {
   const user = c.get('user');
+  const pendingGoalIds = listPendingRsiMethodGoalIds(user.id);
   return c.json({
-    goals: listPersonalGoals(user.id).filter((goal) =>
-      canUseWorkspace(user, goal.workspace_jid),
-    ),
+    goals: listPersonalGoals(user.id)
+      .filter((goal) => canUseWorkspace(user, goal.workspace_jid))
+      .map((goal) =>
+        pendingGoalIds.has(goal.id)
+          ? { ...goal, pending_method: true }
+          : goal,
+      ),
   });
 });
 routes.post('/', async (c) => {
@@ -274,6 +288,18 @@ routes.get('/:id', (c) => {
     rsi: {
       decision,
       branches: listBranches(goal.owner_user_id, goal.id),
+      method: (() => {
+        const method = getRsiMethodForGoal(goal.owner_user_id, goal.id);
+        return method
+          ? {
+              id: method.id,
+              memory_item_id: method.memory_item_id,
+              status: method.memory_status,
+              verification: method.verification,
+            }
+          : null;
+      })(),
+      methods_full: activity.some((entry) => entry.kind === 'rsi_methods_full'),
     },
     ...(goal.team ? { team_steps: goalTeamStepViews(goal.id) } : {}),
   });
@@ -461,7 +487,8 @@ routes.post('/:id/tasks/:taskId/run', async (c) => {
     202,
   );
 });
-routes.post('/:id/retry', (c) => {
+routes.post('/:id/retry', async (c) => {
+  const input = rsiRetrySchema.parse(await c.req.json().catch(() => ({})));
   const goal = visibleGoal(c, c.req.param('id'));
   if (goal.status !== 'failed') {
     return c.json({ error: 'Goal is not failed' }, 409);
@@ -472,7 +499,12 @@ routes.post('/:id/retry', (c) => {
     return c.json({ error: decision.reason }, 409);
   }
   try {
-    const branch = beginRetry(goal.owner_user_id, goal.id, 'manual');
+    const branch = beginRetry(
+      goal.owner_user_id,
+      goal.id,
+      'manual',
+      input.approach,
+    );
     return c.json({ branch, decision }, 201);
   } catch (error) {
     if (error instanceof GoalConflict) throw error;

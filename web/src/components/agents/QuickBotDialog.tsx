@@ -437,22 +437,22 @@ export function QuickBotProvider({ children }: { children: ReactNode }) {
             {view !== 'browse' && (
               <button
                 type="button"
-                aria-label="返回 Dot 和对话"
+                aria-label="返回助手与对话"
                 onClick={browse}
                 disabled={busy}
                 className="mb-2 flex min-h-11 items-center gap-2 text-sm text-muted-foreground hover:text-foreground disabled:opacity-50"
               >
-                <ArrowLeft className="size-4" /> Dot 和对话
+                <ArrowLeft className="size-4" /> 助手与对话
               </button>
             )}
             <SheetTitle>
               {view === 'create'
-                ? '创建新 Dot'
+                ? '创建新助手'
                 : view === 'group-create'
                   ? '新建群聊'
                   : view === 'history'
                     ? '对话列表'
-                    : 'Dot 和对话'}
+                    : '助手与对话'}
             </SheetTitle>
             <SheetDescription>
               {view === 'create'
@@ -460,13 +460,13 @@ export function QuickBotProvider({ children }: { children: ReactNode }) {
                 : view === 'group-create'
                   ? '给小队起个名字，在这里一起推进工作。'
                   : view === 'history'
-                    ? '切换当前 Dot 的对话，或返回查找其他 Dot。'
-                    : '找到你的 Dot，继续之前的对话。'}
+                    ? '切换当前助手的对话，或返回查找其他助手。'
+                    : '找到你的助手，继续之前的对话。'}
             </SheetDescription>
             <button
               type="button"
               aria-label={
-                view === 'create' ? '关闭新建 Dot' : '关闭 Dot 和对话'
+                view === 'create' ? '关闭新建助手' : '关闭助手与对话'
               }
               disabled={busy}
               onClick={close}
@@ -492,7 +492,7 @@ export function QuickBotProvider({ children }: { children: ReactNode }) {
                   }}
                   className="flex min-h-11 min-w-0 items-center justify-center gap-2 rounded-lg px-2 text-sm text-muted-foreground aria-pressed:bg-background aria-pressed:font-medium aria-pressed:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
                 >
-                  <Plus className="size-4" aria-hidden="true" /> 新建 Dot
+                  <Plus className="size-4" aria-hidden="true" /> 新建助手
                 </button>
                 <button
                   type="button"
@@ -627,7 +627,7 @@ export function ConversationNavigationTrigger() {
   return (
     <button
       type="button"
-      aria-label="Dot 和对话"
+      aria-label="助手与对话"
       aria-haspopup="dialog"
       onClick={navigation.browse}
       className="flex size-11 shrink-0 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground"

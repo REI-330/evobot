@@ -9,12 +9,11 @@ const read = (relativePath: string) =>
   fs.readFileSync(path.join(root, relativePath), 'utf-8');
 
 describe('settings information architecture', () => {
-  test('keeps account, system, and administration scopes explicit', () => {
+  test('keeps account and system scopes explicit without SaaS/ops bloat', () => {
     const nav = read('web/src/components/settings/SettingsNav.tsx');
 
     expect(nav).toContain("label: '账户设置'");
     expect(nav).toContain("label: '高级设置'");
-    expect(nav).toContain("label: '管理与访问'");
     expect(nav).toContain("label: '关于 EvoBot'");
     expect(nav).toContain("key: 'my-channels'");
     expect(nav).toContain("key: 'security'");
@@ -23,14 +22,13 @@ describe('settings information architecture', () => {
     expect(nav).toContain('min-h-0 flex-1 overflow-y-auto px-3 pb-28');
     expect(nav).toContain('SheetDescription');
     expect(nav).not.toMatch(
-      /key: '(groups|agent-profiles|memory|skills|mcp-servers|plugins|usage)'/,
+      /key: '(groups|agent-profiles|memory|skills|mcp-servers|plugins|usage|billing|observability|mem0-private|registration|users|monitor)'/,
     );
   });
 
   test('uses the app scroll root and keeps settings content out of shell cards', () => {
     const appLayout = read('web/src/components/layout/AppLayout.tsx');
     const settings = read('web/src/pages/SettingsPage.tsx');
-    const billing = read('web/src/pages/BillingPage.tsx');
 
     expect(appLayout).toContain('data-app-scroll-root="true"');
     expect(settings).toContain('data-settings-page="true"');
@@ -40,7 +38,6 @@ describe('settings information architecture', () => {
     expect(settings).not.toContain(
       'h-full bg-background flex flex-col lg:flex-row overflow-hidden',
     );
-    expect(billing).not.toContain('flex-1 overflow-y-auto');
   });
 
   test('moves product resources out of settings while preserving old links', () => {
@@ -51,15 +48,15 @@ describe('settings information architecture', () => {
 
     expect(app).toContain('path="/capabilities/:section?"');
     expect(app).toContain('path="/usage"');
-    expect(app).toContain('requiredPermission="manage_system_config"');
     expect(settings).toContain("skills: '/capabilities/skills'");
     expect(settings).toContain("'mcp-servers': '/capabilities/mcp'");
     expect(settings).toContain("plugins: '/capabilities/plugins'");
+    expect(settings).toContain("usage: '/capabilities/usage'");
     expect(settings).toContain(
       "bindings: '/settings?tab=my-channels&view=bindings'",
     );
-    expect(navItems).toContain("label: '能力库'");
-    expect(capabilities).toMatch(/能力库[\s\S]*具体智能体的“能力配置”/);
+    expect(navItems).toContain("label: '能力与用量'");
+    expect(capabilities).toMatch(/能力与用量[\s\S]*具体智能体的“能力配置”/);
   });
 
   test('keeps workspaces private and removes the abandoned collaboration surface', () => {

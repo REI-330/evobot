@@ -11,7 +11,8 @@ describe('product terminology', () => {
     vi.unstubAllEnvs();
     vi.resetModules();
   });
-  test('uses Dot-first navigation while preserving existing intelligent-agent configuration terms', () => {
+
+  test('uses unified assistant and EvoBot terminology without legacy Dot labels', () => {
     const productSurface = [
       'web/src/components/layout/nav-items.ts',
       'web/src/components/layout/UnifiedSidebar.tsx',
@@ -24,14 +25,14 @@ describe('product terminology', () => {
       .map(read)
       .join('\n');
 
-    expect(productSurface).toContain("label: '我的 Dot'");
-    expect(productSurface).toContain("label: 'Dot 配置'");
+    expect(productSurface).toContain("label: '我的助手'");
+    expect(productSurface).toContain("label: '能力与用量'");
     expect(productSurface).toContain('主智能体');
     expect(productSurface).toContain('自定义智能体');
     expect(productSurface).toContain('为智能体新建工作区');
     expect(productSurface).toContain('智能体运行次数');
     expect(productSurface).not.toMatch(
-      /label: 'Agent'|主 Agent|自定义 Agent|Agent 工作区|选择 Agent|创建 Agent|Agent 运行次数|Agent 列表/,
+      /label: 'Agent'|主 Agent|自定义 Agent|Agent 工作区|选择 Agent|创建 Agent|Agent 运行次数|Agent 列表|我的 Dot|Dot 配置|Dot 记忆|新建 Dot|Dot 和对话/,
     );
   });
 
@@ -41,8 +42,9 @@ describe('product terminology', () => {
     const { filterNavItems } =
       await import('../web/src/components/layout/nav-items.js');
     const paths = filterNavItems(false, true).map((item) => item.path);
-    expect(paths[0]).toBe('/chat');
+    expect(paths[0]).toBe('/goals');
     expect(paths).not.toContain('/bots');
+    expect(paths).toContain('/chat');
     expect(paths).toContain('/agent-profiles');
     expect(paths).toContain('/goals');
   });

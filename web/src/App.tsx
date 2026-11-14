@@ -8,7 +8,6 @@ import {
 } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 import { LoginPage } from './pages/LoginPage';
-import { RegisterPage } from './pages/RegisterPage';
 import { SetupPage } from './pages/SetupPage';
 import { SetupProvidersPage } from './pages/SetupProvidersPage';
 import { SetupChannelsPage } from './pages/SetupChannelsPage';
@@ -61,42 +60,16 @@ const AgentProfilesPage = lazy(() =>
     default: m.AgentProfilesPage,
   })),
 );
-const BillingPage = lazy(() => import('./pages/BillingPage'));
-const UsagePage = lazy(() =>
-  import('./pages/UsagePage').then((m) => ({ default: m.UsagePage })),
-);
-// These four were the only synchronous authed routes left. CapabilitiesPage in
-// particular statically pulls SkillsPage → MarkdownRenderer → KaTeX +
-// highlight.js, which hoisted that whole chain into the entry chunk (~1.74MB
-// raw, 517KB gzip) and made even /login download it.
+// These routes are lazy-loaded to keep the entry bundle small. CapabilitiesPage
+// pulls SkillsPage → MarkdownRenderer → KaTeX + highlight.js.
 const MemoryPage = lazy(() =>
   import('./pages/MemoryPage').then((m) => ({ default: m.MemoryPage })),
-);
-const UsersPage = lazy(() =>
-  import('./pages/UsersPage').then((m) => ({ default: m.UsersPage })),
-);
-const MonitorPage = lazy(() =>
-  import('./pages/MonitorPage').then((m) => ({ default: m.MonitorPage })),
 );
 const CapabilitiesPage = lazy(() =>
   import('./pages/CapabilitiesPage').then((m) => ({
     default: m.CapabilitiesPage,
   })),
 );
-
-function UsageRouteFallback() {
-  return (
-    <div
-      className="min-h-full px-4 py-5 sm:px-6 lg:px-8 lg:py-8"
-      role="status"
-      aria-live="polite"
-    >
-      <div className="mx-auto max-w-7xl rounded-xl border border-border bg-card/40 p-6 text-sm text-muted-foreground motion-safe:animate-pulse">
-        正在加载用量分析…
-      </div>
-    </div>
-  );
-}
 
 function AgentProfilesRouteFallback() {
   return (
@@ -116,7 +89,7 @@ const appRoutes = createRoutesFromElements(
   <>
     {/* Public Routes */}
     <Route path="/login" element={<LoginPage />} />
-    <Route path="/register" element={<RegisterPage />} />
+    <Route path="/register" element={<Navigate to="/login" replace />} />
     <Route path="/setup" element={<SetupPage />} />
     <Route
       path="/setup/providers"
@@ -202,32 +175,9 @@ const appRoutes = createRoutesFromElements(
           </Suspense>
         }
       />
-      <Route
-        path="/monitor"
-        element={
-          <AuthGuard requiredPermission="manage_system_config">
-            <Suspense fallback={null}>
-              <MonitorPage />
-            </Suspense>
-          </AuthGuard>
-        }
-      />
-      <Route
-        path="/usage"
-        element={
-          <Suspense fallback={<UsageRouteFallback />}>
-            <UsagePage />
-          </Suspense>
-        }
-      />
-      <Route
-        path="/billing"
-        element={
-          <Suspense fallback={null}>
-            <BillingPage />
-          </Suspense>
-        }
-      />
+      <Route path="/monitor" element={<Navigate to="/settings" replace />} />
+      <Route path="/usage" element={<Navigate to="/capabilities/usage" replace />} />
+      <Route path="/billing" element={<Navigate to="/goals" replace />} />
       <Route
         path="/memory"
         element={
@@ -264,22 +214,7 @@ const appRoutes = createRoutesFromElements(
           </Suspense>
         }
       />
-      <Route
-        path="/users"
-        element={
-          <AuthGuard
-            requiredAnyPermissions={[
-              'manage_users',
-              'manage_invites',
-              'view_audit_log',
-            ]}
-          >
-            <Suspense fallback={null}>
-              <UsersPage />
-            </Suspense>
-          </AuthGuard>
-        }
-      />
+      <Route path="/users" element={<Navigate to="/settings" replace />} />
     </Route>
 
     {/* Default redirect — go through AuthGuard to detect setup state */}

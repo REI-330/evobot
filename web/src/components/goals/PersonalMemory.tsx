@@ -5,6 +5,17 @@ import { pendingInputRequest } from '../../utils/input-receipts';
 import { extractErrorMessage } from '../../utils/error';
 import { Button } from '../ui/button';
 
+type RsiMethodMeta = {
+  id: string;
+  source_kind: 'goal_completed' | 'user_correction';
+  source_goal_id: string | null;
+  source_goal_objective: string | null;
+  verification: 'none' | 'passed' | 'failed';
+  verified_at: string | null;
+  last_used_at: string | null;
+  use_count: number;
+};
+
 type Entry = {
   recallable: boolean;
   item: {
@@ -12,6 +23,7 @@ type Entry = {
     content: string;
     title: string | null;
     kind: string;
+    status?: string;
     revision: number;
     expiresAt: string | null;
   };
@@ -22,6 +34,13 @@ type Entry = {
     artifact_id: string | null;
     edited_since_capture: boolean;
   };
+  rsi?: RsiMethodMeta;
+};
+
+const rsiVerificationLabels: Record<RsiMethodMeta['verification'], string> = {
+  none: '未验证',
+  passed: '最近一次通过',
+  failed: '最近一次失败',
 };
 type Attempt = {
   path: string;
@@ -194,8 +213,17 @@ export function PersonalMemory({
     }
   }
   if (!enabled) return null;
+  const sortedEntries = [...entries].sort((a, b) => {
+    const aUnconfirmed = a.item.status && a.item.status !== 'active' ? 0 : 1;
+    const bUnconfirmed = b.item.status && b.item.status !== 'active' ? 0 : 1;
+    if (aUnconfirmed !== bUnconfirmed) return aUnconfirmed - bUnconfirmed;
+    const aUsed = a.rsi?.last_used_at ? Date.parse(a.rsi.last_used_at) : 0;
+    const bUsed = b.rsi?.last_used_at ? Date.parse(b.rsi.last_used_at) : 0;
+    return bUsed - aUsed;
+  });
   return (
     <section
+      id="personal-memory-methods"
       aria-label="个人记忆"
       className="space-y-3 rounded-xl border bg-card p-4"
     >
@@ -351,91 +379,167 @@ export function PersonalMemory({
           </div>
         </form>
       </details>
-      {entries.map((entry) => (
-        <article
-          key={entry.item.id}
-          className="space-y-2 rounded-lg border p-3"
-          aria-label={`个人记忆：${entry.item.title ?? entry.item.id}`}
-        >
-          <p className="font-medium">
-            {entry.item.title || '未命名记忆'} · 修订 {entry.item.revision}
-          </p>
-          <p className="whitespace-pre-wrap break-words text-sm">
-            {entry.item.content}
-          </p>
-          {!entry.recallable && (
-            <p className="text-xs">
-              当前状态或有效期不允许召回；读取工具不会返回此条目。
+      {sortedEntries.map((entry) => {
+        const isRsi = Boolean(entry.rsi);
+        const isUnconfirmed =
+          Boolean(entry.item.status) && entry.item.status !== 'active';
+        const isVerificationFailed = entry.rsi?.verification === 'failed';
+        return (
+          <article
+            key={entry.item.id}
+            className="space-y-2 rounded-lg border p-3"
+            aria-label={`个人记忆：${entry.item.title ?? entry.item.id}`}
+          >
+            <div className="flex flex-wrap items-center gap-2">
+              <p className="font-medium">
+                {entry.item.title || '未命名记忆'} · 修订 {entry.item.revision}
+              </p>
+              {isRsi && (
+                <span className="rounded bg-muted px-2 py-0.5 text-xs font-medium text-foreground">
+                  从任务学到
+                </span>
+              )}
+              {isRsi && isUnconfirmed && (
+                <span className="rounded bg-amber-500/15 px-2 py-0.5 text-xs text-amber-700 dark:text-amber-300">
+                  待确认
+                </span>
+              )}
+              {isVerificationFailed && (
+                <span className="rounded bg-destructive/15 px-2 py-0.5 text-xs text-destructive">
+                  暂不使用
+                </span>
+              )}
+            </div>
+            {entry.rsi && (
+              <p className="text-xs text-muted-foreground">
+                {entry.rsi.source_goal_objective
+                  ? `来源目标：${entry.rsi.source_goal_objective.slice(0, 80)} · `
+                  : ''}
+                验证状态：{rsiVerificationLabels[entry.rsi.verification]}
+                {entry.rsi.verified_at
+                  ? ` · 最近验证：${new Date(entry.rsi.verified_at).toLocaleString()}`
+                  : ''}
+              </p>
+            )}
+            <p className="whitespace-pre-wrap break-words text-sm">
+              {entry.item.content}
             </p>
-          )}
-          <p className="text-xs text-muted-foreground">
-            当前授权：
-            {entry.allowed_workspaces
-              .map((jid) => workspaces.find((w) => w.jid === jid)?.name ?? jid)
-              .join('、')}
-          </p>
-          {!!entry.stale_workspaces.length && (
-            <p className="text-xs">
-              内容已修订，旧的跨工作区授权已失效，请编辑并重新确认。
+            {!entry.recallable && (
+              <p className="text-xs">
+                当前状态或有效期不允许召回；读取工具不会返回此条目。
+              </p>
+            )}
+            <p className="text-xs text-muted-foreground">
+              当前授权：
+              {entry.allowed_workspaces
+                .map((jid) => workspaces.find((w) => w.jid === jid)?.name ?? jid)
+                .join('、')}
             </p>
-          )}
-          {entry.origin.goal_id && (
-            <p className="text-xs">
-              <Link
-                className="text-primary underline"
-                to={`/goals?goal=${encodeURIComponent(entry.origin.goal_id)}`}
+            {!!entry.stale_workspaces.length && (
+              <p className="text-xs">
+                内容已修订，旧的跨工作区授权已失效，请编辑并重新确认。
+              </p>
+            )}
+            {entry.origin.goal_id && (
+              <p className="text-xs">
+                <Link
+                  className="text-primary underline"
+                  to={`/goals?goal=${encodeURIComponent(entry.origin.goal_id)}`}
+                >
+                  原始委托来源
+                </Link>
+                {entry.origin.edited_since_capture
+                  ? ' · 保存后已有本人修订'
+                  : ''}
+              </p>
+            )}
+            <div className="flex flex-wrap gap-2">
+              {isRsi && isUnconfirmed && (
+                <Button
+                  className="min-h-11"
+                  disabled={busy || pending}
+                  onClick={() =>
+                    void send(
+                      `/api/personal-memory/${entry.item.id}/confirm`,
+                      'POST',
+                      {},
+                    )
+                  }
+                >
+                  确认使用
+                </Button>
+              )}
+              {isRsi && isVerificationFailed && (
+                <Button
+                  className="min-h-11"
+                  variant="outline"
+                  disabled={busy || pending}
+                  onClick={async () => {
+                    setBusy(true);
+                    setError('');
+                    try {
+                      await api.post(
+                        `/api/personal-memory/${entry.item.id}/reverify`,
+                      );
+                      await reload();
+                    } catch (err) {
+                      setError(extractErrorMessage(err));
+                    } finally {
+                      setBusy(false);
+                    }
+                  }}
+                >
+                  改回使用
+                </Button>
+              )}
+              {!isRsi && (
+                <Button
+                  className="min-h-11"
+                  variant="outline"
+                  disabled={busy || pending}
+                  onClick={() => edit(entry)}
+                >
+                  编辑与授权
+                </Button>
+              )}
+              <Button
+                className="min-h-11"
+                variant="outline"
+                disabled={busy}
+                onClick={() => void history(entry.item.id)}
               >
-                原始委托来源
-              </Link>
-              {entry.origin.edited_since_capture ? ' · 保存后已有本人修订' : ''}
-            </p>
-          )}
-          <div className="flex flex-wrap gap-2">
-            <Button
-              className="min-h-11"
-              variant="outline"
-              disabled={busy || pending}
-              onClick={() => edit(entry)}
-            >
-              编辑与授权
-            </Button>
-            <Button
-              className="min-h-11"
-              variant="outline"
-              disabled={busy}
-              onClick={() => void history(entry.item.id)}
-            >
-              修订记录
-            </Button>
-            <Button
-              className="min-h-11"
-              variant="ghost"
-              disabled={busy || pending}
-              onClick={() =>
-                void send(
-                  `/api/personal-memory/${entry.item.id}/forget`,
-                  'POST',
-                  { expected_revision: entry.item.revision, confirmed: true },
-                )
-              }
-            >
-              遗忘并撤销读取授权
-            </Button>
-          </div>
-          {versions?.id === entry.item.id && (
-            <ol className="space-y-2 text-sm">
-              {versions.rows.map((row) => (
-                <li key={row.revision}>
-                  修订 {row.revision} · {row.changeType}
-                  <pre className="whitespace-pre-wrap break-words">
-                    {row.content}
-                  </pre>
-                </li>
-              ))}
-            </ol>
-          )}
-        </article>
-      ))}
+                修订记录
+              </Button>
+              <Button
+                className="min-h-11"
+                variant="ghost"
+                disabled={busy || pending}
+                onClick={() =>
+                  void send(
+                    `/api/personal-memory/${entry.item.id}/forget`,
+                    'POST',
+                    { expected_revision: entry.item.revision, confirmed: true },
+                  )
+                }
+              >
+                {isRsi ? '删除' : '遗忘并撤销读取授权'}
+              </Button>
+            </div>
+            {versions?.id === entry.item.id && (
+              <ol className="space-y-2 text-sm">
+                {versions.rows.map((row) => (
+                  <li key={row.revision}>
+                    修订 {row.revision} · {row.changeType}
+                    <pre className="whitespace-pre-wrap break-words">
+                      {row.content}
+                    </pre>
+                  </li>
+                ))}
+              </ol>
+            )}
+          </article>
+        );
+      })}
     </section>
   );
 }

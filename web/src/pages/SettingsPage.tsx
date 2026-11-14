@@ -1,14 +1,12 @@
-import { lazy, Suspense, useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { Navigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
-import { AdvancedNavigation } from '../components/layout/AdvancedNavigation';
 import { SettingsDrawerTrigger } from '../components/layout/SettingsDrawer';
 import { toast } from 'sonner';
 
 import { useAuthStore } from '../stores/auth';
 import { SettingsNav } from '../components/settings/SettingsNav';
 import { ClaudeProviderSection } from '../components/settings/ClaudeProviderSection';
-import { RegistrationSection } from '../components/settings/RegistrationSection';
 import { ProfileSection } from '../components/settings/ProfileSection';
 import { PreferencesSection } from '../components/settings/PreferencesSection';
 import { SecuritySection } from '../components/settings/SecuritySection';
@@ -16,29 +14,20 @@ import { AboutSection } from '../components/settings/AboutSection';
 import { AppearanceSection } from '../components/settings/AppearanceSection';
 import { MainAgentIdentitySection } from '../components/settings/MainAgentIdentitySection';
 import { MainAgentCapabilitiesSection } from '../components/settings/MainAgentCapabilitiesSection';
-import { Mem0PrivateSection } from '../components/settings/Mem0PrivateSection';
-import { LangfuseSection } from '../components/settings/LangfuseSection';
 import { DeviceControlSection } from '../components/settings/DeviceControlSection';
 import {
   HostIntegrationSettingsSection,
   SystemSettingsSection,
 } from '../components/settings/SystemSettingsSection';
 import { UserChannelsSection } from '../components/settings/UserChannelsSection';
-import { UsersPage } from './UsersPage';
-import { MonitorPage } from './MonitorPage';
 import type { SettingsTab } from '../components/settings/types';
-
-const BillingPage = lazy(() => import('./BillingPage'));
 
 const VALID_TABS: SettingsTab[] = [
   'claude',
-  'registration',
   'appearance',
   'system',
   'main-agent',
   'host-integration',
-  'observability',
-  'billing',
   'profile',
   'preferences',
   'my-channels',
@@ -47,26 +36,20 @@ const VALID_TABS: SettingsTab[] = [
   'groups',
   'agent-profiles',
   'memory',
-  'mem0-private',
   'skills',
   'mcp-servers',
   'plugins',
-  'users',
   'about',
   'bindings',
   'usage',
-  'monitor',
 ];
 const SYSTEM_TABS: SettingsTab[] = [
   'claude',
-  'registration',
   'appearance',
   'system',
   'main-agent',
   'host-integration',
-  'observability',
 ];
-const FULLPAGE_TABS: SettingsTab[] = ['users', 'monitor', 'billing'];
 
 const LEGACY_TAB_ROUTES: Partial<Record<SettingsTab, string>> = {
   groups: '/chat',
@@ -76,14 +59,11 @@ const LEGACY_TAB_ROUTES: Partial<Record<SettingsTab, string>> = {
   'mcp-servers': '/capabilities/mcp',
   plugins: '/capabilities/plugins',
   bindings: '/settings?tab=my-channels&view=bindings',
-  usage: '/usage',
+  usage: '/capabilities/usage',
 };
 
 export function SettingsPage() {
   const { user: currentUser } = useAuthStore();
-  const hasBillingPermission = useAuthStore((state) =>
-    state.hasPermission('manage_billing'),
-  );
   const [searchParams, setSearchParams] = useSearchParams();
 
   const hasSystemConfigPermission =
@@ -92,12 +72,6 @@ export function SettingsPage() {
   const mustChangePassword = !!currentUser?.must_change_password;
   const canManageSystemConfig =
     hasSystemConfigPermission && !mustChangePassword;
-  const canManageBilling = hasBillingPermission && !mustChangePassword;
-  const canManageUsers =
-    currentUser?.role === 'admin' ||
-    !!currentUser?.permissions.includes('manage_users') ||
-    !!currentUser?.permissions.includes('manage_invites') ||
-    !!currentUser?.permissions.includes('view_audit_log');
 
   const defaultTab: SettingsTab = 'profile';
   const rawTabValue = searchParams.get('tab');
@@ -114,22 +88,17 @@ export function SettingsPage() {
       if (SYSTEM_TABS.includes(raw) && !canManageSystemConfig)
         return defaultTab;
       if (
-        (raw === 'main-agent' || raw === 'host-integration' || raw === 'observability') &&
+        (raw === 'main-agent' || raw === 'host-integration') &&
         currentUser?.role !== 'admin'
       ) {
         return defaultTab;
       }
-      if (raw === 'monitor' && !canManageSystemConfig) return defaultTab;
-      if (raw === 'billing' && !canManageBilling) return defaultTab;
-      if (raw === 'users' && !canManageUsers) return defaultTab;
       return raw;
     }
     return defaultTab;
   }, [
     rawTab,
     canManageSystemConfig,
-    canManageUsers,
-    canManageBilling,
     mustChangePassword,
     defaultTab,
     currentUser?.role,
@@ -149,7 +118,7 @@ export function SettingsPage() {
     system: '运行与容量',
     'main-agent': '主 EvoBot',
     'host-integration': '宿主机集成',
-    observability: 'Langfuse 观测',
+    observability: '观测',
     billing: '计费管理',
     profile: '个人资料',
     preferences: '常规',
@@ -159,7 +128,7 @@ export function SettingsPage() {
     groups: '会话管理',
     'agent-profiles': '智能体',
     memory: 'Workspace Memory',
-    'mem0-private': 'Dot 记忆',
+    'mem0-private': '记忆',
     skills: '技能(Skill)管理',
     'mcp-servers': 'MCP 服务器',
     plugins: '插件 (Plugins)',
@@ -195,7 +164,6 @@ export function SettingsPage() {
         <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">
           {sectionTitle[activeTab]}
         </span>
-        <AdvancedNavigation mobile />
       </div>
 
       <SettingsNav
@@ -203,88 +171,64 @@ export function SettingsPage() {
         activeTab={activeTab}
         onTabChange={handleTabChange}
         canManageSystemConfig={canManageSystemConfig}
-        canManageBilling={canManageBilling}
-        canManageUsers={!!canManageUsers}
         isAdmin={currentUser?.role === 'admin'}
         mustChangePassword={mustChangePassword}
       />
 
       <div data-settings-content="true" className="min-w-0 flex-1">
-        {FULLPAGE_TABS.includes(activeTab) ? (
-          <>
-            {activeTab === 'users' && <UsersPage />}
-            {activeTab === 'monitor' && <MonitorPage />}
-            {activeTab === 'billing' && (
-              <Suspense fallback={null}>
-                <BillingPage managementOnly />
-              </Suspense>
+        <div className="px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
+          <div className="mx-auto max-w-6xl">
+            <header className="mb-6">
+              <h1 className="product-page-title">
+                {sectionTitle[activeTab]}
+              </h1>
+              {sectionDescription[activeTab] && (
+                <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">
+                  {sectionDescription[activeTab]}
+                </p>
+              )}
+            </header>
+
+            {mustChangePassword && (
+              <div className="mb-6 rounded-xl border border-warning/20 bg-warning-bg px-4 py-3 text-sm text-warning">
+                检测到首次登录或管理员重置密码，请先在“安全与设备”中修改密码；完成前其他设置暂不可用。
+              </div>
             )}
-          </>
-        ) : (
-          <div className="px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
-            <div className="mx-auto max-w-6xl">
-              <header className="mb-6">
-                <h1 className="product-page-title">
-                  {sectionTitle[activeTab]}
-                </h1>
-                {sectionDescription[activeTab] && (
-                  <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">
-                    {sectionDescription[activeTab]}
-                  </p>
+
+            {activeTab === 'system' ? (
+              <SystemSettingsSection scope="runtime" />
+            ) : activeTab === 'main-agent' ||
+              activeTab === 'host-integration' ? (
+              <div>
+                {activeTab === 'main-agent' && <MainAgentIdentitySection />}
+                {activeTab === 'main-agent' && (
+                  <MainAgentCapabilitiesSection />
                 )}
-              </header>
-
-              {mustChangePassword && (
-                <div className="mb-6 rounded-xl border border-warning/20 bg-warning-bg px-4 py-3 text-sm text-warning">
-                  检测到首次登录或管理员重置密码，请先在“安全与设备”中修改密码；完成前其他设置暂不可用。
+                <div className={activeTab === 'main-agent' ? 'pt-6' : ''}>
+                  <HostIntegrationSettingsSection
+                    scope={activeTab === 'main-agent' ? 'main-agent' : 'host'}
+                  />
                 </div>
-              )}
-
-              {activeTab === 'system' ? (
-                <SystemSettingsSection scope="runtime" />
-              ) : activeTab === 'main-agent' ||
-                activeTab === 'host-integration' ? (
-                <div>
-                  {activeTab === 'main-agent' && <MainAgentIdentitySection />}
-                  {activeTab === 'main-agent' && (
-                    <MainAgentCapabilitiesSection />
-                  )}
-                  <div className={activeTab === 'main-agent' ? 'pt-6' : ''}>
-                    <HostIntegrationSettingsSection
-                      scope={activeTab === 'main-agent' ? 'main-agent' : 'host'}
-                    />
-                  </div>
-                </div>
-              ) : (
-                <>
-                  {activeTab === 'claude' && (
-                    <ClaudeProviderSection
-                      setNotice={(message) => message && toast.success(message)}
-                      setError={(message) => message && toast.error(message)}
-                    />
-                  )}
-                  {activeTab === 'registration' && (
-                    <div className="space-y-8">
-                      <RegistrationSection />
-                      <div className="border-t border-border pt-6">
-                        <SystemSettingsSection scope="security" />
-                      </div>
-                    </div>
-                  )}
-                  {activeTab === 'appearance' && <AppearanceSection />}
-                  {activeTab === 'profile' && <ProfileSection />}
-                  {activeTab === 'mem0-private' && <Mem0PrivateSection />}
-                  {activeTab === 'observability' && <LangfuseSection />}
-                  {activeTab === 'device-control' && <DeviceControlSection />}
-                  {activeTab === 'preferences' && <PreferencesSection />}
-                  {activeTab === 'my-channels' && <UserChannelsSection />}
-                  {activeTab === 'security' && <SecuritySection />}
-                  {activeTab === 'about' && <AboutSection />}
-                </>
-              )}
-            </div>
+              </div>
+            ) : (
+              <>
+                {activeTab === 'claude' && (
+                  <ClaudeProviderSection
+                    setNotice={(message) => message && toast.success(message)}
+                    setError={(message) => message && toast.error(message)}
+                  />
+                )}
+                {activeTab === 'appearance' && <AppearanceSection />}
+                {activeTab === 'profile' && <ProfileSection />}
+                {activeTab === 'device-control' && <DeviceControlSection />}
+                {activeTab === 'preferences' && <PreferencesSection />}
+                {activeTab === 'my-channels' && <UserChannelsSection />}
+                {activeTab === 'security' && <SecuritySection />}
+                {activeTab === 'about' && <AboutSection />}
+              </>
+            )}
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
