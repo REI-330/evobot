@@ -24,7 +24,7 @@ test('computer capability is explicitly stored for one owner and fails closed on
     version: 1,
     ownerId,
     nodeId,
-    serverId: `opendot_computer_${randomUUID().replaceAll('-', '')}`,
+    serverId: `evobot_computer_${randomUUID().replaceAll('-', '')}`,
   };
   expect(readComputerCapability(ownerId)).toBeUndefined();
   saveComputerCapability(binding);

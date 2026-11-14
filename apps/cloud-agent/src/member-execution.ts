@@ -70,7 +70,7 @@ export class MemberExecutions {
     const value = CloudMemberExecutionSchema.parse(raw);
     if (
       !binding.group_session ||
-      binding.execution_authority !== 'miniclaw-product' ||
+      binding.execution_authority !== 'evobot-product' ||
       binding.goal_id ||
       binding.bot_handoff ||
       value.session_id !== binding.session_id ||

@@ -2,7 +2,7 @@
 
 ## Implemented boundary
 
-`MINICLAW_DEVICE_NODES=true` opts into a local outbound Node process. The Gateway
+`EVOBOT_DEVICE_NODES=true` opts into a local outbound Node process. The Gateway
 keeps its existing authentication, Workspace ACL, Runtime, Scheduler and approval
 system. First version exposes **only `files.read` for at most 50 explicitly named
 relative files**. No filesystem-root access, wildcard, directory scan, shell,
@@ -49,7 +49,7 @@ behavior through `EnvHttpProxyAgent`; it does not disable TLS verification.
 New Durable roots register `list_personal_devices` and `read_device_file`. Listing
 shows only current Workspace grants (bounded metadata); reading requires an exact
 node ID/path. Before creating a product intent, the ToolTask commits a native
-`miniclaw.device-command.v1` memo with stable command/owner/Workspace/Session,
+`evobot.device-command.v1` memo with stable command/owner/Workspace/Session,
 conversation, ToolTask, ancestor generation, call, Goal Run, node, grant, manifest
 and path identities. Replays reuse it. A database-only intent without the matching
 native active checkpoint cannot dispatch. A memo ahead of the product intent may
@@ -127,7 +127,7 @@ its authentication or runtime framework was not imported.
 
 ## Cloud Bot Team bridge (schema v84)
 
-`MINICLAW_CLOUD_DEVICES=true` additionally opts **new Goal Team Cloud Handoffs**
+`EVOBOT_CLOUD_DEVICES=true` additionally opts **new Goal Team Cloud Handoffs**
 into the reviewed `read_device_file` capability. Ordinary Cloud Sessions and
 standalone Handoffs cannot acquire it. Local Node Sessions retain their original
 protocol and grants. No new runtime, scheduler or node protocol is introduced.

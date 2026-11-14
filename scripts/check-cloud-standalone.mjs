@@ -9,7 +9,7 @@ import { spawn } from 'node:child_process';
 const repository = fileURLToPath(new URL('../', import.meta.url));
 const cloud = path.join(repository, 'apps/cloud-agent');
 const scratch = await fs.mkdtemp(
-  path.join(os.tmpdir(), 'miniclaw-cloud-only-'),
+  path.join(os.tmpdir(), 'evobot-cloud-only-'),
 );
 async function copy(relative) {
   const from = path.join(repository, relative),

@@ -147,7 +147,7 @@ export function SettingsPage() {
     registration: '注册策略',
     appearance: '常规与品牌',
     system: '运行与容量',
-    'main-agent': '主 OpenDot',
+    'main-agent': '主 EvoBot',
     'host-integration': '宿主机集成',
     observability: 'Langfuse 观测',
     billing: '计费管理',

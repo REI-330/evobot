@@ -12,7 +12,7 @@ const InputRequest = defineDocFamily<
   { payloadDigest: string; verified: boolean },
   string
 >({
-  kind: 'miniclaw.input-request',
+  kind: 'evobot.input-request',
   version: 1,
   family: true,
   scope: 'session',
@@ -40,7 +40,7 @@ const requestKey = (requestId: string) =>
   createHash('sha256').update(requestId, 'utf8').digest('hex');
 const payloadDigest = (content: string) =>
   createHash('sha256')
-    .update('miniclaw.input.v1\0', 'utf8')
+    .update('evobot.input.v1\0', 'utf8')
     .update(content, 'utf8')
     .digest('hex');
 

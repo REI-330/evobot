@@ -15,8 +15,8 @@ test.each(['revoke', 'abort'] as const)(
   'paired device %s during a dispatched MCP effect never replays or exposes its result',
   async (operation) => {
     const f = await botHandoffHttpFixture(undefined, {
-      MINICLAW_PI_MCP: 'true',
-      MINICLAW_DEVICE_NODES: 'true',
+      EVOBOT_PI_MCP: 'true',
+      EVOBOT_DEVICE_NODES: 'true',
     });
     let node: ChildProcess | undefined;
     let nodeLog = '';

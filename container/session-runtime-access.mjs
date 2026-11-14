@@ -131,15 +131,15 @@ function verifyAccess() {
 
 const { failures, warnings } = verifyAccess();
 for (const warning of warnings) {
-  process.stderr.write(`miniclaw: runtime access warning: ${warning}\n`);
+  process.stderr.write(`evobot: runtime access warning: ${warning}\n`);
 }
 if (failures.length > 0) {
   process.stderr.write(
-    `miniclaw: runtime access check failed for node ${nodeUid}:${nodeGid} (identity ${process.env.MINICLAW_INTERNAL_IDENTITY_MODE ?? 'unknown'}); ` +
+    `evobot: runtime access check failed for node ${nodeUid}:${nodeGid} (identity ${process.env.EVOBOT_INTERNAL_IDENTITY_MODE ?? 'unknown'}); ` +
       `${failures.length} path(s) are not accessible to the runtime user\n`,
   );
   for (const failure of failures) {
-    process.stderr.write(`miniclaw: runtime access denied: ${failure}\n`);
+    process.stderr.write(`evobot: runtime access denied: ${failure}\n`);
   }
 }
 process.exit(failures.length > 0 ? 1 : 0);

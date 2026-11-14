@@ -4,7 +4,7 @@ import path from 'node:path';
 import Database from 'better-sqlite3';
 import { expect, test, vi } from 'vitest';
 
-const root = fs.mkdtempSync(path.join(os.tmpdir(), 'opendot-v106-upgrade-'));
+const root = fs.mkdtempSync(path.join(os.tmpdir(), 'evobot-v106-upgrade-'));
 vi.mock('../src/config.js', async (original) => ({
   ...(await original<Record<string, unknown>>()),
   DATA_DIR: root,

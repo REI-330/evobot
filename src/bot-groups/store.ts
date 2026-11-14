@@ -838,7 +838,7 @@ export function getBotGroupSnapshot(
               !!value && !!row.scope_workspace_jid && scopeValid,
             can_execute:
               member.role === 'owner' &&
-              process.env.MINICLAW_BOT_HANDOFFS === 'true' &&
+              process.env.EVOBOT_BOT_HANDOFFS === 'true' &&
               row.state === 'active' &&
               scopeValid &&
               !!value &&
@@ -869,7 +869,7 @@ export function postBotGroupMessage(
     if (group.message_count >= 10000)
       throw new BotGroupError('BOT_GROUP_MESSAGE_LIMIT', 429);
     const dispatch =
-      process.env.MINICLAW_BOT_HANDOFFS === 'true' && input.dispatch !== false;
+      process.env.EVOBOT_BOT_HANDOFFS === 'true' && input.dispatch !== false;
     const mentions = dispatch
       ? canonicalHandoffMentions(
           groupId,

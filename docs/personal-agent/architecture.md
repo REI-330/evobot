@@ -18,11 +18,11 @@ budgets, cancellation and limits. Explicit cross-task Personal Memory now reuses
 Home revisions and requires destination/revision grants; see
 [personal-memory.md](personal-memory.md). Optional paired finite-file Device Nodes now use native ToolTask memos and revocable workspace grants; see [device-nodes.md](device-nodes.md).
 
-MiniClaw retains Pi Coding Agent through the agent-runner and adds an opt-in Pi Durable path for owned Host Sessions. The product layer owns workspace and identity policy, conversation admission, queues, channel delivery, scheduled task records, workspace memory, and runtime configuration. Pi Coding Agent owns an individual model turn and stores its transcript in JSONL. Existing receipts and queue recovery are MiniClaw mechanisms; they are not Pi Durable checkpoints.
+EvoBot retains Pi Coding Agent through the agent-runner and adds an opt-in Pi Durable path for owned Host Sessions. The product layer owns workspace and identity policy, conversation admission, queues, channel delivery, scheduled task records, workspace memory, and runtime configuration. Pi Coding Agent owns an individual model turn and stores its transcript in JSONL. Existing receipts and queue recovery are EvoBot mechanisms; they are not Pi Durable checkpoints.
 
 The `agent/pocket-integration` branch combines the complete `agent/goal-mode-pocket` history (including its fixes) with `agent/personal-agent-integration`. The only source merge conflict was AppLayout's imports: both the Goal availability hook and Pocket panel are retained. PR #2 was verified open and unmerged at its original head `a299a76`; main remains unchanged. See `docs/pi-pocket-port.md` and `evaluation.md` for current evidence and limits.
 
-On `agent/durable-product-sessions`, new owned Host conversation Sessions created through the existing `/agents` or `/sessions` APIs use Pi Durable when `MINICLAW_DURABLE_RUNTIME=true`. Schema v71 persists the owner/workspace/session/runtime/provider identity and a provisioning state in the existing product database. Owned legacy conversations are explicitly assigned to Pi Coding Agent; main sessions, spawned tasks and Docker sessions retain their existing execution path. Runtime selection is never recomputed on restart or flag changes.
+On `agent/durable-product-sessions`, new owned Host conversation Sessions created through the existing `/agents` or `/sessions` APIs use Pi Durable when `EVOBOT_DURABLE_RUNTIME=true`. Schema v71 persists the owner/workspace/session/runtime/provider identity and a provisioning state in the existing product database. Owned legacy conversations are explicitly assigned to Pi Coding Agent; main sessions, spawned tasks and Docker sessions retain their existing execution path. Runtime selection is never recomputed on restart or flag changes.
 
 The formal `/api/messages` path records payload-bound input receipts and projects user messages in one product transaction, then submits to the Session's Durable Inbox. Each Durable Session owns one private SQLite file under `data/db/durable-sessions/`, through the existing cross-process ownership guard. The main service owns these Harness instances, so killing that service kills the actual executor. Its conversation dispatcher reconciles durable receipts instead of launching a Coding Agent for the same Session; channel messages already admitted by existing routing retain their original message identity. No second business queue or scheduler is added.
 
@@ -35,9 +35,9 @@ The Goal execution follow-up atomically provisions new Host Goals, tasks and Dur
 ```text
 Web / PWA / Electron / channel
               |
-        MiniClaw API + ACL
+        EvoBot API + ACL
               |
-   MiniClaw session ownership map
+   EvoBot session ownership map
               |
          Runtime API
           /       \
@@ -47,15 +47,15 @@ Web / PWA / Electron / channel
        authorized tools and delivery
 ```
 
-The ownership map must bind a MiniClaw user and workspace to exactly one runtime conversation. Every lookup, mutation, snapshot, and recovered submission must pass the existing ACL. Runtime selection must be persisted for the session; a feature flag may select a runtime only when creating a new session, and must not switch ownership of a live session.
+The ownership map must bind a EvoBot user and workspace to exactly one runtime conversation. Every lookup, mutation, snapshot, and recovered submission must pass the existing ACL. Runtime selection must be persisted for the session; a feature flag may select a runtime only when creating a new session, and must not switch ownership of a live session.
 
-MiniClaw remains responsible for identity, ACL, workspace boundaries, memory scope, capability grants, scheduler policy, channel routing, and external-delivery receipts. Pi Durable supplies durable conversations, task checkpoints, inbox submissions, SQLite storage, and replay/resume behavior. A future adapter must translate existing authorized tools into Pi Durable tools rather than importing an unrestricted tool bundle.
+EvoBot remains responsible for identity, ACL, workspace boundaries, memory scope, capability grants, scheduler policy, channel routing, and external-delivery receipts. Pi Durable supplies durable conversations, task checkpoints, inbox submissions, SQLite storage, and replay/resume behavior. A future adapter must translate existing authorized tools into Pi Durable tools rather than importing an unrestricted tool bundle.
 
 ## Storage and ownership
 
 Pi Durable 1.3.0 uses a Harness as the owner of one storage instance. Its Node SQLite adapter uses WAL and `synchronous=NORMAL`; its documented crash guarantee covers committed process-crash state, while the newest commit may be lost after host or power failure. A cooperative local SQLite coordinator now enforces one guarded Harness per canonical storage path, including across processes and GC. Product Session mappings are persisted in the existing database. Online backup and restore of the optional Durable database are implemented and tested.
 
-The existing MiniClaw database and JSONL history remain intact during migration. Per-Session Durable databases have online WAL snapshots and restore integrity checks; coordinators are excluded. Cross-database snapshot mismatches fail closed at recovery rather than recreating a prompt. The flag is a new-Session rollout control, not a live-runtime rollback switch. Managed Host Goals dispatch through that mapping; existing Coding/script tasks retain their no-blind-replay boundary.
+The existing EvoBot database and JSONL history remain intact during migration. Per-Session Durable databases have online WAL snapshots and restore integrity checks; coordinators are excluded. Cross-database snapshot mismatches fail closed at recovery rather than recreating a prompt. The flag is a new-Session rollout control, not a live-runtime rollback switch. Managed Host Goals dispatch through that mapping; existing Coding/script tasks retain their no-blind-replay boundary.
 
 ## Verification status
 

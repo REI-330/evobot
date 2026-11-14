@@ -58,7 +58,7 @@ describe('OpenCode Zen Pi model configuration', () => {
     const recovered = createZenModels(config, 'session-one');
     const second = createZenModels(config, 'session-two');
     expect(first.getModel(ZEN_PROVIDER_ID, config.modelId)?.headers).toEqual({
-      'User-Agent': 'OpenDot/1.0',
+      'User-Agent': 'EvoBot/1.0',
       'x-opencode-session': 'session-one',
     });
     expect(
@@ -107,6 +107,6 @@ describe('OpenCode Zen Pi model configuration', () => {
     );
     expect(reply.stopReason).toBe('stop');
     expect(sentHeaders.get('x-opencode-session')).toBe('transport-session');
-    expect(sentHeaders.get('user-agent')).toBe('OpenDot/1.0');
+    expect(sentHeaders.get('user-agent')).toBe('EvoBot/1.0');
   });
 });

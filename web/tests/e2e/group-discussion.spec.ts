@@ -12,8 +12,8 @@ import {
   groupInputContext,
 } from '../../../tests/helpers/group-discussion-fixture';
 const evidence = path.resolve(
-  process.env.MINICLAW_GROUP_DISCUSSION_EVIDENCE_DIR ??
-    '../.claude/skills/verify-miniclaw/artifacts/issue-69',
+  process.env.EVOBOT_GROUP_DISCUSSION_EVIDENCE_DIR ??
+    '../.claude/skills/verify-evobot/artifacts/issue-69',
 );
 test('mobile approves an independent work proposal and its exact artifact, then shows one requester continuation', async ({
   page,

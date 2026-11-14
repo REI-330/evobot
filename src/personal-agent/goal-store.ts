@@ -25,6 +25,10 @@ import {
   CLOUD_GOAL_RUN_LIMIT,
   GoalContextLimit,
 } from './goal-context.js';
+import {
+  finishActiveBranchForRun,
+  recordFailureDecision,
+} from '../rsi/record.js';
 
 interface Statement {
   run(...args: unknown[]): { changes: number };
@@ -256,6 +260,14 @@ function event(goalId: string, kind: string, detail: object): void {
     )
     .run(goalId, kind, JSON.stringify(detail), new Date().toISOString());
   touchGoalRuntime(goalId);
+}
+
+export function recordPersonalGoalEvent(
+  goalId: string,
+  kind: string,
+  detail: object,
+): void {
+  event(goalId, kind, detail);
 }
 
 export function createPersonalGoal(
@@ -1004,6 +1016,7 @@ export function settlePersonalGoalExecution(
   continueRun: () => void,
 ) {
   let teamUpdate: ReturnType<typeof projectGoalTeamOutcome>;
+  let settledOutcome: { goalId: string; status: GoalStatus } | null = null;
   const settled = db().transaction(() => {
     const current = activeGoalExecution(input.sessionId);
     if (
@@ -1100,10 +1113,23 @@ export function settlePersonalGoalExecution(
       status,
       input.evidence,
     );
+    settledOutcome = { goalId: goal.id, status };
     if (status === 'pending') continueRun();
     return true;
   })();
   if (settled && teamUpdate) notifyBotGroupUpdate(teamUpdate);
+  if (settled && settledOutcome) {
+    const outcome: { goalId: string; status: GoalStatus } = settledOutcome;
+    if (outcome.status === 'failed') {
+      recordFailureDecision(outcome.goalId, input.runId);
+    } else {
+      finishActiveBranchForRun(outcome.goalId, input.runId, {
+        status: 'succeeded',
+        failKind: null,
+        retryable: null,
+      });
+    }
+  }
   return settled;
 }
 export function listGoalExecutionEvidence(ownerId: string, goalId: string) {
@@ -1138,6 +1164,11 @@ export function cancelPersonalGoalExecution(runId: string) {
     )
     .run(new Date().toISOString(), row.goal_id);
   event(row.goal_id, 'execution_cancelled', { run_id: runId });
+  finishActiveBranchForRun(row.goal_id, runId, {
+    status: 'stopped',
+    failKind: null,
+    retryable: null,
+  });
 }
 export function goalRunStatus(runId: string): GoalStatus | undefined {
   return (
@@ -1149,21 +1180,27 @@ export function goalRunStatus(runId: string): GoalStatus | undefined {
   )?.status;
 }
 export function failPersonalGoalRun(runId: string, commit: () => boolean) {
-  return db().transaction(() => {
+  let failedGoalId: string | null = null;
+  const committed = db().transaction(() => {
     if (!commit()) return false;
     const row = db()
       .prepare('SELECT goal_id FROM goal_execution_contexts WHERE run_id=?')
       .get(runId) as { goal_id: string } | undefined;
     if (row) {
-      db()
+      const changed = db()
         .prepare(
           "UPDATE personal_goals SET status='failed',revision=revision+1,updated_at=? WHERE id=? AND status IN ('pending','running','waiting_for_approval','waiting_for_device')",
         )
         .run(new Date().toISOString(), row.goal_id);
       event(row.goal_id, 'execution_failed', { run_id: runId });
+      if (changed.changes > 0) failedGoalId = row.goal_id;
     }
     return true;
   })();
+  if (committed && failedGoalId) {
+    recordFailureDecision(failedGoalId, runId);
+  }
+  return committed;
 }
 
 export function listGoalDeviceEvidence(ownerId: string, goalId: string) {

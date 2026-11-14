@@ -83,7 +83,7 @@ test('Coding recall reaches the runner without waiting for the IPC fallback scan
 }, 180000);
 
 test('stopping one active Dot retains the peer IPC watch in the same workspace', async () => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'opendot-ipc-peers-'));
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'evobot-ipc-peers-'));
   const ledger = path.join(root, 'mem0.jsonl');
   const f = await botHandoffHttpFixture(
     path.resolve('tests/fixtures/mem0-no-ipc-fallback-preload.mjs'),

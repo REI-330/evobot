@@ -14,18 +14,18 @@ import {
 const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'demo-open-'));
 const previousEnv = {
   WEB_SESSION_SECRET: process.env.WEB_SESSION_SECRET,
-  MINICLAW_DEMO_OPEN: process.env.MINICLAW_DEMO_OPEN,
+  EVOBOT_DEMO_OPEN: process.env.EVOBOT_DEMO_OPEN,
   TRUST_PROXY: process.env.TRUST_PROXY,
-  MINICLAW_DEMO_ADMIN_USERNAME: process.env.MINICLAW_DEMO_ADMIN_USERNAME,
-  MINICLAW_DEMO_ADMIN_PASSWORD: process.env.MINICLAW_DEMO_ADMIN_PASSWORD,
+  EVOBOT_DEMO_ADMIN_USERNAME: process.env.EVOBOT_DEMO_ADMIN_USERNAME,
+  EVOBOT_DEMO_ADMIN_PASSWORD: process.env.EVOBOT_DEMO_ADMIN_PASSWORD,
 };
 process.env.WEB_SESSION_SECRET =
   previousEnv.WEB_SESSION_SECRET ||
   'demo-open-test-secret-demo-open-test-secret';
-delete process.env.MINICLAW_DEMO_OPEN;
+delete process.env.EVOBOT_DEMO_OPEN;
 delete process.env.TRUST_PROXY;
-delete process.env.MINICLAW_DEMO_ADMIN_USERNAME;
-delete process.env.MINICLAW_DEMO_ADMIN_PASSWORD;
+delete process.env.EVOBOT_DEMO_ADMIN_USERNAME;
+delete process.env.EVOBOT_DEMO_ADMIN_PASSWORD;
 
 vi.mock('../src/config.js', async (importOriginal) => {
   const real = (await importOriginal()) as Record<string, unknown>;
@@ -64,15 +64,15 @@ function restoreEnv(
 
 afterAll(() => {
   restoreEnv('WEB_SESSION_SECRET', previousEnv.WEB_SESSION_SECRET);
-  restoreEnv('MINICLAW_DEMO_OPEN', previousEnv.MINICLAW_DEMO_OPEN);
+  restoreEnv('EVOBOT_DEMO_OPEN', previousEnv.EVOBOT_DEMO_OPEN);
   restoreEnv('TRUST_PROXY', previousEnv.TRUST_PROXY);
   restoreEnv(
-    'MINICLAW_DEMO_ADMIN_USERNAME',
-    previousEnv.MINICLAW_DEMO_ADMIN_USERNAME,
+    'EVOBOT_DEMO_ADMIN_USERNAME',
+    previousEnv.EVOBOT_DEMO_ADMIN_USERNAME,
   );
   restoreEnv(
-    'MINICLAW_DEMO_ADMIN_PASSWORD',
-    previousEnv.MINICLAW_DEMO_ADMIN_PASSWORD,
+    'EVOBOT_DEMO_ADMIN_PASSWORD',
+    previousEnv.EVOBOT_DEMO_ADMIN_PASSWORD,
   );
   fs.rmSync(tmpDir, { recursive: true, force: true });
 });
@@ -84,7 +84,7 @@ beforeAll(() => {
 });
 
 beforeEach(() => {
-  delete process.env.MINICLAW_DEMO_OPEN;
+  delete process.env.EVOBOT_DEMO_OPEN;
   delete process.env.TRUST_PROXY;
   demoOpen.resetDemoOpenStateForTests();
 });
@@ -117,8 +117,8 @@ function request(
     trustProxy?: boolean;
   } = {},
 ) {
-  if (options.demo) process.env.MINICLAW_DEMO_OPEN = 'true';
-  else delete process.env.MINICLAW_DEMO_OPEN;
+  if (options.demo) process.env.EVOBOT_DEMO_OPEN = 'true';
+  else delete process.env.EVOBOT_DEMO_OPEN;
   if (options.trustProxy) process.env.TRUST_PROXY = 'true';
   else delete process.env.TRUST_PROXY;
   const headers: Record<string, string> = {};
@@ -168,7 +168,7 @@ describe('demo open connection policy', () => {
 });
 
 describe('demo open session middleware', () => {
-  test('stays closed unless MINICLAW_DEMO_OPEN=true, including for loopback', async () => {
+  test('stays closed unless EVOBOT_DEMO_OPEN=true, including for loopback', async () => {
     const app = buildApp();
     const res = await request(app, '/api/auth/me', {
       peer: '127.0.0.1',
@@ -205,13 +205,13 @@ describe('demo open session middleware', () => {
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual({ username: 'admin', role: 'admin' });
     const setCookie = res.headers.get('set-cookie') ?? '';
-    expect(setCookie).toContain('miniclaw_session=');
+    expect(setCookie).toContain('evobot_session=');
     expect(setCookie).toContain('HttpOnly');
 
     const admin = db.getUserByUsername('admin');
     expect(admin?.role).toBe('admin');
     expect(admin?.must_change_password).toBe(false);
-    expect(admin?.notes).toBe('Created by MINICLAW_DEMO_OPEN');
+    expect(admin?.notes).toBe('Created by EVOBOT_DEMO_OPEN');
     expect(
       await verifyPassword(
         demoOpen.DEFAULT_DEMO_ADMIN_PASSWORD,
@@ -266,7 +266,7 @@ describe('demo open session middleware', () => {
     const app = buildApp();
     const page = await request(app, '/', { peer: '127.0.0.1', demo: true });
     expect(page.status).toBe(200);
-    expect(page.headers.get('set-cookie') ?? '').toContain('miniclaw_session=');
+    expect(page.headers.get('set-cookie') ?? '').toContain('evobot_session=');
 
     const cloud = await request(app, '/api/cloud-runtime/ping', {
       peer: '127.0.0.1',
@@ -304,7 +304,7 @@ describe('demo open session middleware', () => {
     const res = await request(app, '/api/auth/me', {
       peer: '127.0.0.1',
       demo: true,
-      cookie: `miniclaw_session=${signSessionToken(token)}`,
+      cookie: `evobot_session=${signSessionToken(token)}`,
     });
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual({ username: 'member', role: 'member' });

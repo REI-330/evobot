@@ -16,7 +16,7 @@ const model = await import('../src/personal-agent/product-model.js');
 
 let providerId = '';
 beforeAll(() => {
-  vi.stubEnv('MINICLAW_DURABLE_RUNTIME', 'true');
+  vi.stubEnv('EVOBOT_DURABLE_RUNTIME', 'true');
   db.initDatabase();
   const now = new Date().toISOString();
   db.createUser({
@@ -43,7 +43,7 @@ beforeAll(() => {
     anthropicBaseUrl: 'http://127.0.0.1:1/v1',
     anthropicApiKey: 'test-key',
     anthropicModel: 'container-model',
-    customEnv: { MINICLAW_MODEL_API: 'openai-completions' },
+    customEnv: { EVOBOT_MODEL_API: 'openai-completions' },
   }).id;
 });
 afterAll(() => {

@@ -67,7 +67,7 @@ const systemItems: NavItem[] = [
   },
   {
     key: 'main-agent',
-    label: '主 OpenDot',
+    label: '主 EvoBot',
     icon: <Bot className="size-4" />,
   },
   {
@@ -99,7 +99,7 @@ const managementItems: NavItem[] = [
 
 const aboutItem: NavItem = {
   key: 'about',
-  label: '关于 OpenDot',
+  label: '关于 EvoBot',
   icon: <Info className="size-4" />,
 };
 

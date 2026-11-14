@@ -8,7 +8,7 @@ import {
 } from './helpers/bot-handoff-http-fixture.js';
 import { turnContext } from './helpers/group-discussion-fixture.js';
 
-const dockerHost = process.env.OPENDOT_TEST_DOCKER_HOST;
+const dockerHost = process.env.EVOBOT_TEST_DOCKER_HOST;
 test.skipIf(!dockerHost)(
   'Docker-enabled quick Dot creation enters model-only Group discussion without converting workspaces to Host',
   async () => {

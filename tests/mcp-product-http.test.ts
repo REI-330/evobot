@@ -9,7 +9,7 @@ import {
 } from './helpers/bot-handoff-http-fixture.js';
 
 test('ordinary Node Durable chat uses exact Session consent and approvals across three turns and an owner crash', async () => {
-  const f = await botHandoffHttpFixture(undefined, { MINICLAW_PI_MCP: 'true' });
+  const f = await botHandoffHttpFixture(undefined, { EVOBOT_PI_MCP: 'true' });
   const ledger = path.join(f.root, 'mcp-effects.jsonl');
   const events = () =>
     fs.existsSync(ledger)

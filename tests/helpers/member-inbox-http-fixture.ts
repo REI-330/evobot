@@ -44,7 +44,7 @@ export function recordProof(
   runId: string,
   extra: Record<string, unknown> = {},
 ) {
-  const directory = process.env.MINICLAW_MEMBER_PROOF_DIR;
+  const directory = process.env.EVOBOT_MEMBER_PROOF_DIR;
   if (!directory) return;
   fs.mkdirSync(directory, { recursive: true, mode: 0o700 });
   const hash = (value: string | Buffer) =>

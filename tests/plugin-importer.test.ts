@@ -91,8 +91,8 @@ function seedKnownMarketplacesRaw(raw: string): void {
 }
 
 beforeEach(() => {
-  tmpDataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'miniclaw-imp-data-'));
-  tmpHostDir = fs.mkdtempSync(path.join(os.tmpdir(), 'miniclaw-imp-host-'));
+  tmpDataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'evobot-imp-data-'));
+  tmpHostDir = fs.mkdtempSync(path.join(os.tmpdir(), 'evobot-imp-host-'));
 });
 
 afterEach(() => {

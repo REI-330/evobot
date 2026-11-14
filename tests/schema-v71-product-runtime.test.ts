@@ -67,7 +67,7 @@ test('backs up v70 and explicitly assigns existing sessions to Coding Agent even
       "DROP TRIGGER product_cloud_root_binding;DROP TABLE product_cloud_execution_attempts;DROP TABLE product_cloud_executions;DROP TABLE product_cloud_model_attempts;DROP TABLE product_cloud_sessions;DROP TABLE IF EXISTS device_attachment_chunks;DROP TABLE IF EXISTS device_attachments;DROP TABLE IF EXISTS cloud_device_wakes;DROP TABLE IF EXISTS cloud_device_grant_origins;DROP TABLE IF EXISTS cloud_device_requests;DROP TABLE IF EXISTS device_mcp_capability_grants;DROP TABLE device_audit;DROP TABLE device_commands;DROP TABLE device_mutation_receipts;DROP TABLE device_capability_grants;DROP TABLE device_pair_tickets;DROP TABLE personal_devices;DROP TABLE personal_memory_reads;DROP TABLE personal_memory_grants;DROP TABLE personal_memory_entries;DROP TABLE github_goal_events;DROP TABLE github_goal_triggers;DROP TABLE product_input_results;DROP TABLE product_queue_controls;DROP TABLE product_approval_decisions;DROP TABLE product_approvals;DROP TABLE product_session_inputs;DROP TABLE product_session_runtimes;DROP TABLE goal_execution_contexts;DROP INDEX idx_goal_automatic_task;ALTER TABLE personal_goal_tasks DROP COLUMN automatic;UPDATE router_state SET value='70' WHERE key='schema_version'",
   );
   raw.close();
-  vi.stubEnv('MINICLAW_DURABLE_RUNTIME', 'true');
+  vi.stubEnv('EVOBOT_DURABLE_RUNTIME', 'true');
   db.initDatabase();
   expect(db.CURRENT_SCHEMA_VERSION).toBeGreaterThanOrEqual(71);
   expect(

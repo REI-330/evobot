@@ -5,7 +5,7 @@ export const DEFAULT_CLOUD_MODEL_STEPS = 24;
 export function cloudModelStepLimit(
   env: NodeJS.ProcessEnv = process.env,
 ): number {
-  const parsed = Number(env.MINICLAW_CLOUD_MAX_MODEL_STEPS);
+  const parsed = Number(env.EVOBOT_CLOUD_MAX_MODEL_STEPS);
   if (
     Number.isInteger(parsed) &&
     parsed >= 1 &&

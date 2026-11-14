@@ -20,7 +20,7 @@ interface NavItem {
   hideOnMobile?: boolean;
 }
 
-export function productNavItems(goalsEnabled: boolean, dotName = 'OpenDot') {
+export function productNavItems(goalsEnabled: boolean, dotName = 'EvoBot') {
   return [
     {
       path: BOT_FIRST_HOME_ENABLED ? '/bots' : '/chat',
@@ -56,7 +56,7 @@ export function productNavItems(goalsEnabled: boolean, dotName = 'OpenDot') {
       items.findIndex((other) => other.path === item.path) === index,
   );
 }
-export function mobileNavItems(goalsEnabled: boolean, dotName = 'OpenDot') {
+export function mobileNavItems(goalsEnabled: boolean, dotName = 'EvoBot') {
   return [
     {
       path: BOT_FIRST_HOME_ENABLED ? '/bots' : '/chat',

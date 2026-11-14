@@ -85,8 +85,8 @@ const fail = (code = 'GROUP_DISCUSSION_AUTHORITY_UNAVAILABLE') =>
   new BotGroupError(code);
 const now = () => new Date().toISOString();
 export const discussionsEnabled = () =>
-  process.env.MINICLAW_BOT_GROUPS === 'true' &&
-  process.env.MINICLAW_BOT_HANDOFFS === 'true';
+  process.env.EVOBOT_BOT_GROUPS === 'true' &&
+  process.env.EVOBOT_BOT_HANDOFFS === 'true';
 export const DiscussionSettingsSchema = z
   .object({
     expected_revision: z.number().int().positive(),

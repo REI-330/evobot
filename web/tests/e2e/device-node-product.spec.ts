@@ -16,10 +16,10 @@ test('paired finite-file node resumes the original Goal after Node and Gateway S
   const repository = fileURLToPath(new URL('../../../', import.meta.url));
   // macOS /var is a symlink; device security intentionally requires real paths.
   const root = fs.realpathSync(
-    fs.mkdtempSync(path.join(os.tmpdir(), 'miniclaw-node-product-')),
+    fs.mkdtempSync(path.join(os.tmpdir(), 'evobot-node-product-')),
   );
   const nodeRoot = fs.realpathSync(
-    fs.mkdtempSync(path.join(os.tmpdir(), 'miniclaw-local-node-')),
+    fs.mkdtempSync(path.join(os.tmpdir(), 'evobot-local-node-')),
   );
   const evidence = `NODE_ONLY_${randomBytes(18).toString('hex')}`;
   fs.writeFileSync(path.join(nodeRoot, 'research.txt'), evidence);
@@ -138,9 +138,9 @@ test('paired finite-file node resumes the original Goal after Node and Gateway S
           HOME: path.join(root, 'home'),
           WEB_PORT: String(port),
           CORS_ALLOWED_ORIGINS: origin,
-          MINICLAW_DURABLE_RUNTIME: String(admit),
-          MINICLAW_PERSONAL_GOALS: 'true',
-          MINICLAW_DEVICE_NODES: String(admit),
+          EVOBOT_DURABLE_RUNTIME: String(admit),
+          EVOBOT_PERSONAL_GOALS: 'true',
+          EVOBOT_DEVICE_NODES: String(admit),
           TZ: 'UTC',
         },
         stdio: 'ignore',
@@ -220,7 +220,7 @@ test('paired finite-file node resumes the original Goal after Node and Gateway S
             anthropicBaseUrl: `http://127.0.0.1:${(provider.address() as { port: number }).port}/v1`,
             anthropicApiKey: 'fixture-token',
             anthropicModel: 'fixture-model',
-            customEnv: { MINICLAW_MODEL_API: 'openai-completions' },
+            customEnv: { EVOBOT_MODEL_API: 'openai-completions' },
           },
         })
       ).status(),

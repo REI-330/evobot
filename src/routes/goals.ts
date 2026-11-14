@@ -54,6 +54,9 @@ import {
   goalTeamChoices,
 } from '../personal-agent/goal-team-store.js';
 import { BotGroupError } from '../bot-groups/protocol.js';
+import { beginRetry, listBranches } from '../rsi/branch-store.js';
+import { evaluateGoalRetry, latestGoalRunId } from '../rsi/record.js';
+import { getAutoRetry, setAutoRetry } from '../rsi/settings.js';
 
 const routes = new Hono<{ Variables: Variables }>();
 const requestKey = z.string().trim().min(1).max(128);
@@ -66,13 +69,20 @@ const linkSchema = z
 const runSchema = z
   .object({ expected_task_revision: z.number().int().positive() })
   .strict();
+const workspaceJidSchema = z.string().startsWith('web:').max(256);
+const rsiSettingsPutSchema = z
+  .object({
+    workspace_jid: workspaceJidSchema,
+    auto_retry: z.boolean(),
+  })
+  .strict();
 
 // Availability is authenticated but readable while the write feature is off.
 routes.get('/availability', authMiddleware, (c) => {
   if (c.req.query('workspace_jid') === undefined)
     return c.json({
       enabled:
-        process.env.MINICLAW_PERSONAL_GOALS?.trim().toLowerCase() === 'true',
+        process.env.EVOBOT_PERSONAL_GOALS?.trim().toLowerCase() === 'true',
     });
   const workspace = z
     .string()
@@ -81,7 +91,7 @@ routes.get('/availability', authMiddleware, (c) => {
     .safeParse(c.req.query('workspace_jid'));
   return c.json({
     enabled:
-      process.env.MINICLAW_PERSONAL_GOALS?.trim().toLowerCase() === 'true',
+      process.env.EVOBOT_PERSONAL_GOALS?.trim().toLowerCase() === 'true',
     cloud_enabled:
       workspace.success && cloudGoalAvailable(c.get('user').id, workspace.data),
     cloud_max_runs: CLOUD_GOAL_RUN_LIMIT,
@@ -89,7 +99,7 @@ routes.get('/availability', authMiddleware, (c) => {
 });
 
 routes.use('*', authMiddleware, async (c, next) => {
-  if (process.env.MINICLAW_PERSONAL_GOALS?.trim().toLowerCase() !== 'true') {
+  if (process.env.EVOBOT_PERSONAL_GOALS?.trim().toLowerCase() !== 'true') {
     return c.json({ error: 'Not found' }, 404);
   }
   await next();
@@ -159,7 +169,7 @@ routes.get('/team-options', (c) => {
       .filter((team) => canUseWorkspace(user, team.workspace_jid))
       .flatMap((team) => {
         const runtime =
-          process.env.MINICLAW_DURABLE_RUNTIME?.trim().toLowerCase() === 'true'
+          process.env.EVOBOT_DURABLE_RUNTIME?.trim().toLowerCase() === 'true'
             ? 'node-durable'
             : cloudGoalAvailable(user.id, team.workspace_jid)
               ? 'cloudflare-durable'
@@ -198,6 +208,29 @@ routes.post('/', async (c) => {
     201,
   );
 });
+routes.get('/rsi-settings', (c) => {
+  const workspaceJid = workspaceJidSchema.parse(c.req.query('workspace_jid'));
+  if (!canUseWorkspace(c.get('user'), workspaceJid)) {
+    throw new GoalConflict('GOAL_NOT_FOUND', 'Workspace not found');
+  }
+  return c.json({
+    workspace_jid: workspaceJid,
+    auto_retry: getAutoRetry(workspaceJid),
+  });
+});
+routes.put('/rsi-settings', async (c) => {
+  const input = rsiSettingsPutSchema.parse(
+    await c.req.json().catch(() => ({})),
+  );
+  if (!canUseWorkspace(c.get('user'), input.workspace_jid)) {
+    throw new GoalConflict('GOAL_NOT_FOUND', 'Workspace not found');
+  }
+  setAutoRetry(input.workspace_jid, input.auto_retry);
+  return c.json({
+    workspace_jid: input.workspace_jid,
+    auto_retry: getAutoRetry(input.workspace_jid),
+  });
+});
 routes.get('/:id', (c) => {
   const goal = visibleGoal(c, c.req.param('id'));
   const tasks = linkedTasks(goal);
@@ -205,6 +238,17 @@ routes.get('/:id', (c) => {
   const managed = Boolean(
     goal.session_id && isGoalProductSession(goal.session_id),
   );
+  const activity = listPersonalGoalEvents(goal.owner_user_id, goal.id);
+  const latestDecision = activity.find(
+    (entry) => entry.kind === 'rsi_decision',
+  );
+  const decision = latestDecision
+    ? {
+        action: latestDecision.detail.action as 'allow' | 'stop',
+        reason:
+          (latestDecision.detail.reason as string | null | undefined) ?? null,
+      }
+    : null;
   return c.json({
     goal,
     tasks,
@@ -224,9 +268,13 @@ routes.get('/:id', (c) => {
       .flatMap((task) => getTaskRunsForTask(task.id, 20))
       .sort((a, b) => b.created_at.localeCompare(a.created_at))
       .slice(0, 100),
-    activity: listPersonalGoalEvents(goal.owner_user_id, goal.id),
+    activity,
     evidence: listGoalExecutionEvidence(goal.owner_user_id, goal.id),
     device_evidence: listGoalDeviceEvidence(goal.owner_user_id, goal.id),
+    rsi: {
+      decision,
+      branches: listBranches(goal.owner_user_id, goal.id),
+    },
     ...(goal.team ? { team_steps: goalTeamStepViews(goal.id) } : {}),
   });
 });
@@ -412,6 +460,30 @@ routes.post('/:id/tasks/:taskId/run', async (c) => {
     },
     202,
   );
+});
+routes.post('/:id/retry', (c) => {
+  const goal = visibleGoal(c, c.req.param('id'));
+  if (goal.status !== 'failed') {
+    return c.json({ error: 'Goal is not failed' }, 409);
+  }
+  const runId = latestGoalRunId(goal.id);
+  const { decision } = evaluateGoalRetry(goal, runId);
+  if (decision.action === 'stop') {
+    return c.json({ error: decision.reason }, 409);
+  }
+  try {
+    const branch = beginRetry(goal.owner_user_id, goal.id, 'manual');
+    return c.json({ branch, decision }, 201);
+  } catch (error) {
+    if (error instanceof GoalConflict) throw error;
+    return c.json(
+      {
+        error:
+          error instanceof Error ? error.message : 'Failed to start retry',
+      },
+      500,
+    );
+  }
 });
 
 export default routes;

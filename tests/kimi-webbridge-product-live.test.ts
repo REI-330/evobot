@@ -11,12 +11,12 @@ import {
 import { countDeviceCommands } from './helpers/live-device-node.js';
 import { installOptionalGroupModel } from './helpers/live-openai-model.js';
 
-test.skipIf(process.env.OPENDOT_TEST_WEBBRIDGE !== '1')(
+test.skipIf(process.env.EVOBOT_TEST_WEBBRIDGE !== '1')(
   'real WebBridge read runs only after device approval and rejects an outside origin',
   async () => {
     const f = await botHandoffHttpFixture(undefined, {
-      MINICLAW_PI_MCP: 'true',
-      MINICLAW_DEVICE_NODES: 'true',
+      EVOBOT_PI_MCP: 'true',
+      EVOBOT_DEVICE_NODES: 'true',
     });
     const realModelPath = await installOptionalGroupModel(
       f,
@@ -25,12 +25,12 @@ test.skipIf(process.env.OPENDOT_TEST_WEBBRIDGE !== '1')(
     const site = http.createServer((_, res) => {
       res.setHeader('content-type', 'text/html');
       res.end(
-        `<!doctype html><title>OpenDot Fixture</title><body><script>window.__reads=0;Object.defineProperty(document.body,'innerText',{get(){window.__reads++;return 'OPENDOT_ALLOWED_FIXTURE'}})</script></body>`,
+        `<!doctype html><title>EvoBot Fixture</title><body><script>window.__reads=0;Object.defineProperty(document.body,'innerText',{get(){window.__reads++;return 'EVOBOT_ALLOWED_FIXTURE'}})</script></body>`,
       );
     });
     const outside = http.createServer((_, res) => {
       res.setHeader('content-type', 'text/html');
-      res.end('<title>Outside</title><body>OPENDOT_OUTSIDE_SECRET</body>');
+      res.end('<title>Outside</title><body>EVOBOT_OUTSIDE_SECRET</body>');
     });
     await new Promise<void>((resolve) => site.listen(0, '127.0.0.1', resolve));
     await new Promise<void>((resolve) =>
@@ -39,7 +39,7 @@ test.skipIf(process.env.OPENDOT_TEST_WEBBRIDGE !== '1')(
     const sitePort = (site.address() as any).port;
     const outsidePort = (outside.address() as any).port;
     let bridgeSession = '';
-    const serverId = 'opendot_webbridge_' + randomUUID().replaceAll('-', '');
+    const serverId = 'evobot_webbridge_' + randomUUID().replaceAll('-', '');
     fs.symlinkSync(path.resolve('dist'), path.join(f.root, 'dist'));
     const bridge = async (action: string, args: unknown) => {
       const response = await fetch('http://127.0.0.1:10086/command', {
@@ -67,10 +67,10 @@ test.skipIf(process.env.OPENDOT_TEST_WEBBRIDGE !== '1')(
       const paths = await f.json<any>(await f.call('/api/local-device-setup'));
       expect(paths.available).toBe(true);
       const env = {
-        OPENDOT_WEBBRIDGE_SESSION: bridgeSession,
-        OPENDOT_WEBBRIDGE_TAB_ID: String(tabId),
-        OPENDOT_WEBBRIDGE_ORIGIN: `http://127.0.0.1:${sitePort}`,
-        OPENDOT_WEBBRIDGE_PORT: '10086',
+        EVOBOT_WEBBRIDGE_SESSION: bridgeSession,
+        EVOBOT_WEBBRIDGE_TAB_ID: String(tabId),
+        EVOBOT_WEBBRIDGE_ORIGIN: `http://127.0.0.1:${sitePort}`,
+        EVOBOT_WEBBRIDGE_PORT: '10086',
       };
       const group = await f.createGroup();
       const jid = group.workspaceJid;
@@ -252,7 +252,7 @@ test.skipIf(process.env.OPENDOT_TEST_WEBBRIDGE !== '1')(
         expect(value.value).toBe(0);
       });
       if (!realModelPath)
-        expect(JSON.stringify(f.requests)).toContain('OPENDOT_ALLOWED_FIXTURE');
+        expect(JSON.stringify(f.requests)).toContain('EVOBOT_ALLOWED_FIXTURE');
       else {
         const history = await f.json<any>(
           await f.call(
@@ -260,7 +260,7 @@ test.skipIf(process.env.OPENDOT_TEST_WEBBRIDGE !== '1')(
           ),
         );
         expect(JSON.stringify(history.messages)).toContain(
-          'OPENDOT_ALLOWED_FIXTURE',
+          'EVOBOT_ALLOWED_FIXTURE',
         );
         expect(f.requests).toHaveLength(0);
       }
@@ -273,7 +273,7 @@ test.skipIf(process.env.OPENDOT_TEST_WEBBRIDGE !== '1')(
       });
       await turn(2);
       expect(JSON.stringify(f.requests)).not.toContain(
-        'OPENDOT_OUTSIDE_SECRET',
+        'EVOBOT_OUTSIDE_SECRET',
       );
       const finalHistory = await f.json<any>(
         await f.call(
@@ -281,7 +281,7 @@ test.skipIf(process.env.OPENDOT_TEST_WEBBRIDGE !== '1')(
         ),
       );
       expect(JSON.stringify(finalHistory.messages)).not.toContain(
-        'OPENDOT_OUTSIDE_SECRET',
+        'EVOBOT_OUTSIDE_SECRET',
       );
       if (!realModelPath) {
         // Return to a freshly loaded in-scope page so its read counter proves

@@ -13,7 +13,7 @@ export async function runSyntheticFixtureText({ testFile, failureMessage }) {
     '../..',
   );
   const root = fs.mkdtempSync(
-    path.join(fs.realpathSync(os.tmpdir()), 'opendot-kimicu-setup-'),
+    path.join(fs.realpathSync(os.tmpdir()), 'evobot-kimicu-setup-'),
   );
   const app = path.join(root, 'Fixture.app/Contents');
   const binary = path.join(app, 'MacOS/Fixture');
@@ -23,7 +23,7 @@ export async function runSyntheticFixtureText({ testFile, failureMessage }) {
     fs.mkdirSync(path.dirname(binary), { recursive: true, mode: 0o700 });
     fs.writeFileSync(
       path.join(app, 'Info.plist'),
-      '<?xml version="1.0"?><plist version="1.0"><dict><key>CFBundleIdentifier</key><string>net.opendot.kimi-screenshot-fixture</string><key>CFBundleExecutable</key><string>Fixture</string><key>CFBundleName</key><string>Fixture</string><key>CFBundlePackageType</key><string>APPL</string></dict></plist>',
+      '<?xml version="1.0"?><plist version="1.0"><dict><key>CFBundleIdentifier</key><string>net.evobot.kimi-screenshot-fixture</string><key>CFBundleExecutable</key><string>Fixture</string><key>CFBundleName</key><string>Fixture</string><key>CFBundlePackageType</key><string>APPL</string></dict></plist>',
     );
     const compile = spawnSync(
       '/usr/bin/swiftc',
@@ -40,7 +40,7 @@ export async function runSyntheticFixtureText({ testFile, failureMessage }) {
       env: {
         PATH: process.env.PATH,
         HOME: root,
-        OPENDOT_COLOR_FIXTURE_OUTPUT: ids,
+        EVOBOT_COLOR_FIXTURE_OUTPUT: ids,
       },
       stdio: 'ignore',
     });
@@ -61,8 +61,8 @@ export async function runSyntheticFixtureText({ testFile, failureMessage }) {
         stdio: 'inherit',
         env: {
           ...process.env,
-          OPENDOT_TEST_KIMICU_PID: String(target.pid),
-          OPENDOT_TEST_KIMICU_WINDOW_ID: String(target.green),
+          EVOBOT_TEST_KIMICU_PID: String(target.pid),
+          EVOBOT_TEST_KIMICU_WINDOW_ID: String(target.green),
         },
       },
     );

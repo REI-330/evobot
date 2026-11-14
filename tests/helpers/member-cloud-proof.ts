@@ -11,7 +11,7 @@ export function recordCloudMemberProof(
   runId: string,
   extra: Record<string, unknown> = {},
 ) {
-  if (!process.env.MINICLAW_MEMBER_PROOF_DIR) return;
+  if (!process.env.EVOBOT_MEMBER_PROOF_DIR) return;
   const hash = (value: string | Buffer) =>
     createHash('sha256').update(value).digest('hex');
   recordProof(name, f, db, runId, {

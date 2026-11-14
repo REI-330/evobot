@@ -5,7 +5,7 @@ import { randomUUID } from 'node:crypto';
 import Database from 'better-sqlite3';
 import { expect, test, vi } from 'vitest';
 const root = fs.mkdtempSync(
-  path.join(os.tmpdir(), 'miniclaw-schema-member-stop-'),
+  path.join(os.tmpdir(), 'evobot-schema-member-stop-'),
 );
 vi.mock('../src/config.js', async (original) => ({
   ...(await original<Record<string, unknown>>()),

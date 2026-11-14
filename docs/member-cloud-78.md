@@ -1,8 +1,8 @@
 # Cloud 成员通信与恢复（#78，开发中）
 
 本分支在基础层之上追加了按 Run 授权的 Cloud 成员适配。新模式默认关闭，
-须同时显式开启 `MINICLAW_GROUP_MEMBER_INBOX`、`MINICLAW_GROUP_MEMBER_CONCURRENCY`
-和 `MINICLAW_GROUP_MEMBER_CLOUD`。缺少 Cloud 开关时，新的混合成员讨论仍会拒绝准入。
+须同时显式开启 `EVOBOT_GROUP_MEMBER_INBOX`、`EVOBOT_GROUP_MEMBER_CONCURRENCY`
+和 `EVOBOT_GROUP_MEMBER_CLOUD`。缺少 Cloud 开关时，新的混合成员讨论仍会拒绝准入。
 现有 Cloud Group、Handoff 和 Goal 不会因为注册新工具定义而获得新权限。
 
 加性迁移保留既有输入、来源和预算，并在升级前备份、拒绝降级。Cloud 准入标记

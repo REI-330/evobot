@@ -9,7 +9,7 @@ const Binding = z
     version: z.literal(1),
     ownerId: z.uuid(),
     nodeId: z.uuid(),
-    serverId: z.string().regex(/^opendot_computer_[a-f0-9]{32}$/),
+    serverId: z.string().regex(/^evobot_computer_[a-f0-9]{32}$/),
   })
   .strict();
 export type ComputerCapabilityBinding = z.infer<typeof Binding>;

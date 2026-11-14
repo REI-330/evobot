@@ -4,7 +4,7 @@ import path from 'node:path';
  * A developer can explicitly opt into a matching pair of read-only overlays. */
 export function runnerSourceMounts(
   projectRoot: string,
-  enabled = process.env.MINICLAW_CONTAINER_LIVE_SOURCE === 'true',
+  enabled = process.env.EVOBOT_CONTAINER_LIVE_SOURCE === 'true',
 ): { hostPath: string; containerPath: string; readonly: boolean }[] {
   if (!enabled) return [];
   return ['src', 'prompts'].map((directory) => ({

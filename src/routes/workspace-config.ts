@@ -73,7 +73,7 @@ function getWorkspaceSettingsPath(
 function getWorkspaceMcpMetaPath(
   group: RegisteredGroup & { jid: string },
 ): string {
-  return path.join(getWorkspaceClaudeDir(group), 'miniclaw-workspace.json');
+  return path.join(getWorkspaceClaudeDir(group), 'evobot-workspace.json');
 }
 
 // --- MCP Metadata Helpers ---

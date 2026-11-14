@@ -7,13 +7,13 @@ import { KimiDesktopTargetPolicy } from './kimi-desktop-target-policy.js';
 import { KimiCuToolSession } from './kimi-cu-tool-session.js';
 import { kimiCuDeviceLock } from './kimi-cu-device-lock.js';
 
-const appId = process.env.OPENDOT_KIMICU_APP_ID ?? '';
-const pid = Number(process.env.OPENDOT_KIMICU_PID);
-const windowId = Number(process.env.OPENDOT_KIMICU_WINDOW_ID);
+const appId = process.env.EVOBOT_KIMICU_APP_ID ?? '';
+const pid = Number(process.env.EVOBOT_KIMICU_PID);
+const windowId = Number(process.env.EVOBOT_KIMICU_WINDOW_ID);
 if (process.platform !== 'darwin')
   throw new Error('KimiCU device configuration unavailable');
 const client = new McpClient({
-  name: 'opendot-kimicu-scoped',
+  name: 'evobot-kimicu-scoped',
   version: '1',
   capabilities: {},
   requestTimeoutMs: 10000,
@@ -52,7 +52,7 @@ const tools = [
   },
   {
     name: 'capture_window',
-    annotations: { 'opendot.requiresImageGrant': true },
+    annotations: { 'evobot.requiresImageGrant': true },
     description:
       'Capture the owner-selected application window; requires a separate image grant.',
     inputSchema: {
@@ -97,7 +97,7 @@ try {
         result = {
           protocolVersion: request.params.protocolVersion,
           capabilities: { tools: {} },
-          serverInfo: { name: 'opendot-kimicu-scoped', version: '1' },
+          serverInfo: { name: 'evobot-kimicu-scoped', version: '1' },
         };
       else if (request.method === 'tools/list') result = { tools };
       else if (request.method === 'tools/call') {

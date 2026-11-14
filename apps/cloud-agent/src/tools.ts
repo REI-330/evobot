@@ -25,7 +25,7 @@ export function personalMemoryTool(
       if (
         api.conversationId !== 1 ||
         !binding.tool_capabilities?.includes('read_personal_memory') ||
-        binding.execution_authority !== 'miniclaw-product'
+        binding.execution_authority !== 'evobot-product'
       )
         throw new CloudError(403, 'CLOUD_TOOL_NOT_GRANTED');
       const parameters = { query: args.query ?? '' };
@@ -40,7 +40,7 @@ export function personalMemoryTool(
         ...(execution ? { execution: { ...execution } } : {}),
       };
       const committed = await api.memo(
-        'miniclaw.cloud.tool.v1',
+        'evobot.cloud.tool.v1',
         intent,
         context,
       );

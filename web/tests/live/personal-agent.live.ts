@@ -19,7 +19,7 @@ test('real configured model completes an approved Goal through production pages 
   browser,
 }) => {
   const configuration = readZenModelConfiguration();
-  const evidencePath = process.env.MINICLAW_LIVE_EVIDENCE_PATH;
+  const evidencePath = process.env.EVOBOT_LIVE_EVIDENCE_PATH;
   if (!evidencePath) throw new Error('Run npm run test:personal-agent-live');
   const checks: string[] = [];
   const ids: Record<string, string | number> = {};
@@ -40,7 +40,7 @@ test('real configured model completes an approved Goal through production pages 
       { mode: 0o600 },
     );
   const repository = fileURLToPath(new URL('../../../', import.meta.url));
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'miniclaw-live-product-'));
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'evobot-live-product-'));
   const reservation = net.createServer();
   reservation.listen(0, '127.0.0.1');
   await once(reservation, 'listening');
@@ -66,8 +66,8 @@ test('real configured model completes an approved Goal through production pages 
       WEB_PORT: String(port),
       TZ: 'Asia/Taipei',
       CORS_ALLOWED_ORIGINS: origin,
-      MINICLAW_PERSONAL_GOALS: 'true',
-      MINICLAW_DURABLE_RUNTIME: String(enabled),
+      EVOBOT_PERSONAL_GOALS: 'true',
+      EVOBOT_DURABLE_RUNTIME: String(enabled),
       NO_PROXY: [process.env.NO_PROXY, '127.0.0.1', 'localhost']
         .filter(Boolean)
         .join(','),
@@ -140,9 +140,9 @@ test('real configured model completes an approved Goal through production pages 
             name: 'Authorized live Zen acceptance',
             type: 'third_party',
             anthropicBaseUrl: configuration.baseUrl,
-            anthropicApiKey: process.env.MINICLAW_ZEN_API_KEY!.trim(),
+            anthropicApiKey: process.env.EVOBOT_ZEN_API_KEY!.trim(),
             anthropicModel: configuration.modelId,
-            customEnv: { MINICLAW_MODEL_API: 'openai-completions' },
+            customEnv: { EVOBOT_MODEL_API: 'openai-completions' },
           },
         })
       ).status(),

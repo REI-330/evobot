@@ -81,7 +81,7 @@ export function shouldAutoApproveComputerCall(input: {
   now: number;
   requireReadApproval?: boolean;
 }): boolean {
-  if (!input.serverId.startsWith('opendot_computer_')) return false;
+  if (!input.serverId.startsWith('evobot_computer_')) return false;
   const tier = computerApprovalTier(input.toolName);
   if (tier === 'read') return input.requireReadApproval !== true;
   if (tier !== 'mutate') return false;

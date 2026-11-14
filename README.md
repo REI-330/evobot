@@ -1,7 +1,7 @@
-# OpenDot
+# EvoBot
 
 <p align="center">
-  <img src="web/public/icons/logo-1024.png" alt="OpenDot application logo" width="96" />
+  <img src="web/public/icons/logo-1024.png" alt="EvoBot application logo" width="96" />
 </p>
 
 <p align="center">
@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/helsome/OpenDot">GitHub</a> ·
+  <a href="https://github.com/REI-330/evobot">GitHub</a> ·
   <a href="DESIGN.md">设计规范</a> ·
   <a href="docs/API.md">API</a> ·
   <a href="docs/ACL-MATRIX.md">权限模型</a> ·
@@ -19,7 +19,7 @@
 
 ## 产品定位
 
-OpenDot 面向个人与团队，复用 Pi Agent Runtime、已有 Goal、群聊、工具授权和记忆边界。
+EvoBot 面向个人与团队，复用 Pi Agent Runtime、已有 Goal、群聊、工具授权和记忆边界。
 Dot 是用户可命名的个人助手；默认协调员通过稳定身份识别，不会被界面强制改名为 Chief。
 产品优先呈现对话、工作进展和需要处理的授权；Workspace、Runtime 与执行详情保留在高级入口。
 
@@ -38,12 +38,12 @@ Dot 是用户可命名的个人助手；默认协调员通过稳定身份识别�
 底部输入区，以及按需展开的工作、审批与上下文。明暗主题共用品牌蓝、字体层级和组件 Token。
 
 <p align="center">
-  <img src="docs/frontend-redesign/opendot/desktop-dark-opendot.png" alt="OpenDot desktop conversation in dark mode" width="900" />
+  <img src="docs/frontend-redesign/opendot/desktop-dark-opendot.png" alt="EvoBot desktop conversation in dark mode" width="900" />
 </p>
 
 <p align="center">
-  <img src="docs/frontend-redesign/opendot/mobile-light-opendot.png" alt="OpenDot mobile conversation in light mode" width="260" />
-  <img src="docs/frontend-redesign/opendot/mobile-dark-approval.png" alt="OpenDot mobile approval sheet" width="260" />
+  <img src="docs/frontend-redesign/opendot/mobile-light-opendot.png" alt="EvoBot mobile conversation in light mode" width="260" />
+  <img src="docs/frontend-redesign/opendot/mobile-dark-approval.png" alt="EvoBot mobile approval sheet" width="260" />
 </p>
 
 图片来自隔离 HTTP/SQLite 测试环境；任务推理、触屏与键盘为模拟。完整桌面/手机、明暗主题、
@@ -51,11 +51,11 @@ Dot 是用户可命名的个人助手；默认协调员通过稳定身份识别�
 
 ## 品牌与兼容性
 
-项目和应用品牌为 OpenDot，沿用已选定的白色机器人应用标识。每个 Dot 的头像和名称独立于应用品牌，
+项目和应用品牌为 EvoBot，沿用已选定的白色机器人应用标识。每个 Dot 的头像和名称独立于应用品牌，
 已有个性化名称与历史名称不会自动覆写，可在 Dot 详情的设置中修改。
 
-兼容标识继续保留：`MINICLAW_*` 环境变量、`miniclaw` 包/工具名称、现有数据库与 API、
-Cookie/存储键、Docker 镜像标签和 Electron `cc.miniclaw.desktop`。桌面数据继续使用原有目录，
+兼容标识继续保留：`EVOBOT_*` 环境变量、`evobot` 包/工具名称、现有数据库与 API、
+Cookie/存储键、Docker 镜像标签和 Electron `cc.evobot.desktop`。桌面数据继续使用原有目录，
 不因显示名称变化而创建空白用户配置。旧部署不需要因本次视觉修改进行数据迁移。
 详细范围见 [品牌与仓库兼容说明](docs/opendot-brand-compatibility.md)。
 
@@ -72,7 +72,7 @@ Cookie/存储键、Docker 镜像标签和 Electron `cc.miniclaw.desktop`。桌�
 
 - 基于 Pi Agent Runtime 提供 prompt、流式输出、工具调用、Session 持久化与恢复。
 - 支持 abort、follow-up、原生 compaction 和持久化 JSONL Session。
-- 复用 OpenDot 已有的 MCP capability handler，并映射为稳定的 `mcp__miniclaw__*` 工具。
+- 复用 EvoBot 已有的 MCP capability handler，并映射为稳定的 `mcp__miniclaw__*` 工具。
 - Subagents 通过 Pi extension 与显式的 spawn/stop 生命周期桥接。
 - Runtime 不会静默假装拥有缺失能力；尚未接入 Pi 的 Web Search/Web Fetch 能力会保持明确不可用。
 
@@ -104,7 +104,7 @@ Cookie/存储键、Docker 镜像标签和 Electron `cc.miniclaw.desktop`。桌�
 - Electron 只是 Desktop Shell，复用现有 Web Client，不在 Renderer 中承载数据库、文件系统、凭证、Docker 或 shell/process 权限。
 - Main Process 负责窗口生命周期、外部链接、菜单和受限 IPC；Preload 只暴露白名单 API。
 - 默认提供 macOS arm64 打包配置，并保留 Windows、Linux 目标配置。
-- 同一套 Renderer 可以连接本地 Backend，也可以通过 `MINICLAW_SERVER_URL` 连接远程 OpenDot 服务。
+- 同一套 Renderer 可以连接本地 Backend，也可以通过 `EVOBOT_SERVER_URL` 连接远程 EvoBot 服务。
 
 ## 工作原理
 
@@ -112,7 +112,7 @@ Cookie/存储键、Docker 镜像标签和 Electron `cc.miniclaw.desktop`。桌�
 Web Client / Electron Desktop / Message Channels
                          │ HTTP + WebSocket / Channel Adapters
                          ▼
-                OpenDot Backend
+                EvoBot Backend
         Auth · API · Queue · Scheduler · ACL
                          │
         ┌────────────────┼─────────────────┐
@@ -144,8 +144,8 @@ Web Client / Electron Desktop / Message Channels
 ### 启动 Backend 与 Web Client
 
 ```bash
-git clone https://github.com/helsome/OpenDot.git
-cd OpenDot
+git clone https://github.com/REI-330/evobot.git
+cd EvoBot
 
 npm install
 npm --prefix web install
@@ -168,13 +168,13 @@ npm run dev:all
 
 首次进入时完成管理员初始化和 Provider 配置即可。Provider/渠道接入步骤现在可以选择“稍后设置”，跳过后仍可进入工作台，之后在设置中补齐模型和渠道配置。
 
-Agent 容器镜像默认使用 `helsome/miniclaw-agent:latest`，可以通过 `MINICLAW_CONTAINER_IMAGE` 或 `CONTAINER_IMAGE` 覆盖。
+Agent 容器镜像默认使用 `rei330/evobot-agent:latest`，可以通过 `EVOBOT_CONTAINER_IMAGE` 或 `CONTAINER_IMAGE` 覆盖。
 
-容器模式要求 Docker 可用且镜像已安装。`make start` / `make dev` 优先使用本地已有镜像；缺失时拉取远程镜像。若出现 `pull access denied`，先确认镜像确实已发布、当前账号有读取权限，或配置可访问的镜像地址。管理员也可以在仓库根目录执行 `docker build --pull -t helsome/miniclaw-agent:latest container` 从当前源码构建。服务启动与镜像构建必须连接同一个 Docker daemon；使用独立 Docker 环境时，给服务和构建命令设置相同的 `DOCKER_HOST`。需要使用本机已有 HTTP(S) 代理时，可通过 `MINICLAW_CONTAINER_PROXY` 指定容器能访问的代理地址；容器里的 `127.0.0.1` 指向容器本身。该默认值只作用于 Container Runner，显式的 Provider / 工作区代理配置优先。
+容器模式要求 Docker 可用且镜像已安装。`make start` / `make dev` 优先使用本地已有镜像；缺失时拉取远程镜像。若出现 `pull access denied`，先确认镜像确实已发布、当前账号有读取权限，或配置可访问的镜像地址。管理员也可以在仓库根目录执行 `docker build --pull -t rei330/evobot-agent:latest container` 从当前源码构建。服务启动与镜像构建必须连接同一个 Docker daemon；使用独立 Docker 环境时，给服务和构建命令设置相同的 `DOCKER_HOST`。需要使用本机已有 HTTP(S) 代理时，可通过 `EVOBOT_CONTAINER_PROXY` 指定容器能访问的代理地址；容器里的 `127.0.0.1` 指向容器本身。该默认值只作用于 Container Runner，显式的 Provider / 工作区代理配置优先。
 
-第三方 OpenAI Completions 接口需在 Provider 的自定义环境变量中设置 `MINICLAW_MODEL_API=openai-completions`；默认协议为 `anthropic-messages`。该设置同时用于普通 Dot 对话的 Host / Container Runner。生产容器使用镜像内配套的源码和 Prompt；仅开发时可显式设置 `MINICLAW_CONTAINER_LIVE_SOURCE=true` 挂载本机源码，修改正式 Runner 后应重新构建镜像。
+第三方 OpenAI Completions 接口需在 Provider 的自定义环境变量中设置 `EVOBOT_MODEL_API=openai-completions`；默认协议为 `anthropic-messages`。该设置同时用于普通 Dot 对话的 Host / Container Runner。生产容器使用镜像内配套的源码和 Prompt；仅开发时可显式设置 `EVOBOT_CONTAINER_LIVE_SOURCE=true` 挂载本机源码，修改正式 Runner 后应重新构建镜像。
 
-原生群聊由 `MINICLAW_BOT_GROUPS=true` 启用；需要 Bot 执行协作时另设 `MINICLAW_BOT_HANDOFFS=true`。创建入口位于「Dot 和对话 → ＋新建群聊」。Bot 执行仍需群聊管理员在设置中明确授予运行权限与调用预算。
+原生群聊由 `EVOBOT_BOT_GROUPS=true` 启用；需要 Bot 执行协作时另设 `EVOBOT_BOT_HANDOFFS=true`。创建入口位于「Dot 和对话 → ＋新建群聊」。Bot 执行仍需群聊管理员在设置中明确授予运行权限与调用预算。
 
 ### 启动 Electron Desktop
 
@@ -187,10 +187,10 @@ npm run dev:all
 再在另一个终端启动桌面端：
 
 ```bash
-MINICLAW_RENDERER_URL=http://127.0.0.1:5173 npm run desktop:dev
+EVOBOT_RENDERER_URL=http://127.0.0.1:5173 npm run desktop:dev
 ```
 
-如果直接使用 Backend 提供的构建后页面，可以省略 `MINICLAW_RENDERER_URL`：
+如果直接使用 Backend 提供的构建后页面，可以省略 `EVOBOT_RENDERER_URL`：
 
 ```bash
 npm run desktop:dev
@@ -199,7 +199,7 @@ npm run desktop:dev
 连接远程 Backend 时：
 
 ```bash
-MINICLAW_SERVER_URL=https://your-miniclaw.example.com npm run desktop:dev
+EVOBOT_SERVER_URL=https://your-evobot.example.com npm run desktop:dev
 ```
 
 打包命令：
@@ -230,18 +230,18 @@ npm run desktop:package
 | `make backup`                 | 创建运行时数据备份                                   |
 | `make restore FILE=...`       | 恢复指定备份                                         |
 | `make status`                 | 查看 Backend、日志和 Docker 状态                     |
-| `make stop`                   | 停止当前端口上的 OpenDot 服务                        |
+| `make stop`                   | 停止当前端口上的 EvoBot 服务                        |
 
 ## 配置入口
 
 | 环境变量                   | 用途                                                | 默认值                          |
 | -------------------------- | --------------------------------------------------- | ------------------------------- |
-| `MINICLAW_SERVER_URL`      | Electron 要连接的 Backend 地址                      | `http://127.0.0.1:3000`         |
-| `MINICLAW_RENDERER_URL`    | Electron 要加载的 Renderer 地址，适合本地 Vite 开发 | 与 Server URL 相同              |
-| `MINICLAW_CONTAINER_IMAGE` | Agent Runner 使用的容器镜像                         | `helsome/miniclaw-agent:latest` |
+| `EVOBOT_SERVER_URL`      | Electron 要连接的 Backend 地址                      | `http://127.0.0.1:3000`         |
+| `EVOBOT_RENDERER_URL`    | Electron 要加载的 Renderer 地址，适合本地 Vite 开发 | 与 Server URL 相同              |
+| `EVOBOT_CONTAINER_IMAGE` | Agent Runner 使用的容器镜像                         | `rei330/evobot-agent:latest` |
 | `CONTAINER_IMAGE`          | 容器镜像的兼容覆盖项                                | 同上                            |
 | `WEB_PORT`                 | Makefile 启动 Backend 使用的端口                    | `3000`                          |
-| `MINICLAW_DEMO_OPEN`       | 回环地址免登录演示模式，详见 [`DEMO.md`](DEMO.md)   | 关闭                            |
+| `EVOBOT_DEMO_OPEN`       | 回环地址免登录演示模式，详见 [`DEMO.md`](DEMO.md)   | 关闭                            |
 | `PROVIDER_SETUP_SKIPPED`   | 没有系统设置文件时跳过 Provider 引导                | 关闭                            |
 
 不要把 API Key、Session Cookie 或其他凭证写入命令行历史、截图或提交到仓库。远程部署时使用 HTTPS/WSS，并为反向代理、Cookie 和访问控制配置独立的安全边界。
@@ -260,7 +260,7 @@ npm run desktop:package
 
 ## 项目状态
 
-OpenDot 当前处于持续开发阶段。仓库已经包含：
+EvoBot 当前处于持续开发阶段。仓库已经包含：
 
 - Pi Agent Runtime 生产执行路径与 runtime-neutral contract。
 - Web Client 与 Electron Desktop Shell。
@@ -293,7 +293,7 @@ OpenDot 当前处于持续开发阶段。仓库已经包含：
 - [`docs/workspace-memory-v2.md`](docs/workspace-memory-v2.md) — Workspace Memory 的数据模型、版本与交互边界
 - [`docs/runtime-migration.md`](docs/runtime-migration.md) — 从旧运行时到 Pi Agent Runtime 的迁移记录
 - [`docs/personal-agent/architecture.md`](docs/personal-agent/architecture.md) — Personal Agent 架构现状与迁移边界
-- [`docs/personal-agent/goals-and-tasks.md`](docs/personal-agent/goals-and-tasks.md) — 可选 Goal 任务入口、现有 Scheduler 集成与运行预算（`MINICLAW_PERSONAL_GOALS=true`）
+- [`docs/personal-agent/goals-and-tasks.md`](docs/personal-agent/goals-and-tasks.md) — 可选 Goal 任务入口、现有 Scheduler 集成与运行预算（`EVOBOT_PERSONAL_GOALS=true`）
 - [`docs/personal-agent/evaluation.md`](docs/personal-agent/evaluation.md) — 可复现的验证证据与未验证事项
 - [`docs/PROMPT-SKILL-RUNTIME-TEST-PLAN.md`](docs/PROMPT-SKILL-RUNTIME-TEST-PLAN.md) — Prompt、Skill、Runtime 与 Agent Builder 验证计划
 - [`docs/miniclaw-migration-cleanup.md`](docs/miniclaw-migration-cleanup.md) — 品牌和运行时命名迁移记录
@@ -315,4 +315,4 @@ npm run desktop:build
 
 ## License
 
-OpenDot 使用 MIT License，详见 [`LICENSE`](LICENSE)。
+EvoBot 使用 MIT License，详见 [`LICENSE`](LICENSE)。

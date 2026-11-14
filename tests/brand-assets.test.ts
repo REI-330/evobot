@@ -9,7 +9,7 @@ const sharp = createRequire(new URL('../web/package.json', import.meta.url))(
   'sharp',
 );
 const root = resolve(import.meta.dirname, '..');
-const source = readFileSync(resolve(root, 'assets/miniclaw-icon.svg'));
+const source = readFileSync(resolve(root, 'assets/evobot-icon.svg'));
 const digest = (buffer: Buffer) =>
   createHash('sha256').update(buffer).digest('hex');
 async function pixels(input: Buffer, size: number, flatten = false) {
@@ -26,7 +26,7 @@ test('all committed Web/PWA/Electron PNGs are current raster exports of the appr
     ['web/public/icons/logo-1024.png', 1024],
     ['web/public/icons/apple-touch-icon-180.png', 180, true],
     ['web/public/icons/icon-512-maskable.png', 512, true],
-    ['electron/assets/miniclaw-icon.png', 1024],
+    ['electron/assets/evobot-icon.png', 1024],
   ];
   for (const [path, size, flatten] of outputs) {
     const buffer = readFileSync(resolve(root, path));
@@ -42,7 +42,7 @@ test('all committed Web/PWA/Electron PNGs are current raster exports of the appr
 });
 
 test('macOS ICNS contains the same approved image at every supported native size', async () => {
-  const buffer = readFileSync(resolve(root, 'electron/assets/miniclaw.icns'));
+  const buffer = readFileSync(resolve(root, 'electron/assets/evobot.icns'));
   expect(buffer.subarray(0, 4).toString()).toBe('icns');
   expect(buffer.readUInt32BE(4)).toBe(buffer.length);
   const sizes = {

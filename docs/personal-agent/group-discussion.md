@@ -1,6 +1,6 @@
 # Persistent Group Dot sessions and bounded discussion
 
-Implements [Issue #69](https://github.com/helsome/OpenDot/issues/69). A Group
+Implements [Issue #69](https://github.com/REI-330/evobot/issues/69). A Group
 owner explicitly enables discussion, selects participants and a coordinator, then
 sends an undirected question. Outside a live discussion, directed `@Dot` Handoffs keep their single-request
 behavior. During a live discussion, dispatched user additions (including
@@ -345,8 +345,8 @@ real-provider, deployed Cloudflare or physical-phone acceptance.
   starting its isolated server while Vite clears `dist` can omit static routing.
 - `scripts/test-group-discussion-live.ts`: opt-in real-provider test with three
   persistent Pi sessions and a Node restart during the run. Requires private
-  `MINICLAW_GROUP_MODEL_CONFIG`; emits hashes/counts, never credentials or raw
-  replies. `MINICLAW_GROUP_EVIDENCE_PATH` selects the private report path.
+  `EVOBOT_GROUP_MODEL_CONFIG`; emits hashes/counts, never credentials or raw
+  replies. `EVOBOT_GROUP_EVIDENCE_PATH` selects the private report path.
 
 ### Real-provider comparison
 
@@ -369,19 +369,19 @@ Sessions. Only the isolated fixture data is used; live user conversations and
 private memories are not copied into these tasks.
 
 ```bash
-MINICLAW_GROUP_MODEL_CONFIG=/path/to/private-model.json \
-MINICLAW_GROUP_EVIDENCE_PATH=/path/to/private-comparison.json \
+EVOBOT_GROUP_MODEL_CONFIG=/path/to/private-model.json \
+EVOBOT_GROUP_EVIDENCE_PATH=/path/to/private-comparison.json \
 node --use-env-proxy --import tsx scripts/test-group-discussion-compare.ts
 ```
 
 The private configuration uses `baseUrl`, `api`, `model`, and `apiKey`; it must
 remain outside Git. Reports use a model/configuration hash and are written with
 mode `0600`; endpoint, model name, key, URLs and private paths are redacted from
-reported text. `MINICLAW_GROUP_CASES` selects comma-separated case IDs for a
-pilot; a pilot never counts as the full corpus. `MINICLAW_GROUP_REPEATS` controls
-repetition count and `MINICLAW_GROUP_MAX_REQUESTS` bounds actual provider
+reported text. `EVOBOT_GROUP_CASES` selects comma-separated case IDs for a
+pilot; a pilot never counts as the full corpus. `EVOBOT_GROUP_REPEATS` controls
+repetition count and `EVOBOT_GROUP_MAX_REQUESTS` bounds actual provider
 attempts (default 300). Each discussion has the same twelve-attempt limit.
-`MINICLAW_GROUP_RESTART=1` enables an additional opt-in fault run: after a real
+`EVOBOT_GROUP_RESTART=1` enables an additional opt-in fault run: after a real
 public reply commits, the isolated Node process is killed and restarted. The
 report checks frozen turn/request/input/submission identity and Group Session
 associations across that restart. The tighter probe requires an admitted native
@@ -410,16 +410,16 @@ native silent PASS decisions across two relay runs, while two coordinator runs
 closed without requesting redundant speakers. These are separate observations.
 
 For a real-provider mobile probe, select one case, one policy and one repetition
-with `MINICLAW_GROUP_BROWSER=1`, `MINICLAW_GROUP_POLICIES=relay-v1`,
-`MINICLAW_GROUP_CASES=natural` and `MINICLAW_GROUP_REPEATS=1`. The probe uses its
+with `EVOBOT_GROUP_BROWSER=1`, `EVOBOT_GROUP_POLICIES=relay-v1`,
+`EVOBOT_GROUP_CASES=natural` and `EVOBOT_GROUP_REPEATS=1`. The probe uses its
 own Chromium context and isolated fixture, sends through the actual composer,
 checks light/dark and keyboard-sized geometry, and reloads without another model
 request. Screenshots are private and withheld if configured private values occur
 in the rendered text. It does not control an existing user browser tab.
 
 `scripts/test-group-discussion-ablation.ts` is a separate opt-in component study.
-Set the private model configuration and `MINICLAW_GROUP_ABLATION_EVIDENCE_PATH`;
-`MINICLAW_GROUP_ABLATION_MAX_REQUESTS` bounds its total actual requests (default
+Set the private model configuration and `EVOBOT_GROUP_ABLATION_EVIDENCE_PATH`;
+`EVOBOT_GROUP_ABLATION_MAX_REQUESTS` bounds its total actual requests (default
 96). Four arms compare v1 versus v2 wire shape under the same coordinator and
 neutral guidance, neutral versus natural guidance under v2/coordinator, and
 coordinator versus relay under v2/natural guidance. It uses two chat-only tasks,

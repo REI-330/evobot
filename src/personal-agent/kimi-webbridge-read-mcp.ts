@@ -8,19 +8,19 @@ import {
   loopbackWebBridge,
 } from './kimi-webbridge-guarded-read.js';
 
-const session = process.env.OPENDOT_WEBBRIDGE_SESSION ?? '';
+const session = process.env.EVOBOT_WEBBRIDGE_SESSION ?? '';
 if (
-  !/^opendot-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+  !/^evobot-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
     session,
   )
 )
   throw new Error('Dedicated WebBridge session required');
 const reader = new KimiWebBridgeGuardedReader(
-  loopbackWebBridge(Number(process.env.OPENDOT_WEBBRIDGE_PORT)),
+  loopbackWebBridge(Number(process.env.EVOBOT_WEBBRIDGE_PORT)),
   {
     session,
-    tabId: Number(process.env.OPENDOT_WEBBRIDGE_TAB_ID),
-    origin: process.env.OPENDOT_WEBBRIDGE_ORIGIN,
+    tabId: Number(process.env.EVOBOT_WEBBRIDGE_TAB_ID),
+    origin: process.env.EVOBOT_WEBBRIDGE_ORIGIN,
   },
 );
 const Empty = z.object({}).strict();
@@ -54,7 +54,7 @@ for await (const line of createInterface({
       result = {
         protocolVersion: request.params.protocolVersion,
         capabilities: { tools: {} },
-        serverInfo: { name: 'opendot-webbridge-scoped-read', version: '1' },
+        serverInfo: { name: 'evobot-webbridge-scoped-read', version: '1' },
       };
     else if (request.method === 'tools/list') result = { tools };
     else if (

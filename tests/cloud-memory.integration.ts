@@ -57,9 +57,9 @@ afterAll(async () => {
 
 test('Cloud native Memory tools use real product grants and audit, survive restart, and cannot read revoked sources', async () => {
   const secret = 'local-cloud-memory-control-fixture-key';
-  vi.stubEnv('MINICLAW_CLOUD_SHARED_SECRET', secret);
-  vi.stubEnv('MINICLAW_CLOUD_MEMORY', 'true');
-  vi.stubEnv('MINICLAW_PERSONAL_MEMORY', 'true');
+  vi.stubEnv('EVOBOT_CLOUD_SHARED_SECRET', secret);
+  vi.stubEnv('EVOBOT_CLOUD_MEMORY', 'true');
+  vi.stubEnv('EVOBOT_PERSONAL_MEMORY', 'true');
   db.initDatabase();
   runtime.startProductRuntimeService();
   const now = new Date().toISOString();
@@ -158,7 +158,7 @@ test('Cloud native Memory tools use real product grants and audit, survive resta
     anthropicBaseUrl: `http://127.0.0.1:${(provider.address() as { port: number }).port}/v1`,
     anthropicApiKey: 'synthetic-cloud-memory-provider-key',
     anthropicModel: 'memory-model',
-    customEnv: { MINICLAW_MODEL_API: 'openai-completions' },
+    customEnv: { EVOBOT_MODEL_API: 'openai-completions' },
   });
   const authority = serve({
     fetch: (request) => routes.fetch(request),
@@ -209,7 +209,7 @@ test('Cloud native Memory tools use real product grants and audit, survive resta
   const start = (admission: boolean) =>
     new Miniflare(
       convertV4MiniflareOptions({
-        name: 'miniclaw-cloud-memory',
+        name: 'evobot-cloud-memory',
         modules: true,
         modulesRoot: path.resolve('.'),
         scriptPath: path.resolve('apps/cloud-agent/dist/worker.js'),
@@ -221,13 +221,13 @@ test('Cloud native Memory tools use real product grants and audit, survive resta
         },
         resourcePersistencePath: path.join(root, 'workerd'),
         bindings: {
-          MINICLAW_CLOUD_ADMISSION: String(admission),
-          MINICLAW_CLOUD_SHARED_SECRET: secret,
-          MINICLAW_CLOUD_ORIGIN: 'https://cloud.fixture',
-          MINICLAW_AUTHORITY_ORIGIN: 'https://authority.fixture',
+          EVOBOT_CLOUD_ADMISSION: String(admission),
+          EVOBOT_CLOUD_SHARED_SECRET: secret,
+          EVOBOT_CLOUD_ORIGIN: 'https://cloud.fixture',
+          EVOBOT_AUTHORITY_ORIGIN: 'https://authority.fixture',
         },
         serviceBindings: {
-          MINICLAW_AUTHORITY_SERVICE: async (request: Request) => {
+          EVOBOT_AUTHORITY_SERVICE: async (request: Request) => {
             if (new URL(request.url).pathname.endsWith('/tools'))
               toolRequests++;
             return fetch(

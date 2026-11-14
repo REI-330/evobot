@@ -250,18 +250,18 @@ import {
 } from './memory-service.js';
 import { type WorkspaceMemoryMutationContext } from './memory-store.js';
 import {
-  isMiniclawBootstrapTurn,
-  isMiniclawOwnerProfileRuntimeStructurallyEligible,
-} from './miniclaw-bootstrap.js';
+  isEvoBotBootstrapTurn,
+  isEvoBotOwnerProfileRuntimeStructurallyEligible,
+} from './evobot-bootstrap.js';
 import {
-  acknowledgeMiniclawOwnerIntroduction,
-  claimMiniclawOwnerIntroduction,
-  clearMiniclawOwnerPreferredAddress,
-  getMiniclawOwnerProfileProjection,
+  acknowledgeEvoBotOwnerIntroduction,
+  claimEvoBotOwnerIntroduction,
+  clearEvoBotOwnerPreferredAddress,
+  getEvoBotOwnerProfileProjection,
   OwnerProfileStoreError,
-  setMiniclawOwnerPreferredAddress,
-  skipMiniclawOwnerIntroduction,
-  type MiniclawOwnerProfileProjection,
+  setEvoBotOwnerPreferredAddress,
+  skipEvoBotOwnerIntroduction,
+  type EvoBotOwnerProfileProjection,
 } from './owner-profile-store.js';
 import {
   buildWorkspaceMemoryUpdateInput,
@@ -631,7 +631,7 @@ function buildWebTraceUrl(
   turnId?: string,
 ): string | null {
   const base =
-    process.env.MINICLAW_WEB_URL ||
+    process.env.EVOBOT_WEB_URL ||
     process.env.PUBLIC_BASE_URL ||
     process.env.WEB_BASE_URL;
   if (!base || !folder) return null;
@@ -879,7 +879,7 @@ export function feedStreamEventToCard(
       }
       break;
     case 'context_audit':
-      // Context audits describe Miniclaw/Claude runtime wiring. Keep them in
+      // Context audits describe EvoBot/Claude runtime wiring. Keep them in
       // service logs for operators, but never leak framework internals into a
       // user's conversation or streaming card.
       if (se.contextAudit?.warnings?.length) {
@@ -2315,16 +2315,16 @@ function toContainerAgentProfile(
   };
 }
 
-function resolveMiniclawOwnerProfileForTurn(input: {
+function resolveEvoBotOwnerProfileForTurn(input: {
   group: RegisteredGroup;
   profile: AgentProfile | undefined;
   turnId?: string;
   isScheduledTask?: boolean;
   runtimeAgentId?: string | null;
   runtimeAgentKind?: 'task' | 'conversation' | 'spawn' | null;
-}): MiniclawOwnerProfileProjection | undefined {
+}): EvoBotOwnerProfileProjection | undefined {
   if (
-    !isMiniclawBootstrapTurn({
+    !isEvoBotBootstrapTurn({
       turnId: input.turnId,
       isHome: input.group.is_home === true,
       isDefaultProfile: input.profile?.is_default === true,
@@ -2359,13 +2359,13 @@ function resolveMiniclawOwnerProfileForTurn(input: {
   );
   if (!workspaceJid) return undefined;
   try {
-    return getMiniclawOwnerProfileProjection(workspaceJid);
+    return getEvoBotOwnerProfileProjection(workspaceJid);
   } catch {
     return undefined;
   }
 }
 
-function isMiniclawOwnerProfileRuntimeEligible(input: {
+function isEvoBotOwnerProfileRuntimeEligible(input: {
   group: RegisteredGroup;
   profile: AgentProfile | undefined;
   turnId?: string;
@@ -2373,7 +2373,7 @@ function isMiniclawOwnerProfileRuntimeEligible(input: {
   runtimeAgentId?: string | null;
   runtimeAgentKind?: 'task' | 'conversation' | 'spawn' | null;
 }): boolean {
-  return isMiniclawOwnerProfileRuntimeStructurallyEligible({
+  return isEvoBotOwnerProfileRuntimeStructurallyEligible({
     isHome: input.group.is_home === true,
     isDefaultProfile: input.profile?.is_default === true,
     isScheduledTask: input.isScheduledTask,
@@ -2643,7 +2643,7 @@ function bindChannelOutboxScope(
     threadId: route.threadId ?? null,
     turnRunId: runtime.runId,
     inputTurnId,
-    owner: `miniclaw-outbox:${process.pid}:${runtime.runId}`,
+    owner: `evobot-outbox:${process.pid}:${runtime.runId}`,
   });
 }
 
@@ -3186,7 +3186,7 @@ async function deliverProactiveFinalFallback(input: {
       originalRunId: input.scope?.turnRunId ?? `proactive:${input.inputTurnId}`,
       noticeKey: 'proactive-final-fallback',
       text: input.text,
-      sender: 'miniclaw-agent',
+      sender: 'evobot-agent',
       senderName: ASSISTANT_NAME,
       agentId: input.agentId,
       presentation: 'native',
@@ -5496,7 +5496,7 @@ export function collectMessageImages(
   return images;
 }
 
-/** A paired/registered direct chat is already bound to one Miniclaw user.
+/** A paired/registered direct chat is already bound to one EvoBot user.
  * Learn that chat's provider-native owner identity from its first durable human
  * message so natural-language owner workflows do not require a bootstrap slash
  * command. Group chats remain explicit-claim only. */
@@ -5943,7 +5943,7 @@ async function processGroupMessages(chatJid: string): Promise<boolean> {
         limit: 30,
         maxMessageLength: 700,
         intro:
-          '检测到当前 workspace 切换或更新了顶层 AgentProfile 身份提示词，底层模型 session 已重置。以下是 Miniclaw 保存的最近对话记录，供你在新身份下延续上下文。',
+          '检测到当前 workspace 切换或更新了顶层 AgentProfile 身份提示词，底层模型 session 已重置。以下是 EvoBot 保存的最近对话记录，供你在新身份下延续上下文。',
       },
     );
     if (historyContext) {
@@ -5973,7 +5973,7 @@ async function processGroupMessages(chatJid: string): Promise<boolean> {
         limit: 30,
         maxMessageLength: 700,
         intro:
-          '检测到本次因切换 provider 需要使用新的底层模型 session。以下是 Miniclaw 保存的最近对话记录，供你延续上下文。',
+          '检测到本次因切换 provider 需要使用新的底层模型 session。以下是 EvoBot 保存的最近对话记录，供你延续上下文。',
       },
     );
     if (historyContext) {
@@ -9657,16 +9657,16 @@ async function runAgent(
     }
   }
   const containerAgentProfile = toContainerAgentProfile(resolvedAgentProfile);
-  const miniclawOwnerProfile = resolveMiniclawOwnerProfileForTurn({
+  const evobotOwnerProfile = resolveEvoBotOwnerProfileForTurn({
     group,
     profile: resolvedAgentProfile,
     turnId,
     isScheduledTask: Boolean(messageTaskId),
   });
-  const miniclawBootstrapPending =
-    miniclawOwnerProfile?.onboarding.state === 'pending' ||
-    miniclawOwnerProfile?.onboarding.state === 'claimed';
-  const miniclawOwnerProfileEnabled = isMiniclawOwnerProfileRuntimeEligible({
+  const evobotBootstrapPending =
+    evobotOwnerProfile?.onboarding.state === 'pending' ||
+    evobotOwnerProfile?.onboarding.state === 'claimed';
+  const evobotOwnerProfileEnabled = isEvoBotOwnerProfileRuntimeEligible({
     group,
     profile: resolvedAgentProfile,
     turnId,
@@ -9799,9 +9799,9 @@ async function runAgent(
           isMain: isAdminHome,
           isHome,
           isAdminHome,
-          miniclawBootstrapPending,
-          miniclawOwnerProfile,
-          miniclawOwnerProfileEnabled,
+          evobotBootstrapPending,
+          evobotOwnerProfile,
+          evobotOwnerProfileEnabled,
           agentBuilderEnabled: resolvedAgentProfile?.is_default === true,
           codingMcpEnabled: mainComputerEnabled,
           images,
@@ -9829,9 +9829,9 @@ async function runAgent(
           isMain: isAdminHome,
           isHome,
           isAdminHome,
-          miniclawBootstrapPending,
-          miniclawOwnerProfile,
-          miniclawOwnerProfileEnabled,
+          evobotBootstrapPending,
+          evobotOwnerProfile,
+          evobotOwnerProfileEnabled,
           agentBuilderEnabled: resolvedAgentProfile?.is_default === true,
           codingMcpEnabled: mainComputerEnabled,
           images,
@@ -9937,7 +9937,7 @@ async function sendMessageWithOutcome(
         ? storeScheduledGroupWorkspaceResultAndFinalize({
             messageId: msgId,
             chatJid: jid,
-            senderId: 'miniclaw-agent',
+            senderId: 'evobot-agent',
             senderName: ASSISTANT_NAME,
             text,
             timestamp,
@@ -9949,7 +9949,7 @@ async function sendMessageWithOutcome(
             return storeMessageDirect(
               msgId,
               jid,
-              'miniclaw-agent',
+              'evobot-agent',
               ASSISTANT_NAME,
               text,
               timestamp,
@@ -9964,7 +9964,7 @@ async function sendMessageWithOutcome(
       {
         id: persistedMsgId,
         chat_jid: jid,
-        sender: 'miniclaw-agent',
+        sender: 'evobot-agent',
         sender_name: ASSISTANT_NAME,
         content: text,
         timestamp,
@@ -10036,7 +10036,7 @@ function saveInterruptedStreamingMessages(): void {
       storeMessageDirect(
         msgId,
         jid,
-        'miniclaw-agent',
+        'evobot-agent',
         ASSISTANT_NAME,
         interruptedText,
         timestamp,
@@ -10143,7 +10143,7 @@ function recoverStreamingBuffer(): void {
           storeMessageDirect(
             msgId,
             jid,
-            'miniclaw-agent',
+            'evobot-agent',
             ASSISTANT_NAME,
             interruptedText,
             timestamp,
@@ -11182,7 +11182,7 @@ function startIpcWatcher(): void {
                   const persistedImgMsgId = storeMessageDirect(
                     imgMsgId,
                     imgChatJid,
-                    'miniclaw-agent',
+                    'evobot-agent',
                     ASSISTANT_NAME,
                     displayText,
                     imgTimestamp,
@@ -11192,7 +11192,7 @@ function startIpcWatcher(): void {
                   broadcastNewMessage(imgChatJid, {
                     id: persistedImgMsgId,
                     chat_jid: imgChatJid,
-                    sender: 'miniclaw-agent',
+                    sender: 'evobot-agent',
                     sender_name: ASSISTANT_NAME,
                     content: displayText,
                     timestamp: imgTimestamp,
@@ -11414,7 +11414,7 @@ function startIpcWatcher(): void {
           'agent_profile_publish_result_',
           'agent_profile_discard_result_',
           'workspace_memory_result_',
-          'miniclaw_owner_profile_result_',
+          'evobot_owner_profile_result_',
           'mem0_private_recall_result_',
           'external_mcp_result_',
         ];
@@ -11801,11 +11801,11 @@ async function processTaskIpc(
     tool_call_id?: string;
     call_id?: string;
     arguments?: Record<string, unknown>;
-    // Dedicated built-in Miniclaw Owner Profile facade.
+    // Dedicated built-in EvoBot Owner Profile facade.
     preferredAddress?: string;
     expectedOnboardingRevision?: number;
     leaseToken?: number;
-    // For the main Miniclaw's conversational Agent Builder
+    // For the main EvoBot's conversational Agent Builder
     profileId?: string;
     draftId?: string;
     expectedDraftRevision?: number;
@@ -12243,11 +12243,11 @@ async function processTaskIpc(
       }
       break;
     }
-    case 'miniclaw_owner_profile': {
+    case 'evobot_owner_profile': {
       const finish = (payload: Record<string, unknown>): void =>
         writeTaskResult(
           tasksDir,
-          'miniclaw_owner_profile',
+          'evobot_owner_profile',
           data.requestId,
           payload,
         );
@@ -12274,7 +12274,7 @@ async function processTaskIpc(
                 'Owner Profile runner identity is required',
               );
             }
-            const claim = claimMiniclawOwnerIntroduction({
+            const claim = claimEvoBotOwnerIntroduction({
               workspaceJid: principal.workspaceJid,
               leaseOwner: data.runnerInstanceId,
             });
@@ -12309,7 +12309,7 @@ async function processTaskIpc(
                 'Owner Profile lease token is required',
               );
             }
-            result = acknowledgeMiniclawOwnerIntroduction({
+            result = acknowledgeEvoBotOwnerIntroduction({
               workspaceJid: principal.workspaceJid,
               leaseOwner: data.runnerInstanceId,
               leaseToken: data.leaseToken!,
@@ -12317,7 +12317,7 @@ async function processTaskIpc(
             break;
           }
           case 'set':
-            result = setMiniclawOwnerPreferredAddress({
+            result = setEvoBotOwnerPreferredAddress({
               workspaceJid: principal.workspaceJid,
               preferredAddress: data.preferredAddress ?? '',
               expectedRevision: data.expectedRevision,
@@ -12332,7 +12332,7 @@ async function processTaskIpc(
                 'expectedRevision is required to clear the Owner Profile',
               );
             }
-            result = clearMiniclawOwnerPreferredAddress({
+            result = clearEvoBotOwnerPreferredAddress({
               workspaceJid: principal.workspaceJid,
               expectedRevision: data.expectedRevision!,
               idempotencyKey: data.idempotencyKey,
@@ -12340,7 +12340,7 @@ async function processTaskIpc(
             });
             break;
           case 'skip':
-            result = skipMiniclawOwnerIntroduction({
+            result = skipEvoBotOwnerIntroduction({
               workspaceJid: principal.workspaceJid,
               expectedOnboardingRevision: data.expectedOnboardingRevision,
               context: principal.context,
@@ -12373,7 +12373,7 @@ async function processTaskIpc(
             code,
             error: error instanceof Error ? error.message : String(error),
           },
-          'Miniclaw Owner Profile IPC request failed',
+          'EvoBot Owner Profile IPC request failed',
         );
       }
       break;
@@ -13704,7 +13704,7 @@ async function processTaskIpc(
             ...outboxScope,
             requestId: data.requestId,
             request,
-            owner: `miniclaw-feishu-capability:${process.pid}:${outboxScope.turnRunId}`,
+            owner: `evobot-feishu-capability:${process.pid}:${outboxScope.turnRunId}`,
             execute: () =>
               imManager.executeFeishuCapability(
                 activeTurn.sourceJid,
@@ -14690,7 +14690,7 @@ async function processAgentConversation(
   );
 
   // Get or use agent-specific session before building the prompt. If the
-  // session was cleared by provider/model switching, inject persisted Miniclaw
+  // session was cleared by provider/model switching, inject persisted EvoBot
   // chat history so the new model does not mistake the fresh SDK session for
   // an empty conversation.
   const sessionId = getSession(effectiveGroup.folder, agentId) || undefined;
@@ -14716,8 +14716,8 @@ async function processAgentConversation(
         limit: 30,
         maxMessageLength: 700,
         intro: resetForAgentProfile
-          ? '检测到当前 workspace 切换或更新了顶层 AgentProfile 身份提示词，当前 agent 的底层模型 session 已重置。以下是 Miniclaw 保存的最近对话记录，供你在新身份下延续上下文。'
-          : '检测到当前 agent 的底层模型 session 是新的（可能因为切换 provider/model 或恢复失败）。以下是 Miniclaw 保存的最近对话记录，供你延续上下文。',
+          ? '检测到当前 workspace 切换或更新了顶层 AgentProfile 身份提示词，当前 agent 的底层模型 session 已重置。以下是 EvoBot 保存的最近对话记录，供你在新身份下延续上下文。'
+          : '检测到当前 agent 的底层模型 session 是新的（可能因为切换 provider/model 或恢复失败）。以下是 EvoBot 保存的最近对话记录，供你延续上下文。',
       },
     );
     if (historyContext) {
@@ -15171,7 +15171,7 @@ async function processAgentConversation(
       storeMessageDirect(
         msgId,
         virtualChatJid,
-        'miniclaw-agent',
+        'evobot-agent',
         ASSISTANT_NAME,
         joined,
         timestamp,
@@ -15190,7 +15190,7 @@ async function processAgentConversation(
         {
           id: msgId,
           chat_jid: virtualChatJid,
-          sender: 'miniclaw-agent',
+          sender: 'evobot-agent',
           sender_name: ASSISTANT_NAME,
           content: joined,
           timestamp,
@@ -15722,7 +15722,7 @@ async function processAgentConversation(
       output.streamEvent?.eventType === 'raw_sdk_event'
         ? output.streamEvent.rawEvent
         : undefined;
-    if (modelEvent?.kind === 'opendot_coding_model_observation_v1') {
+    if (modelEvent?.kind === 'evobot_coding_model_observation_v1') {
       try {
         const observer = getHostObservability();
         const runtime =
@@ -16178,7 +16178,7 @@ async function processAgentConversation(
               const persistedMsgId = storeMessageDirect(
                 msgId,
                 virtualChatJid,
-                'miniclaw-agent',
+                'evobot-agent',
                 ASSISTANT_NAME,
                 interruptedText,
                 timestamp,
@@ -16198,7 +16198,7 @@ async function processAgentConversation(
                 {
                   id: persistedMsgId,
                   chat_jid: virtualChatJid,
-                  sender: 'miniclaw-agent',
+                  sender: 'evobot-agent',
                   sender_name: ASSISTANT_NAME,
                   content: interruptedText,
                   timestamp,
@@ -16557,7 +16557,7 @@ async function processAgentConversation(
           storeMessageDirect(
             msgId,
             virtualChatJid,
-            'miniclaw-agent',
+            'evobot-agent',
             ASSISTANT_NAME,
             dbText,
             timestamp,
@@ -16596,7 +16596,7 @@ async function processAgentConversation(
           {
             id: persistedMsgId,
             chat_jid: virtualChatJid,
-            sender: 'miniclaw-agent',
+            sender: 'evobot-agent',
             sender_name: ASSISTANT_NAME,
             content: dbText,
             timestamp,
@@ -17016,7 +17016,7 @@ async function processAgentConversation(
       });
     };
 
-    const miniclawOwnerProfile = resolveMiniclawOwnerProfileForTurn({
+    const evobotOwnerProfile = resolveEvoBotOwnerProfileForTurn({
       group: effectiveGroup,
       profile: agentProfile,
       turnId: lastProcessed.id,
@@ -17024,7 +17024,7 @@ async function processAgentConversation(
       runtimeAgentId: agentId,
       runtimeAgentKind: agent.kind,
     });
-    const miniclawOwnerProfileEnabled = isMiniclawOwnerProfileRuntimeEligible({
+    const evobotOwnerProfileEnabled = isEvoBotOwnerProfileRuntimeEligible({
       group: effectiveGroup,
       profile: agentProfile,
       turnId: lastProcessed.id,
@@ -17085,11 +17085,11 @@ async function processAgentConversation(
         !!agentProfile &&
         !!mem0DotAccess(effectiveGroup.created_by, agentProfile.id, 'recall'),
       codingMcpEnabled: agent.kind === 'conversation' && piMcpEnabled(),
-      miniclawBootstrapPending:
-        miniclawOwnerProfile?.onboarding.state === 'pending' ||
-        miniclawOwnerProfile?.onboarding.state === 'claimed',
-      miniclawOwnerProfile,
-      miniclawOwnerProfileEnabled,
+      evobotBootstrapPending:
+        evobotOwnerProfile?.onboarding.state === 'pending' ||
+        evobotOwnerProfile?.onboarding.state === 'claimed',
+      evobotOwnerProfile,
+      evobotOwnerProfileEnabled,
       agentId,
       agentName: agent.name,
       images: imagesForAgent,
@@ -17508,7 +17508,7 @@ async function processAgentConversation(
           const persistedMsgId = storeMessageDirect(
             msgId,
             virtualChatJid,
-            'miniclaw-agent',
+            'evobot-agent',
             ASSISTANT_NAME,
             interruptedText,
             timestamp,
@@ -17527,7 +17527,7 @@ async function processAgentConversation(
             {
               id: persistedMsgId,
               chat_jid: virtualChatJid,
-              sender: 'miniclaw-agent',
+              sender: 'evobot-agent',
               sender_name: ASSISTANT_NAME,
               content: interruptedText,
               timestamp,
@@ -17564,7 +17564,7 @@ async function processAgentConversation(
         const persistedMsgId = storeMessageDirect(
           msgId,
           virtualChatJid,
-          'miniclaw-agent',
+          'evobot-agent',
           ASSISTANT_NAME,
           partialReply,
           timestamp,
@@ -17583,7 +17583,7 @@ async function processAgentConversation(
           {
             id: persistedMsgId,
             chat_jid: virtualChatJid,
-            sender: 'miniclaw-agent',
+            sender: 'evobot-agent',
             sender_name: ASSISTANT_NAME,
             content: partialReply,
             timestamp,
@@ -17655,7 +17655,7 @@ async function processAgentConversation(
         storeMessageDirect(
           injectId,
           agent.spawned_from_jid,
-          'miniclaw-agent',
+          'evobot-agent',
           ASSISTANT_NAME,
           resultText,
           injectTs,
@@ -17664,7 +17664,7 @@ async function processAgentConversation(
         broadcastNewMessage(agent.spawned_from_jid, {
           id: injectId,
           chat_jid: agent.spawned_from_jid,
-          sender: 'miniclaw-agent',
+          sender: 'evobot-agent',
           sender_name: ASSISTANT_NAME,
           content: resultText,
           timestamp: injectTs,
@@ -17737,7 +17737,7 @@ async function startMessageLoop(): Promise<void> {
   }
   messageLoopRunning = true;
 
-  logger.info('miniclaw running');
+  logger.info('evobot running');
 
   while (!shuttingDown) {
     try {
@@ -18018,7 +18018,7 @@ async function startMessageLoop(): Promise<void> {
           // already active this IPC path (not the cold-start runContainerAgent
           // path) handles delivery, so it must carry task_id too — otherwise the
           // task's send_message output loses task attribution and the host skips
-          // the notify_channels broadcast (helsome/miniclaw#559).
+          // the notify_channels broadcast (REI-330/evobot#559).
           const injectionTaskId = extractLastTaskId(messagesToSend);
 
           const sendResult = queue.sendMessage(
@@ -18432,7 +18432,7 @@ function dockerUnavailableHint(reason: DockerFailureReason | null): string {
     case 'cli_missing':
       return 'Install the Docker CLI on the service host (it is not on PATH).';
     case 'socket_permission':
-      return 'The service user cannot open the Docker socket. Add it to the docker group on Linux or grant the Docker Desktop/colima context access, then restart Miniclaw.';
+      return 'The service user cannot open the Docker socket. Add it to the docker group on Linux or grant the Docker Desktop/colima context access, then restart EvoBot.';
     case 'daemon_unavailable':
       return 'Start the Docker daemon (macOS: Docker Desktop or colima start; Linux: sudo systemctl start docker) and verify the active Docker context.';
     case 'timeout':
@@ -18522,11 +18522,11 @@ async function ensureDockerRunning(): Promise<void> {
     }
   }
 
-  // Kill and clean up orphaned miniclaw containers from previous runs
+  // Kill and clean up orphaned evobot containers from previous runs
   try {
     const { stdout } = await execFileAsync(
       'docker',
-      ['ps', '--filter', 'name=miniclaw-', '--format', '{{.Names}}'],
+      ['ps', '--filter', 'name=evobot-', '--format', '{{.Names}}'],
       { timeout: 10000 },
     );
     const output = typeof stdout === 'string' ? stdout : String(stdout);
@@ -18558,7 +18558,7 @@ async function ensureDockerRunning(): Promise<void> {
  * are re-routed to the new user's home folder on first message receipt.
  *
  * In multi-bot setups where the same human talks to multiple bots (each owned
- * by a different Miniclaw user), re-routing is skipped — the chat stays with
+ * by a different EvoBot user), re-routing is skipped — the chat stays with
  * its original owner as long as that owner still has an active connection on
  * the **same channel type** (feishu/telegram/qq/wechat).
  */
@@ -18636,7 +18636,7 @@ function buildOnNewChat(
       //   1. Credential transfer: admin disables their Feishu channel, member
       //      enables the same appId → re-route chat to the new user.
       //   2. Multi-bot setup: same human talks to multiple bots, each owned by
-      //      a different Miniclaw user → do NOT re-route.
+      //      a different EvoBot user → do NOT re-route.
       //
       // Distinguish by checking whether the previous owner still has an active
       // connection on the SAME channel type.  Checking all channel types would
@@ -18671,7 +18671,7 @@ function buildOnNewChat(
             folder: homeFolder,
             created_by: userId,
             executionMode: isAdminHostOnlyOwner(userId) ? 'host' : 'container',
-            // Trust belongs to the previous Miniclaw user's channel binding,
+            // Trust belongs to the previous EvoBot user's channel binding,
             // not merely to the provider chat id. Never carry that trust into
             // the new user's Agent Builder authorization boundary.
             owner_claim_source: 'transfer_reset' as const,
@@ -22422,6 +22422,6 @@ async function checkImBindingsHealth(): Promise<void> {
 }
 
 main().catch((err) => {
-  logger.error({ err }, 'Failed to start miniclaw');
+  logger.error({ err }, 'Failed to start evobot');
   process.exit(1);
 });

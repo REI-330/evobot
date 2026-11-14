@@ -4,7 +4,7 @@ import path from 'node:path';
 import { Hono } from 'hono';
 import { afterAll, expect, test, vi } from 'vitest';
 
-const root = fs.mkdtempSync(path.join(os.tmpdir(), 'opendot-observability-route-'));
+const root = fs.mkdtempSync(path.join(os.tmpdir(), 'evobot-observability-route-'));
 vi.mock('../src/config.js', async (original) => ({ ...(await original<Record<string, unknown>>()), DATA_DIR: root }));
 vi.mock('../src/middleware/auth.js', () => ({ authMiddleware: async (c: any, next: () => Promise<void>) => {
   c.set('user', { id: 'fixture-owner', role: c.req.header('x-role') || 'member' });

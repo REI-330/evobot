@@ -32,9 +32,9 @@ async function openEditor(vision: boolean) {
     anthropicBaseUrl: 'https://example.test/v1',
     anthropicModel: 'vision-model',
     customEnv: {
-      MINICLAW_MODEL_API: 'openai-completions',
+      EVOBOT_MODEL_API: 'openai-completions',
       OTHER_SETTING: 'keep',
-      ...(vision ? { MINICLAW_MODEL_VISION_INPUT: 'true' } : {}),
+      ...(vision ? { EVOBOT_MODEL_VISION_INPUT: 'true' } : {}),
     },
     hasAnthropicAuthToken: true,
     health: null,
@@ -76,9 +76,9 @@ test('vision is off by default and enabling preserves unrelated provider setting
     '/api/config/claude/providers/fixture',
     expect.objectContaining({
       customEnv: expect.objectContaining({
-        MINICLAW_MODEL_VISION_INPUT: 'true',
+        EVOBOT_MODEL_VISION_INPUT: 'true',
         OTHER_SETTING: 'keep',
-        MINICLAW_MODEL_API: 'openai-completions',
+        EVOBOT_MODEL_API: 'openai-completions',
       }),
     }),
   );
@@ -90,6 +90,6 @@ test('disabling an existing opt-in removes it without discarding other settings'
   await act(async () => toggle.click());
   await save();
   const body = mocks.patch.mock.calls[0]?.[1] as any;
-  expect(body.customEnv).not.toHaveProperty('MINICLAW_MODEL_VISION_INPUT');
+  expect(body.customEnv).not.toHaveProperty('EVOBOT_MODEL_VISION_INPUT');
   expect(body.customEnv.OTHER_SETTING).toBe('keep');
 });

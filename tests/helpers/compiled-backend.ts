@@ -7,7 +7,7 @@ import process from 'node:process';
 /** Compile once before parallel test workers. No application process/data is opened. */
 export default async function compileProductBackend() {
   const repository = fileURLToPath(new URL('../../', import.meta.url));
-  const cacheKey = Symbol.for('miniclaw.tests.compiled-backends');
+  const cacheKey = Symbol.for('evobot.tests.compiled-backends');
   const globals = process as typeof process &
     Record<symbol, Map<string, Promise<void>> | undefined>;
   const builds = (globals[cacheKey] ??= new Map());

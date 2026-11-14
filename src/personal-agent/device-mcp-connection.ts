@@ -239,7 +239,7 @@ export class DeviceMcpConnection implements McpDispatchConnection {
       ? {
           ...parsed,
           structuredContent: {
-            __opendot_device_attachment: {
+            __evobot_device_attachment: {
               command_id: binding.id,
               digest: result.attachment.digest,
               size: result.attachment.size,

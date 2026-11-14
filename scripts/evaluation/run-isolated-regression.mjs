@@ -47,7 +47,7 @@ for (const name of dependencyRoots)
       `Install locked dependencies before the evaluation: ${name}`,
     );
 const temp = realpathSync(
-  mkdtempSync(path.join(realpathSync(tmpdir()), 'opendot-eval-')),
+  mkdtempSync(path.join(realpathSync(tmpdir()), 'evobot-eval-')),
 );
 const snapshot = path.join(temp, 'snapshot');
 mkdirSync(snapshot, { mode: 0o700 });
@@ -144,7 +144,7 @@ try {
     );
   }
   const report = {
-    format: 'opendot-isolated-regression-v2',
+    format: 'evobot-isolated-regression-v2',
     datasetDigest: fixtureDigest(snapshot),
     datasetDigestScope: 'declared-fixture-files-and-required-assertions',
     revision,

@@ -34,7 +34,7 @@ for await (const line of input) {
         {
           name: 'echo',
           ...(process.env.MCP_TEST_REQUIRE_IMAGE_GRANT
-            ? { annotations: { 'opendot.requiresImageGrant': true } }
+            ? { annotations: { 'evobot.requiresImageGrant': true } }
             : {}),
           description:
             process.env.MCP_TEST_CHANGE && listings > 1 ? 'changed' : 'echo',

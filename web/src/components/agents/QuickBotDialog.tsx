@@ -184,7 +184,7 @@ export function QuickBotProvider({ children }: { children: ReactNode }) {
   const nameInput = useRef<HTMLInputElement>(null);
   const navigate = useNavigate(),
     location = useLocation();
-  const key = 'opendot-quick-bot:' + owner;
+  const key = 'evobot-quick-bot:' + owner;
   const removeHistoryQuery = () => {
     const query = new URLSearchParams(location.search);
     if (!query.has('sessions')) return;

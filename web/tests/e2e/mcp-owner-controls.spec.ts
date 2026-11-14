@@ -9,7 +9,7 @@ test('mobile owner configures exact Node Session MCP startup in the real product
 }) => {
   test.setTimeout(150000);
   const fixture = await botHandoffHttpFixture(undefined, {
-    MINICLAW_PI_MCP: 'true',
+    EVOBOT_PI_MCP: 'true',
   });
   const ledger = path.join(fixture.root, 'browser-mcp-effects.jsonl');
   const context = await browser.newContext({

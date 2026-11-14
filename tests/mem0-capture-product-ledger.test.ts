@@ -123,7 +123,7 @@ it('arms in actual admission and cannot add until Product Input and answer bindi
       answer!.messageId,
       `web:owner#agent:${sessionId}`,
       'pi-durable',
-      'MiniClaw',
+      'EvoBot',
       'Noted.',
       timestamp,
       true,

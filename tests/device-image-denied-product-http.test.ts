@@ -13,8 +13,8 @@ import {
 
 test('device MCP does not upload a returned image without an image grant', async () => {
   const f = await botHandoffHttpFixture(undefined, {
-    MINICLAW_PI_MCP: 'true',
-    MINICLAW_DEVICE_NODES: 'true',
+    EVOBOT_PI_MCP: 'true',
+    EVOBOT_DEVICE_NODES: 'true',
   });
   let node: ChildProcess | undefined;
   let nodeLog = '';

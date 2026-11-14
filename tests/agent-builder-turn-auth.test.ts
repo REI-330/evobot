@@ -418,7 +418,7 @@ describe('Agent Builder runtime eligibility', () => {
         ...base,
         sourceProfileIsDefault: false,
       }),
-    ).toMatch(/main Miniclaw/);
+    ).toMatch(/main EvoBot/);
     expect(
       getAgentBuilderRuntimeRejection({
         ...base,

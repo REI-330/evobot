@@ -8,9 +8,9 @@ import { readZenModelConfiguration } from '../src/personal-agent/zen-model-confi
 
 async function main() {
   const names = [
-    'MINICLAW_ZEN_API_KEY',
-    'MINICLAW_ZEN_BASE_URL',
-    'MINICLAW_ZEN_MODEL',
+    'EVOBOT_ZEN_API_KEY',
+    'EVOBOT_ZEN_BASE_URL',
+    'EVOBOT_ZEN_MODEL',
   ];
   const missing = names.filter((name) => !process.env[name]?.trim());
   if (missing.length) {
@@ -63,12 +63,12 @@ async function main() {
       return;
     }
   }
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'miniclaw-live-report-'));
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'evobot-live-report-'));
   const evidence = path.join(root, 'evidence.json');
   try {
     const env: NodeJS.ProcessEnv = {
-      MINICLAW_LIVE_EVIDENCE_PATH: evidence,
-      MINICLAW_LIVE_SCENARIO: scenario,
+      EVOBOT_LIVE_EVIDENCE_PATH: evidence,
+      EVOBOT_LIVE_SCENARIO: scenario,
     };
     for (const name of [
       ...names,

@@ -259,7 +259,7 @@ describe('runtime backup and restore safety', () => {
   });
 
   test('sweeps an orphaned staging directory left by a previously killed restore', async () => {
-    // A `.miniclaw-restore-*` staging dir only survives past a restore
+    // A `.evobot-restore-*` staging dir only survives past a restore
     // invocation if that invocation was killed hard enough to skip its own
     // `finally` cleanup (SIGKILL/OOM/host crash). It holds the pre-restore
     // rollback copy — i.e. real secrets/DB — and must not accumulate on
@@ -278,7 +278,7 @@ describe('runtime backup and restore safety', () => {
 
     fs.mkdirSync(restoreParent, { recursive: true });
     const orphan = fs.mkdtempSync(
-      path.join(restoreParent, '.miniclaw-restore-'),
+      path.join(restoreParent, '.evobot-restore-'),
     );
     fs.mkdirSync(path.join(orphan, 'rollback', 'db'), { recursive: true });
     fs.writeFileSync(
@@ -306,7 +306,7 @@ describe('runtime backup and restore safety', () => {
     expect(
       fs
         .readdirSync(restoreParent)
-        .filter((name) => name.startsWith('.miniclaw-restore-')),
+        .filter((name) => name.startsWith('.evobot-restore-')),
     ).toHaveLength(0);
     expect(fs.existsSync(path.join(restoreData, 'db', 'messages.db'))).toBe(
       true,
@@ -314,7 +314,7 @@ describe('runtime backup and restore safety', () => {
   });
 
   test('preserves an orphaned rollback directory when the new restore attempt itself fails validation', async () => {
-    // A leaked `.miniclaw-restore-*` staging dir may hold the ONLY
+    // A leaked `.evobot-restore-*` staging dir may hold the ONLY
     // surviving copy of good pre-restore data (e.g. a prior run killed
     // between moving the live component to rollback and moving the new one
     // into place). If a later restore attempt sweeps that orphan BEFORE
@@ -336,7 +336,7 @@ describe('runtime backup and restore safety', () => {
 
     fs.mkdirSync(restoreParent, { recursive: true });
     const orphan = fs.mkdtempSync(
-      path.join(restoreParent, '.miniclaw-restore-'),
+      path.join(restoreParent, '.evobot-restore-'),
     );
     fs.mkdirSync(path.join(orphan, 'rollback', 'db'), { recursive: true });
     const survivingBytes = 'the only surviving copy of the old database';
@@ -378,7 +378,7 @@ describe('runtime backup and restore safety', () => {
     // cleanupOrphanedRestoreStagingDirs cannot tell "an abandoned staging
     // dir from a crashed run" apart from "another restore's staging/
     // rollback dir that is still in active use right now" — both just look
-    // like a `.miniclaw-restore-*` directory that isn't this process's
+    // like a `.evobot-restore-*` directory that isn't this process's
     // own. Without serialization, whichever restore finishes first would
     // delete the other's in-flight rollback data. Simulate a live
     // in-progress restore by writing a lock file stamped with our own pid
@@ -396,7 +396,7 @@ describe('runtime backup and restore safety', () => {
 
     fs.mkdirSync(restoreParent, { recursive: true });
     fs.writeFileSync(
-      path.join(restoreParent, '.miniclaw-restore.lock'),
+      path.join(restoreParent, '.evobot-restore.lock'),
       String(process.pid),
       { flag: 'wx' },
     );
@@ -421,7 +421,7 @@ describe('runtime backup and restore safety', () => {
     // The live lock (still our own pid) must not have been touched.
     expect(
       fs.readFileSync(
-        path.join(restoreParent, '.miniclaw-restore.lock'),
+        path.join(restoreParent, '.evobot-restore.lock'),
         'utf8',
       ),
     ).toBe(String(process.pid));
@@ -432,7 +432,7 @@ describe('runtime backup and restore safety', () => {
     const archive = path.join(tmp, 'lock-mkdtemp-failure-backup.tar.gz');
     const restoreData = path.join(tmp, 'lock-mkdtemp-failure-restore', 'data');
     const restoreParent = path.dirname(restoreData);
-    const lockPath = path.join(restoreParent, '.miniclaw-restore.lock');
+    const lockPath = path.join(restoreParent, '.evobot-restore.lock');
     const dbDir = path.join(archiveRoot, 'data', 'db');
     fs.mkdirSync(dbDir, { recursive: true });
     const db = new Database(path.join(dbDir, 'messages.db'));
@@ -451,7 +451,7 @@ describe('runtime backup and restore safety', () => {
 const fs = require('node:fs');
 const originalMkdtempSync = fs.mkdtempSync;
 fs.mkdtempSync = function (prefix, ...args) {
-  if (String(prefix).endsWith('.miniclaw-restore-')) {
+  if (String(prefix).endsWith('.evobot-restore-')) {
     const error = new Error('simulated ENOSPC while creating restore staging directory');
     error.code = 'ENOSPC';
     throw error;
@@ -491,7 +491,7 @@ fs.mkdtempSync = function (prefix, ...args) {
     expect(
       fs
         .readdirSync(restoreParent)
-        .filter((name) => name.startsWith('.miniclaw-restore-')),
+        .filter((name) => name.startsWith('.evobot-restore-')),
     ).toHaveLength(0);
 
     // A normal retry must proceed immediately rather than fail closed on a
@@ -534,7 +534,7 @@ fs.mkdtempSync = function (prefix, ...args) {
       child.on('exit', () => resolve(child.pid));
     });
     fs.writeFileSync(
-      path.join(restoreParent, '.miniclaw-restore.lock'),
+      path.join(restoreParent, '.evobot-restore.lock'),
       String(deadPid),
       { flag: 'wx' },
     );
@@ -560,10 +560,10 @@ fs.mkdtempSync = function (prefix, ...args) {
     // The script must not rename or unlink a pathname that could have been
     // replaced by a newly acquired live lock after its liveness check.
     expect(
-      fs.existsSync(path.join(restoreParent, '.miniclaw-restore.lock')),
+      fs.existsSync(path.join(restoreParent, '.evobot-restore.lock')),
     ).toBe(true);
 
-    fs.rmSync(path.join(restoreParent, '.miniclaw-restore.lock'));
+    fs.rmSync(path.join(restoreParent, '.evobot-restore.lock'));
     await execFileAsync(
       'node',
       [
@@ -579,7 +579,7 @@ fs.mkdtempSync = function (prefix, ...args) {
       true,
     );
     expect(
-      fs.existsSync(path.join(restoreParent, '.miniclaw-restore.lock')),
+      fs.existsSync(path.join(restoreParent, '.evobot-restore.lock')),
     ).toBe(false);
   });
 
@@ -610,7 +610,7 @@ fs.mkdtempSync = function (prefix, ...args) {
       child.on('exit', () => resolve(child.pid as number));
     });
     fs.writeFileSync(
-      path.join(restoreParent, '.miniclaw-restore.lock'),
+      path.join(restoreParent, '.evobot-restore.lock'),
       String(deadPid),
       { flag: 'wx' },
     );
@@ -662,11 +662,11 @@ fs.mkdtempSync = function (prefix, ...args) {
     expect(fs.existsSync(restoreData)).toBe(false);
     // Neither contender may mutate the stale pathname or enter staging.
     expect(
-      fs.existsSync(path.join(restoreParent, '.miniclaw-restore.lock')),
+      fs.existsSync(path.join(restoreParent, '.evobot-restore.lock')),
     ).toBe(true);
     const leftoverStaging = fs
       .readdirSync(restoreParent)
-      .filter((name) => name.startsWith('.miniclaw-restore-'));
+      .filter((name) => name.startsWith('.evobot-restore-'));
     expect(leftoverStaging).toHaveLength(0);
   });
 

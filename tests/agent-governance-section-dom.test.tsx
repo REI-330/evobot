@@ -88,15 +88,15 @@ describe('Agent governance isolation UI', () => {
     expect(container?.textContent).toContain('非 Home 工作区');
   });
 
-  test('shows Home as fixed to OpenDot and offers no migration control', async () => {
-    const miniclaw = {
+  test('shows Home as fixed to EvoBot and offers no migration control', async () => {
+    const evobot = {
       ...baseProfile,
-      id: 'miniclaw',
-      name: 'OpenDot',
+      id: 'evobot',
+      name: 'EvoBot',
       is_default: true,
     };
-    await render(miniclaw, {
-      profile: miniclaw,
+    await render(evobot, {
+      profile: evobot,
       workspaces: [
         {
           jid: 'web:main',
@@ -111,7 +111,7 @@ describe('Agent governance isolation UI', () => {
       channel_mounts: [],
     });
 
-    expect(container?.textContent).toContain('Home · 固定归属 OpenDot');
+    expect(container?.textContent).toContain('Home · 固定归属 EvoBot');
     expect(
       container?.querySelector('[aria-label="迁移工作区 Home"]'),
     ).toBeNull();

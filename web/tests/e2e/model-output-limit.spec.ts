@@ -23,7 +23,7 @@ test('mobile provider editor saves and restores the durable output limit', async
         anthropicApiKey: 'synthetic-secret',
         anthropicModel: 'fixture-model',
         customEnv: {
-          MINICLAW_MODEL_API: 'openai-completions',
+          EVOBOT_MODEL_API: 'openai-completions',
           TEST_OTHER: 'preserved',
         },
       }),
@@ -57,8 +57,8 @@ test('mobile provider editor saves and restores the durable output limit', async
     const saved = await response;
     expect(saved.status()).toBe(200);
     expect(saved.request().postDataJSON().customEnv).toMatchObject({
-      MINICLAW_MODEL_MAX_OUTPUT_TOKENS: '8192',
-      MINICLAW_MODEL_API: 'openai-completions',
+      EVOBOT_MODEL_MAX_OUTPUT_TOKENS: '8192',
+      EVOBOT_MODEL_API: 'openai-completions',
       TEST_OTHER: 'preserved',
     });
     await expect(dialog).toBeHidden();

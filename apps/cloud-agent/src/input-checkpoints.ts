@@ -11,7 +11,7 @@ import { CloudError, digest, InputSchema, type CloudInput } from './protocol';
 const Receipts = defineDocFamily<{ digest: string; verified: boolean }, string>(
   {
     family: true,
-    kind: 'miniclaw.cloud-input',
+    kind: 'evobot.cloud-input',
     version: 1,
     scope: 'session',
     initial: (hash) => ({ digest: hash, verified: false }),

@@ -56,7 +56,7 @@ const db = () => {
 const sha256 = (value: string) =>
   createHash('sha256').update(value).digest('hex');
 export const mem0PrivateEnvironment = () => {
-  const value = process.env.MINICLAW_MEM0_ENVIRONMENT?.trim() || 'default';
+  const value = process.env.EVOBOT_MEM0_ENVIRONMENT?.trim() || 'default';
   return /^[a-zA-Z0-9_-]{1,64}$/.test(value) ? value : 'default';
 };
 const scope = (ownerId: string, inputId: string) => ({
@@ -74,7 +74,7 @@ export function bindMem0PrivateRecallDatabase(value: Database | null) {
 
 /** Bound optional recall latency without changing the default for existing installations. */
 export function mem0RecallTimeoutMs(
-  value = process.env.MINICLAW_MEM0_RECALL_TIMEOUT_MS,
+  value = process.env.EVOBOT_MEM0_RECALL_TIMEOUT_MS,
 ): number {
   if (!value || !/^\d+$/.test(value)) return 1500;
   const timeout = Number(value);

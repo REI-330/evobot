@@ -34,7 +34,7 @@ the Profile, private conversation workspace and owner-scoped request receipt;
 a lost response retries that receipt instead of creating another Bot. Advanced
 configuration remains available. Schema v86 retains existing identities and
 adds nullable avatar shape plus creation receipts. Team refresh checks Goal
-availability before requesting Goal team options. The local verify-miniclaw
+availability before requesting Goal team options. The local verify-evobot
 harness now fails on console/page/HTTP errors, with only the exact first
 unauthenticated auth-prewarm 401 exception. Docker's summary uses literal
 quoting, and its empty/partial/configured credential branches are exercised.
@@ -53,7 +53,7 @@ implementation also bounds generation streams to 60 seconds and pairs fetch with
 the installed proxy dispatcher; those failed runs are retained rather than
 counted as accepted. See [the final safe result account](bot-team-live-acceptance.md).
 
-The local strict verify-miniclaw suite passed 30 checks: setup/login, chat,
+The local strict verify-evobot suite passed 30 checks: setup/login, chat,
 lightweight Dot creation, tasks, capabilities and separate mobile first chat.
 All observed unexpected console, page and HTTP error arrays were empty; doctor
 passed before/after and both disposable instances were stopped. Primary creation
@@ -97,7 +97,7 @@ During the second run, one Handoff waited with three model attempts and the
 other failed with six; no budget or timeout was increased. The cause is not
 established. See the [retained acceptance account](bot-team-live-acceptance.md).
 
-The existing `verify-miniclaw` baseline passed 24 checks across setup/login,
+The existing `verify-evobot` baseline passed 24 checks across setup/login,
 synthetic-provider chat, profile creation, task creation/pause and capability
 registration. Those tests do not prove real-model recovery, new-Dot first-chat
 completion, physical devices or deployed Cloudflare business behavior. In
@@ -109,7 +109,7 @@ color choices. Choosing a blue star updated the preview; entering a name enabled
 Create. The draft was cancelled, and reopening showed an empty name and disabled
 Create. No Bot was saved, so post-save behavior is unverified.
 
-Current OpenDot creation has a role-description entry followed by five wizard
+Current EvoBot creation has a role-description entry followed by five wizard
 steps, then leaves a saved Profile without a workspace. Its sidebar's DOTS list
 is derived from existing workspaces, so a new Profile cannot appear there until
 a workspace exists. The team page can prepare that conversation, but it asks
@@ -119,7 +119,7 @@ present before first use; the creation portrait offers emoji/color and later
 image upload, without Grok's direct shape picker. These are UX findings, not
 acceptance criteria silently changed to match another product.
 
-A new local `verify-miniclaw` mobile first-chat journey now covers the saved
+A new local `verify-evobot` mobile first-chat journey now covers the saved
 editor, correct workspace/Profile binding, distinct provider reply, exact user
 message persistence and 390 x 844 document overflow. All five functional checks
 passed. Its sixth, explicit HTTP-error check failed on
@@ -134,7 +134,7 @@ Its original shared harness logs console errors as warnings and may still return
 failed check. The original created-Profile screenshot also captured a transient
 draft/saving state; the new path waits for the saved editor before capturing.
 
-Latest inspected [hosted CI](https://github.com/helsome/OpenDot/actions/runs/39536730814)
+Latest inspected [hosted CI](https://github.com/REI-330/evobot/actions/runs/39536730814)
 for `9cce601` failed before any job steps; no failure log was available through
 the connected API. Its underlying scheduling/execution cause is unconfirmed.
 
@@ -179,7 +179,7 @@ for this Node Group path is no longer missing. Deployed Cloud Group lifecycle,
 update/rollback/cost, physical phone/PWA behavior, native Electron and real IM
 remain separate. No issues were closed and no new Cloud resources were deployed.
 
-The prior head `c5853f8` [hosted CI run](https://github.com/helsome/OpenDot/actions/runs/39447739069)
+The prior head `c5853f8` [hosted CI run](https://github.com/REI-330/evobot/actions/runs/39447739069)
 failed before any job steps, with no downloadable job log. Its scheduling failure
 reason is not established through the connected API. It must not be confused
 with the earlier fixed TypeScript error or reported as a hosted pass.
@@ -196,19 +196,19 @@ No issues were closed by this audit.
 | #31, #32, #33 | Closed       | Entry, Group domain/ACL and native Handoff core scopes accepted. This does not imply every deployment/device path is accepted.                                                                                                                           |
 | #58           | Open         | Foundation and product integration are on main. This follow-up makes generated, explicit emoji and uploaded portraits share a 6.4s breathing layer, including identified private-chat replies/streaming. Physical-mobile performance remains unverified. |
 | #61           | Open         | Conversation-first shell is merged. This follow-up removes the overlapping session-sheet close control and resets new-Dot wizard scroll to the editor. Physical keyboard, background and safe-area acceptance remains separate.                          |
-| #64           | Open         | Repository rename, product identity and metadata PRs are merged. Retained MINICLAW compatibility names are intentional. Release references/publication and final CI acceptance still need reconciliation.                                                |
+| #64           | Open         | Repository rename, product identity and metadata PRs are merged. Retained EVOBOT compatibility names are intentional. Release references/publication and final CI acceptance still need reconciliation.                                                |
 | #34           | Open         | Local workerd/authority tests and deployed health checks do not establish deployed Group lifecycle, vendor inference, update/rollback or billing acceptance.                                                                                             |
 | #35           | Open         | Real isolated Goal/model/tool recovery has passed separately; complete Bot Team, external IM, physical phone and native Electron acceptance remains incomplete.                                                                                          |
 | #30           | Open         | Epic retains the #34/#35 release gates.                                                                                                                                                                                                                  |
 
-The latest main [CI run](https://github.com/helsome/OpenDot/actions/runs/39434444946)
+The latest main [CI run](https://github.com/REI-330/evobot/actions/runs/39434444946)
 failed during the personal-agent TypeScript check: `randomUUID()` narrowed the
 optional session argument to a UUID template literal. The follow-up explicitly
 types the argument as `string`, preserving arbitrary stable conversation IDs.
 `make typecheck` now passes locally; that is distinct from hosted validation of
 the next pushed revision. Both hosted cloud jobs passed on the inspected head.
 
-The independent [image publish run](https://github.com/helsome/OpenDot/actions/runs/39434444957)
+The independent [image publish run](https://github.com/REI-330/evobot/actions/runs/39434444957)
 failed at Docker Hub login with “Username and password required”. No registry
 credentials were created or changed. This publication blocker is still open.
 
@@ -230,7 +230,7 @@ Remote main inspected at `e890e0240137a3c1de1beedf3de26e75a274a040` includes
 #46, #47, #48 and #52. Historical feature PR heads are not necessarily ancestors
 because integration copied/squashed reviewed trees; inspect current source too.
 
-Main's [product CI](https://github.com/helsome/OpenDot/actions/runs/39361827293)
+Main's [product CI](https://github.com/REI-330/evobot/actions/runs/39361827293)
 passed on that exact SHA. Its separate Docker Publish workflow failed at Docker Hub login (annotation: Username and password required); that is a
 release/publication blocker and must not be described as a product test failure.
 No image publication or credential repair is claimed here.
@@ -279,9 +279,9 @@ and #30 retain the gates above; no production deployment or main merge occurred.
 
 #62 exact head `e7d49e9e4fb061d7b13be50a9bb8e169c3a99dfc` passed all three hosted CI jobs (run `39386058412`) and is Ready for independent avatar review. #61 supersedes the old Dashboard integration criterion; do not merge #57 in that form.
 
-## OpenDot canonical design follow-up
+## EvoBot canonical design follow-up
 
-The repository was renamed to `helsome/OpenDot` (same repository identity).
+The repository was renamed to `REI-330/evobot` (same repository identity).
 #63 head `36cf8af4f9667967299dae71300936289f40464a` supplies the canonical
 `DESIGN.md`; #65 preserves it and the conversation-first functional ancestors.
 #65 exact head `1961b60bc2532f6ca190e46b2561736ad375bffd` passed all three hosted
@@ -289,14 +289,14 @@ jobs in run `39395864128` and is Ready. It supersedes #57's Dashboard; #57 stays
 Draft. #59 repaired logo head `b4999a939cd7821db90457cc4d429cb5383fab53` passed
 all three jobs in run `39393290182` and is also Ready. Neither was auto-merged.
 
-The `agent/opendot-design-system` follow-up applies the canonical tokens and
-shared surfaces, static app identity, OpenDot Web/PWA/native labels and actual
+The `agent/evobot-design-system` follow-up applies the canonical tokens and
+shared surfaces, static app identity, EvoBot Web/PWA/native labels and actual
 Dot names. The existing protected Profile API supports renaming; display metadata
 is fenced by actor, read generation and committed Profile version. Its local
 full Vitest run passed 394 files / 3,190 tests with 23 unchanged skips. Full
 browser acceptance passed 36/36, followed by 2/2 real HTTP rename/brand cases for
 the final version-race fix. Screenshots and boundaries are recorded in
-`docs/frontend-redesign/opendot-design-system.md`; hosted CI is tracked in the PR.
+`docs/frontend-redesign/evobot-design-system.md`; hosted CI is tracked in the PR.
 
 #64 remains open for repository/package/release compatibility follow-up. Old
 personalized/legacy Dot names and existing internal identifiers are preserved.

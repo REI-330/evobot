@@ -127,7 +127,7 @@ describe('Host Mem0 add/search boundary', () => {
         { role: 'user', content: 'I like tea.' },
         { role: 'assistant', content: 'I will remember that.' },
       ],
-      metadata: { source: 'opendot-owner-private', turn_id: 'input-1' },
+      metadata: { source: 'evobot-owner-private', turn_id: 'input-1' },
     });
   });
 

@@ -3,7 +3,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { afterAll, beforeAll, expect, test, vi } from 'vitest';
 
-const root = fs.mkdtempSync(path.join(os.tmpdir(), 'miniclaw-bot-entry-'));
+const root = fs.mkdtempSync(path.join(os.tmpdir(), 'evobot-bot-entry-'));
 vi.mock('../src/config.js', async (original) => ({
   ...(await original<Record<string, unknown>>()),
   DATA_DIR: root,
@@ -45,7 +45,7 @@ beforeAll(() => {
       last_active_at: now,
       expires_at: new Date(Date.now() + 3600000).toISOString(),
     });
-    cookies.set(id, `miniclaw_session=${auth.signSessionToken(token)}`);
+    cookies.set(id, `evobot_session=${auth.signSessionToken(token)}`);
     db.getOrCreateDefaultAgentProfile(id);
     db.setRegisteredGroup(`web:${id}-home`, {
       name: 'Home',

@@ -52,7 +52,7 @@ function selectChatRuntime(
 ) {
   if (
     kind === 'node-durable' &&
-    process.env.MINICLAW_DURABLE_RUNTIME !== 'true'
+    process.env.EVOBOT_DURABLE_RUNTIME !== 'true'
   )
     throw new BotGroupError('BOT_HANDOFF_RUNTIME_DISABLED');
   return selectNewProductRuntime(jid, kind, '', {
@@ -61,7 +61,7 @@ function selectChatRuntime(
 }
 const routes = new Hono<{ Variables: Variables }>();
 const enabled = () =>
-  process.env.MINICLAW_BOT_GROUPS?.trim().toLowerCase() === 'true';
+  process.env.EVOBOT_BOT_GROUPS?.trim().toLowerCase() === 'true';
 const key = (value?: string) => z.string().trim().min(1).max(128).parse(value);
 const id = (value: string) => z.uuid().parse(value);
 const messageId = (value: string) => {
@@ -112,15 +112,15 @@ routes.get('/availability', (c) =>
   c.json({
     enabled: enabled(),
     discussions_enabled: discussionsEnabled(),
-    handoffs_enabled: enabled() && process.env.MINICLAW_BOT_HANDOFFS === 'true',
+    handoffs_enabled: enabled() && process.env.EVOBOT_BOT_HANDOFFS === 'true',
     cloud_handoffs_enabled: cloudBotHandoffsEnabled(),
     cloud_devices_enabled:
       cloudBotHandoffsEnabled() &&
-      process.env.MINICLAW_CLOUD_DEVICES === 'true' &&
-      process.env.MINICLAW_DEVICE_NODES === 'true',
+      process.env.EVOBOT_CLOUD_DEVICES === 'true' &&
+      process.env.EVOBOT_DEVICE_NODES === 'true',
     cloud_approvals_enabled:
       cloudBotHandoffsEnabled() &&
-      process.env.MINICLAW_CLOUD_APPROVALS === 'true',
+      process.env.EVOBOT_CLOUD_APPROVALS === 'true',
   }),
 );
 routes.get('/', (c) =>
@@ -136,7 +136,7 @@ routes.post('/', async (c) => {
     actor,
     key(c.req.header('Idempotency-Key')),
     await c.req.json(),
-    process.env.MINICLAW_BOT_HANDOFFS === 'true'
+    process.env.EVOBOT_BOT_HANDOFFS === 'true'
       ? (groupId, profiles) =>
           prepareAvailableGroupChat(actor, groupId, profiles, selectChatRuntime)
       : undefined,
@@ -238,7 +238,7 @@ routes.post('/:id/members', async (c) => {
     groupId,
     key(c.req.header('Idempotency-Key')),
     await c.req.json(),
-    process.env.MINICLAW_BOT_HANDOFFS === 'true'
+    process.env.EVOBOT_BOT_HANDOFFS === 'true'
       ? (profiles) =>
           prepareAvailableGroupChat(actor, groupId, profiles, selectChatRuntime)
       : undefined,
@@ -306,7 +306,7 @@ routes.patch('/:id', async (c) => {
 
 routes.post('/:id/members/:memberId/runtime-grants', async (c) => {
   admit();
-  if (process.env.MINICLAW_BOT_HANDOFFS !== 'true')
+  if (process.env.EVOBOT_BOT_HANDOFFS !== 'true')
     throw new BotGroupError('BOT_HANDOFF_ADMISSION_DISABLED', 404);
   const actor = c.get('user').id,
     groupId = id(c.req.param('id')),
@@ -317,7 +317,7 @@ routes.post('/:id/members/:memberId/runtime-grants', async (c) => {
   if (
     input.runtime_kind === 'cloudflare-durable' &&
     input.tool_capabilities.includes('create_approved_artifact') &&
-    process.env.MINICLAW_CLOUD_APPROVALS !== 'true'
+    process.env.EVOBOT_CLOUD_APPROVALS !== 'true'
   )
     throw new BotGroupError('BOT_HANDOFF_TOOL_NOT_GRANTED', 400);
   const receipt = grantBotRuntime(
@@ -331,7 +331,7 @@ routes.post('/:id/members/:memberId/runtime-grants', async (c) => {
       // configuration failures are confirmed rejections, not uncertain 5xx.
       if (
         kind === 'node-durable' &&
-        process.env.MINICLAW_DURABLE_RUNTIME?.trim().toLowerCase() !== 'true'
+        process.env.EVOBOT_DURABLE_RUNTIME?.trim().toLowerCase() !== 'true'
       )
         throw new BotGroupError('BOT_HANDOFF_RUNTIME_DISABLED');
       try {

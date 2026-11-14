@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { z } from 'zod';
 import { McpCallIntentSchema } from '../mcp-contract.js';
 
-export const DEVICE_MEMO = 'miniclaw.device-command.v1';
+export const DEVICE_MEMO = 'evobot.device-command.v1';
 export const deviceDigest = (value: unknown) =>
   createHash('sha256').update(JSON.stringify(value)).digest('hex');
 export const deviceTextDigest = (value: string) =>

@@ -6,7 +6,7 @@ import { randomUUID } from 'node:crypto';
 import { expect, test, vi } from 'vitest';
 import type { ProductRuntimeService } from '../src/personal-agent/product-runtime.js';
 const root = fs.mkdtempSync(
-  path.join(os.tmpdir(), 'miniclaw-discussion-stop-'),
+  path.join(os.tmpdir(), 'evobot-discussion-stop-'),
 );
 vi.mock('../src/config.js', async (original) => ({
   ...(await original<Record<string, unknown>>()),
@@ -46,8 +46,8 @@ function stopRuntime(gate: ReturnType<typeof deferred>) {
   };
 }
 test('native stop uncertainty survives restart, retries one fenced owner, and never clears a newer stop', async () => {
-  vi.stubEnv('MINICLAW_BOT_GROUPS', 'true');
-  vi.stubEnv('MINICLAW_BOT_HANDOFFS', 'true');
+  vi.stubEnv('EVOBOT_BOT_GROUPS', 'true');
+  vi.stubEnv('EVOBOT_BOT_HANDOFFS', 'true');
   const firstGate = deferred(),
     retryGate = deferred();
   let service: InstanceType<typeof GroupDiscussionService> | undefined;

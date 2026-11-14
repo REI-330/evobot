@@ -240,13 +240,13 @@ export function meteredModelApi(
         messages: transformed.messages.map((message) => {
           if (
             message.role !== 'assistant' ||
-            !('__opendot_trace_id' in message)
+            !('__evobot_trace_id' in message)
           )
             return message;
           const clean = { ...message } as typeof message & {
-            __opendot_trace_id?: string;
+            __evobot_trace_id?: string;
           };
-          delete clean.__opendot_trace_id;
+          delete clean.__evobot_trace_id;
           return clean;
         }),
       };
@@ -308,15 +308,15 @@ export function meteredModelApi(
             let forwarded = event;
             if (event.type === 'done') {
               const message = { ...event.message } as AssistantMessage & {
-                __opendot_trace_id?: string;
+                __evobot_trace_id?: string;
               };
-              delete message.__opendot_trace_id;
+              delete message.__evobot_trace_id;
               try {
                 const trace = requestStarted
                   ? observation?.completedTraceId?.()
                   : undefined;
                 if (trace && /^[0-9a-f]{32}$/.test(trace))
-                  message.__opendot_trace_id = trace;
+                  message.__evobot_trace_id = trace;
               } catch {
                 /* Observation cannot block the model. */
               }

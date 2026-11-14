@@ -1616,7 +1616,7 @@ function setupWebSocket(server: any): WebSocketServer {
     // Verify session cookie (HMAC signature + DB lookup).
     // WebSocket upgrade cannot return Set-Cookie, so legacy cookies are
     // accepted here but upgraded on the next HTTP request instead.
-    // MINICLAW_DEMO_OPEN may supply a loopback admin session when the
+    // EVOBOT_DEMO_OPEN may supply a loopback admin session when the
     // cookie is missing or no longer valid. Disabled accounts are not
     // replaced, and this does not touch cloud-runtime HMAC.
     const cookieHeader = request.headers.cookie as string | undefined;
@@ -1699,7 +1699,7 @@ function setupWebSocket(server: any): WebSocketServer {
       socket.destroy();
       return;
     }
-    request.__miniclawSessionId = token;
+    request.__evobotSessionId = token;
 
     wss.handleUpgrade(request, socket, head, (ws) => {
       wss.emit('connection', ws, request);
@@ -1707,7 +1707,7 @@ function setupWebSocket(server: any): WebSocketServer {
   });
 
   wss.on('connection', (ws, request: any) => {
-    const sessionId = request?.__miniclawSessionId as string | undefined;
+    const sessionId = request?.__evobotSessionId as string | undefined;
     logger.info('WebSocket client connected');
     const connSession = sessionId
       ? getCachedSessionWithUser(sessionId)
@@ -3478,7 +3478,7 @@ export function broadcastRunFinished(
     const message = {
       id: messageId,
       chat_jid: chatJid,
-      sender: 'miniclaw-system',
+      sender: 'evobot-system',
       sender_name: ASSISTANT_NAME,
       content,
       timestamp,

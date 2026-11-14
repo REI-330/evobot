@@ -17,10 +17,10 @@ test.skipIf(
   'main chat uses an approved computer tool without creating a visible conversation',
   async () => {
     const f = await botHandoffHttpFixture(undefined, {
-      MINICLAW_PI_MCP: 'true',
-      MINICLAW_DEVICE_NODES: 'true',
+      EVOBOT_PI_MCP: 'true',
+      EVOBOT_DEVICE_NODES: 'true',
     });
-    const serverId = `opendot_computer_${randomUUID().replaceAll('-', '')}`;
+    const serverId = `evobot_computer_${randomUUID().replaceAll('-', '')}`;
     fs.symlinkSync(path.resolve('dist'), path.join(f.root, 'dist'));
     fs.symlinkSync(path.resolve('scripts'), path.join(f.root, 'scripts'));
     try {
@@ -60,7 +60,7 @@ test.skipIf(
         serverId,
         ticketName: 'Synthetic main computer',
       });
-      const filter = `NoSuchOpenDotApp${randomUUID().replaceAll('-', '')}`;
+      const filter = `NoSuchEvoBotApp${randomUUID().replaceAll('-', '')}`;
       let toolOffered = false;
       f.setModel((body) => {
         const lastUser =

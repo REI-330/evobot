@@ -44,7 +44,7 @@ async function cloudProductScenario(
   test.setTimeout(goalMode ? 210000 : approvalMode ? 120000 : 90000);
   const repository = fileURLToPath(new URL('../../../', import.meta.url));
   const root = fs.mkdtempSync(
-    path.join(os.tmpdir(), 'miniclaw-cloud-browser-'),
+    path.join(os.tmpdir(), 'evobot-cloud-browser-'),
   );
   const webPort = await port(),
     cloudPort = await port();
@@ -147,13 +147,13 @@ async function cloudProductScenario(
         WEB_PORT: String(webPort),
         CORS_ALLOWED_ORIGINS: origin,
         NODE_EXTRA_CA_CERTS: path.join(root, 'tls.crt'),
-        MINICLAW_CLOUD_RUNTIME: String(admission),
-        MINICLAW_PERSONAL_GOALS: String(goalMode),
-        MINICLAW_CLOUD_GOALS: String(goalMode && admission),
-        MINICLAW_DURABLE_RUNTIME: 'false',
-        MINICLAW_CLOUD_APPROVALS: String(approvalMode),
-        MINICLAW_CLOUD_ORIGIN: cloudOrigin,
-        MINICLAW_CLOUD_SHARED_SECRET: secret,
+        EVOBOT_CLOUD_RUNTIME: String(admission),
+        EVOBOT_PERSONAL_GOALS: String(goalMode),
+        EVOBOT_CLOUD_GOALS: String(goalMode && admission),
+        EVOBOT_DURABLE_RUNTIME: 'false',
+        EVOBOT_CLOUD_APPROVALS: String(approvalMode),
+        EVOBOT_CLOUD_ORIGIN: cloudOrigin,
+        EVOBOT_CLOUD_SHARED_SECRET: secret,
       },
       stdio: 'ignore',
     });
@@ -175,7 +175,7 @@ async function cloudProductScenario(
   async function startCloud(admission: boolean) {
     cloud = new Miniflare(
       convertV4MiniflareOptions({
-        name: 'miniclaw-cloud-agent',
+        name: 'evobot-cloud-agent',
         telemetry: { enabled: false },
         modules: true,
         modulesRoot: repository,
@@ -192,13 +192,13 @@ async function cloudProductScenario(
         },
         resourcePersistencePath: path.join(root, 'workerd'),
         bindings: {
-          MINICLAW_CLOUD_ADMISSION: String(admission),
-          MINICLAW_CLOUD_SHARED_SECRET: secret,
-          MINICLAW_CLOUD_ORIGIN: cloudOrigin,
-          MINICLAW_AUTHORITY_ORIGIN: 'https://authority.fixture',
+          EVOBOT_CLOUD_ADMISSION: String(admission),
+          EVOBOT_CLOUD_SHARED_SECRET: secret,
+          EVOBOT_CLOUD_ORIGIN: cloudOrigin,
+          EVOBOT_AUTHORITY_ORIGIN: 'https://authority.fixture',
         },
         serviceBindings: {
-          MINICLAW_AUTHORITY_SERVICE: async (request: Request) => {
+          EVOBOT_AUTHORITY_SERVICE: async (request: Request) => {
             const raw = await request.text();
             const response = await fetch(
               `${origin}${new URL(request.url).pathname}`,
@@ -294,7 +294,7 @@ async function cloudProductScenario(
             anthropicBaseUrl: `http://127.0.0.1:${providerPort}/v1`,
             anthropicApiKey: 'synthetic-local-browser-provider-key',
             anthropicModel: 'cloud-browser-model',
-            customEnv: { MINICLAW_MODEL_API: 'openai-completions' },
+            customEnv: { EVOBOT_MODEL_API: 'openai-completions' },
           },
         })
       ).status(),

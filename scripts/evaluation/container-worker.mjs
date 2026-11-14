@@ -44,7 +44,7 @@ for (const suite of suites) {
   );
 }
 process.stdout.write(
-  'OPENDOT_EVAL_RESULT=' +
+  'EVOBOT_EVAL_RESULT=' +
     JSON.stringify({ cases, datasetDigest: fixtureDigest('/work') }) +
     '\n',
 );

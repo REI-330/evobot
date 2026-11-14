@@ -143,7 +143,7 @@ it('rolls back the claim when the budget is exhausted and resumes after budget r
     'I like tea',
     'Noted.',
   );
-  vi.stubEnv('MINICLAW_MEM0_DAILY_BUDGET', '0');
+  vi.stubEnv('EVOBOT_MEM0_DAILY_BUDGET', '0');
   try {
     await capture.dispatchMem0PrivateCapture('input-1', client);
     expect(state().state).toBe('pending');
@@ -155,7 +155,7 @@ it('rolls back the claim when the budget is exhausted and resumes after budget r
         .get('input-1'),
     ).toEqual({ attempts: 0 });
     expect(send).not.toHaveBeenCalled();
-    vi.stubEnv('MINICLAW_MEM0_DAILY_BUDGET', '1');
+    vi.stubEnv('EVOBOT_MEM0_DAILY_BUDGET', '1');
     await capture.dispatchMem0PrivateCapture('input-1', client);
     expect(state().state).toBe('accepted');
     expect(send).toHaveBeenCalledTimes(1);

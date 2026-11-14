@@ -28,8 +28,8 @@ const routes = new Hono<{ Variables: Variables }>();
 routes.get('/availability', authMiddleware, (c) =>
   c.json({
     enabled:
-      process.env.MINICLAW_GITHUB_GOALS?.trim().toLowerCase() === 'true' &&
-      process.env.MINICLAW_PERSONAL_GOALS?.trim().toLowerCase() === 'true',
+      process.env.EVOBOT_GITHUB_GOALS?.trim().toLowerCase() === 'true' &&
+      process.env.EVOBOT_PERSONAL_GOALS?.trim().toLowerCase() === 'true',
     secret_variables:
       c.get('user').role === 'admin'
         ? githubSigningVariables(c.get('user').id)
@@ -38,8 +38,8 @@ routes.get('/availability', authMiddleware, (c) =>
 );
 routes.use('*', async (c, next) => {
   if (
-    process.env.MINICLAW_GITHUB_GOALS?.trim().toLowerCase() !== 'true' ||
-    process.env.MINICLAW_PERSONAL_GOALS?.trim().toLowerCase() !== 'true'
+    process.env.EVOBOT_GITHUB_GOALS?.trim().toLowerCase() !== 'true' ||
+    process.env.EVOBOT_PERSONAL_GOALS?.trim().toLowerCase() !== 'true'
   )
     return c.json({ error: 'Not found' }, 404);
   await next();
@@ -108,7 +108,7 @@ routes.get('/', (c) =>
   c.json({ triggers: listGithubTriggers(c.get('user').id) }),
 );
 routes.post('/', async (c) => {
-  if (process.env.MINICLAW_DURABLE_RUNTIME?.trim().toLowerCase() !== 'true')
+  if (process.env.EVOBOT_DURABLE_RUNTIME?.trim().toLowerCase() !== 'true')
     return c.json({ error: 'Durable creation is disabled' }, 409);
   const input = GithubTriggerCreateSchema.parse(
     await c.req.json().catch(() => ({})),

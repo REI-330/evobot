@@ -84,7 +84,7 @@ test('Node and standalone Worker parse the same marker while Worker admission re
       instructions: '',
       max_model_steps: 4,
       deadline_at: Date.now() + 60000,
-      execution_authority: 'miniclaw-product' as const,
+      execution_authority: 'evobot-product' as const,
       tool_capabilities: ['inspect_text'],
       bot_handoff: marker,
     };

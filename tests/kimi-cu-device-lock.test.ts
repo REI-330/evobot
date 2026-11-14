@@ -10,9 +10,9 @@ test('KimiCU lock identity is independent of caller-provided HOME and target', (
     process.env.HOME = '/tmp/not-the-account-home';
     expect(kimiCuDeviceLock()).toEqual(before);
     expect(before.lockDirectory).toBe(
-      path.join(os.userInfo().homedir, '.opendot', 'device-locks'),
+      path.join(os.userInfo().homedir, '.evobot', 'device-locks'),
     );
-    expect(before.resourceId).toBe('opendot:kimicu:desktop-input');
+    expect(before.resourceId).toBe('evobot:kimicu:desktop-input');
   } finally {
     if (prior === undefined) delete process.env.HOME;
     else process.env.HOME = prior;

@@ -48,7 +48,7 @@ test('one navigation surface creates a Dot, finds existing Dots and switches old
       try {
         await context.addInitScript(() => {
           if (location.origin !== 'null')
-            localStorage.setItem('miniclaw-theme', 'system');
+            localStorage.setItem('evobot-theme', 'system');
         });
         expect(
           (
@@ -394,7 +394,7 @@ test('desktop creation survives the default chat entry resolving after the drawe
       form.getByRole('textbox', { name: '群聊名称', exact: true }),
     ).toHaveValue('保留建群草稿');
     await expect(
-      form.getByRole('checkbox', { name: 'Miniclaw', exact: true }),
+      form.getByRole('checkbox', { name: 'EvoBot', exact: true }),
     ).toBeChecked();
     await expect(
       form.getByRole('button', { name: '创建群聊', exact: true }),

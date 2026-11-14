@@ -18,12 +18,12 @@ import { logger } from './logger.js';
 import type { User } from './types.js';
 
 /** Exact opt-in. Any other value, including "1" or "TRUE", leaves demo mode off. */
-export const DEMO_OPEN_ENV = 'MINICLAW_DEMO_OPEN';
-export const DEMO_ADMIN_USERNAME_ENV = 'MINICLAW_DEMO_ADMIN_USERNAME';
-export const DEMO_ADMIN_PASSWORD_ENV = 'MINICLAW_DEMO_ADMIN_PASSWORD';
+export const DEMO_OPEN_ENV = 'EVOBOT_DEMO_OPEN';
+export const DEMO_ADMIN_USERNAME_ENV = 'EVOBOT_DEMO_ADMIN_USERNAME';
+export const DEMO_ADMIN_PASSWORD_ENV = 'EVOBOT_DEMO_ADMIN_PASSWORD';
 export const DEFAULT_DEMO_ADMIN_USERNAME = 'admin';
-export const DEFAULT_DEMO_ADMIN_PASSWORD = 'miniclaw-demo';
-const DEMO_ADMIN_NOTES = 'Created by MINICLAW_DEMO_OPEN';
+export const DEFAULT_DEMO_ADMIN_PASSWORD = 'evobot-demo';
+const DEMO_ADMIN_NOTES = 'Created by EVOBOT_DEMO_OPEN';
 
 export function isDemoOpenEnabled(): boolean {
   return process.env[DEMO_OPEN_ENV] === 'true';
@@ -155,7 +155,7 @@ function demoAdminPassword(): string | null {
   if (usernameError || passwordError) {
     logger.error(
       { usernameError, passwordError },
-      'MINICLAW_DEMO_OPEN cannot seed a demo admin; fix MINICLAW_DEMO_ADMIN_USERNAME / MINICLAW_DEMO_ADMIN_PASSWORD',
+      'EVOBOT_DEMO_OPEN cannot seed a demo admin; fix EVOBOT_DEMO_ADMIN_USERNAME / EVOBOT_DEMO_ADMIN_PASSWORD',
     );
     return null;
   }
@@ -169,7 +169,7 @@ async function ensureDemoAdmin(): Promise<User | null> {
     if (!announcedMissingAdmin) {
       announcedMissingAdmin = true;
       logger.warn(
-        'MINICLAW_DEMO_OPEN is set but no active admin exists; loopback auto-login is disabled until an admin is active',
+        'EVOBOT_DEMO_OPEN is set but no active admin exists; loopback auto-login is disabled until an admin is active',
       );
     }
     return null;
@@ -189,7 +189,7 @@ async function ensureDemoAdmin(): Promise<User | null> {
     } catch (err) {
       logger.warn(
         { err, userId: seeded.userId },
-        'MINICLAW_DEMO_OPEN created the demo admin but not the home workspace',
+        'EVOBOT_DEMO_OPEN created the demo admin but not the home workspace',
       );
     }
     logAuthEvent({
@@ -200,7 +200,7 @@ async function ensureDemoAdmin(): Promise<User | null> {
     });
     logger.warn(
       { username },
-      'MINICLAW_DEMO_OPEN seeded a demo admin. The default password is documented in DEMO.md; change it before exposing this database',
+      'EVOBOT_DEMO_OPEN seeded a demo admin. The default password is documented in DEMO.md; change it before exposing this database',
     );
   }
   return getEarliestActiveAdmin() ?? null;
@@ -229,7 +229,7 @@ async function issueDemoOpenSession(meta: {
     announcedDemoOpen = true;
     logger.warn(
       { username: user.username },
-      'MINICLAW_DEMO_OPEN is granting loopback clients an admin session without login',
+      'EVOBOT_DEMO_OPEN is granting loopback clients an admin session without login',
     );
   }
   return token;

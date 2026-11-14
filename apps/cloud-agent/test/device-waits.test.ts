@@ -12,7 +12,7 @@ import type { Env } from '../src/worker';
 const cloud = env as unknown as Env,
   secret = 'local-workerd-fixture-control-key-32bytes';
 async function fixture() {
-  await cloud.MINICLAW_AUTHORITY_SERVICE!.fetch(
+  await cloud.EVOBOT_AUTHORITY_SERVICE!.fetch(
     'https://authority.fixture/fixture/reset',
     { method: 'POST' },
   );
@@ -31,7 +31,7 @@ async function fixture() {
     instructions: 'Only explicitly granted file requests.',
     max_model_steps: 4,
     deadline_at: Date.now() + 3600000,
-    execution_authority: 'miniclaw-product',
+    execution_authority: 'evobot-product',
     tool_capabilities: ['read_device_file'],
     bot_handoff: {
       handoff_id: crypto.randomUUID(),

@@ -59,9 +59,9 @@ import {
   deviceDigest,
 } from './device-protocol.js';
 
-/** Pi Durable is opt-in until MiniClaw session ownership and ACL routing land. */
+/** Pi Durable is opt-in until EvoBot session ownership and ACL routing land. */
 export function isDurableRuntimeEnabled(
-  value = process.env.MINICLAW_DURABLE_RUNTIME,
+  value = process.env.EVOBOT_DURABLE_RUNTIME,
 ): boolean {
   return value?.trim().toLowerCase() === 'true';
 }
@@ -77,7 +77,7 @@ export type DurableRuntimeOpenOptions = {
     conversationId: ConversationId,
     operation: 'read' | 'write',
   ) => void | Promise<void>;
-  /** Persist/check a MiniClaw request-ID-to-payload digest before Durable admission. */
+  /** Persist/check a EvoBot request-ID-to-payload digest before Durable admission. */
   recordInputRequest: (
     conversationId: ConversationId,
     requestId: string,
@@ -103,8 +103,8 @@ export type ProductToolSource = NativeProductSource<ConversationId>;
 
 /**
  * Small host adapter around the official Pi Durable Harness. This deliberately
- * does not impersonate MiniClaw's RuntimeSession: product routing must first
- * persist the MiniClaw owner/workspace to Pi conversation mapping and enforce
+ * does not impersonate EvoBot's RuntimeSession: product routing must first
+ * persist the EvoBot owner/workspace to Pi conversation mapping and enforce
  * its ACL before enabling this path for user sessions.
  */
 export class PiDurableRuntimeAdapter {
@@ -218,7 +218,7 @@ export class PiDurableRuntimeAdapter {
   }
 
   /**
-   * Validate MiniClaw's persisted session/owner map before enabling work. Pi
+   * Validate EvoBot's persisted session/owner map before enabling work. Pi
    * Durable's scheduler is Harness-wide, so callers must verify every live
    * conversation before this starts any recovered task.
    */
@@ -343,7 +343,7 @@ export class PiDurableRuntimeAdapter {
       const page = await this.storage.scanDocuments(
         {
           scope: { kind: 'session' },
-          kind: 'miniclaw.queue-control',
+          kind: 'evobot.queue-control',
           at: 'current',
         },
         100,
@@ -405,8 +405,8 @@ export class PiDurableRuntimeAdapter {
       .filter((message) => message.role === 'assistant')
       .map(
         (message) =>
-          (message as typeof message & { __opendot_trace_id?: unknown })
-            .__opendot_trace_id,
+          (message as typeof message & { __evobot_trace_id?: unknown })
+            .__evobot_trace_id,
       )
       .filter(
         (trace): trace is string =>
@@ -555,8 +555,8 @@ export class PiDurableRuntimeAdapter {
       );
       if (messages.length !== 1) return '';
       const trace = (
-        messages[0] as (typeof messages)[0] & { __opendot_trace_id?: unknown }
-      ).__opendot_trace_id;
+        messages[0] as (typeof messages)[0] & { __evobot_trace_id?: unknown }
+      ).__evobot_trace_id;
       const current = await this.productToolSource(id, taskId);
       if (
         current.generationTaskId !== source.generationTaskId ||
@@ -826,7 +826,7 @@ export class PiDurableRuntimeAdapter {
     );
     if (!submission) return undefined;
     // Harness.submission is session-wide. Verify its conversation owner before
-    // returning a handle, so an opaque ID cannot cross the MiniClaw ACL edge.
+    // returning a handle, so an opaque ID cannot cross the EvoBot ACL edge.
     const record = await submission.status(BACKGROUND_CONTEXT);
     return record.conversationId === conversationId ? submission : undefined;
   }

@@ -10,7 +10,7 @@ MCP are not enabled here.
 
 ## Admission and configuration
 
-`MINICLAW_PI_MCP=true` is an explicit deployment gate. Absent/false leaves the
+`EVOBOT_PI_MCP=true` is an explicit deployment gate. Absent/false leaves the
 feature off. Saving a server's `pi` policy or enabling a Profile never starts a
 process or grants historical Sessions external tools. The existing
 system/user scope, administrator-only system policy, user name precedence and

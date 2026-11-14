@@ -523,7 +523,7 @@ export class CodingMcpService {
           ...(approval.intent.location.kind === 'device' &&
           result.structuredContent &&
           typeof result.structuredContent === 'object' &&
-          '__opendot_device_attachment' in result.structuredContent
+          '__evobot_device_attachment' in result.structuredContent
             ? [
                 {
                   type: 'text' as const,

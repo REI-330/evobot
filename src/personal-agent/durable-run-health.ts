@@ -13,7 +13,7 @@ const MAX_PROGRESS_TIMEOUT_MS = 60 * 60 * 1000;
 
 export function durableProgressTimeoutMs(
   envValue: string | undefined = process.env
-    .MINICLAW_DURABLE_PROGRESS_TIMEOUT_MS,
+    .EVOBOT_DURABLE_PROGRESS_TIMEOUT_MS,
 ): number {
   const parsed = Number(envValue);
   if (

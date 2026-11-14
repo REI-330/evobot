@@ -100,12 +100,12 @@ export async function signedRequest(
   const signature = await crypto.subtle.sign(
     'HMAC',
     await key(secret),
-    encoder.encode(`miniclaw.cloud.request.v1.${payload}`),
+    encoder.encode(`evobot.cloud.request.v1.${payload}`),
   );
   return new Request(url, {
     method,
     headers: {
-      Authorization: `MiniClawCloud ${payload}.${encode(new Uint8Array(signature))}`,
+      Authorization: `EvoBotCloud ${payload}.${encode(new Uint8Array(signature))}`,
       'Content-Type': 'application/json',
     },
     body: ['GET', 'HEAD'].includes(method) ? undefined : body,
@@ -118,16 +118,19 @@ export async function authenticate(
 ): Promise<CloudScope & { expires_at: number }> {
   try {
     const header = request.headers.get('Authorization');
-    if (!header || header.length > 8192 || !header.startsWith('MiniClawCloud '))
+    const authPrefix = 'EvoBotCloud ';
+    if (!header || header.length > 8192 || !header.startsWith(authPrefix))
       throw new Error();
-    const [payload, signature, ...rest] = header.slice(14).split('.');
+    const [payload, signature, ...rest] = header
+      .slice(authPrefix.length)
+      .split('.');
     if (rest.length || !payload || !signature) throw new Error();
     if (
       !(await crypto.subtle.verify(
         'HMAC',
         await key(secret),
         decode(signature),
-        encoder.encode(`miniclaw.cloud.request.v1.${payload}`),
+        encoder.encode(`evobot.cloud.request.v1.${payload}`),
       ))
     )
       throw new Error();
@@ -217,7 +220,7 @@ export interface CloudBinding extends CloudScope {
   instructions: string;
   max_model_steps: number;
   deadline_at: number;
-  execution_authority?: 'miniclaw-product';
+  execution_authority?: 'evobot-product';
   tool_capabilities?: CloudToolCapability[];
   goal_id?: string;
   bot_handoff?: CloudHandoffBinding;

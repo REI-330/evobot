@@ -81,7 +81,7 @@ export function toStreamEvent(
         displayLevel: 'debug',
         sessionId: event.sessionId,
         rawEvent: {
-          kind: 'opendot_coding_model_observation_v1',
+          kind: 'evobot_coding_model_observation_v1',
           callId: event.callId,
           phase: event.phase,
           state: event.state,

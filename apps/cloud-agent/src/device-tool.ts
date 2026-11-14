@@ -39,7 +39,7 @@ export async function verifyCloudDeviceProof(
   const { intent, receipt, grant } = proof;
   if (
     !binding.bot_handoff ||
-    binding.execution_authority !== 'miniclaw-product' ||
+    binding.execution_authority !== 'evobot-product' ||
     !binding.tool_capabilities?.includes('read_device_file') ||
     receipt.cloud_session_id !== binding.session_id ||
     receipt.owner_user_id !== binding.owner_user_id ||
@@ -170,7 +170,7 @@ export function localDeviceReadTool(
       if (
         !binding.bot_handoff ||
         binding.goal_id ||
-        binding.execution_authority !== 'miniclaw-product' ||
+        binding.execution_authority !== 'evobot-product' ||
         !binding.tool_capabilities?.includes('read_device_file') ||
         api.conversationId !== 1
       )

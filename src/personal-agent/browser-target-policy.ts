@@ -197,7 +197,7 @@ export class BrowserTargetPolicy {
     return serial(this.options.resourceId, () =>
       withDeviceResourceLock(
         this.options.lockDirectory ??
-          path.join(os.homedir(), '.opendot', 'device-locks'),
+          path.join(os.homedir(), '.evobot', 'device-locks'),
         this.options.resourceId,
         async () => {
           // A failed re-observation must not leave an older approval usable.
@@ -221,7 +221,7 @@ export class BrowserTargetPolicy {
     return serial(this.options.resourceId, () =>
       withDeviceResourceLock(
         this.options.lockDirectory ??
-          path.join(os.homedir(), '.opendot', 'device-locks'),
+          path.join(os.homedir(), '.evobot', 'device-locks'),
         this.options.resourceId,
         async () => {
           this.options.authorize();

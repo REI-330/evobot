@@ -20,7 +20,7 @@ export type PreparedQueueCommand = {
   payload?: string;
   goalRunId?: string;
 };
-export const QUEUE_RECEIPT_KIND = 'miniclaw.queue-control';
+export const QUEUE_RECEIPT_KIND = 'evobot.queue-control';
 export const initialQueueReceipt = (digest: string) => ({
   digest,
   settled: false,

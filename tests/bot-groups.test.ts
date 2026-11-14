@@ -15,7 +15,7 @@ import {
   vi,
 } from 'vitest';
 
-const root = fs.mkdtempSync(path.join(os.tmpdir(), 'miniclaw-bot-groups-'));
+const root = fs.mkdtempSync(path.join(os.tmpdir(), 'evobot-bot-groups-'));
 vi.mock('../src/config.js', async (original) => ({
   ...(await original<Record<string, unknown>>()),
   DATA_DIR: root,
@@ -60,7 +60,7 @@ beforeAll(() => {
       last_active_at: now,
       expires_at: new Date(Date.now() + 3600000).toISOString(),
     });
-    cookies.set(id, `miniclaw_session=${auth.signSessionToken(token)}`);
+    cookies.set(id, `evobot_session=${auth.signSessionToken(token)}`);
     const profile = db.getOrCreateDefaultAgentProfile(id);
     db.setRegisteredGroup(`web:${id}`, {
       name: id,
@@ -91,7 +91,7 @@ beforeAll(() => {
   );
 });
 beforeEach(() => {
-  vi.stubEnv('MINICLAW_BOT_GROUPS', 'true');
+  vi.stubEnv('EVOBOT_BOT_GROUPS', 'true');
   notifications.length = 0;
 });
 afterEach(() => {
@@ -547,7 +547,7 @@ test('one Owner action prepares ordinary group chat without per-Dot scope or gra
   const { prepareGroupChat } = await import('../src/bot-groups/chat-setup.js');
   const discussions = await import('../src/bot-groups/discussion-store.js');
   const handoffs = await import('../src/bot-groups/handoff-store.js');
-  vi.stubEnv('MINICLAW_BOT_HANDOFFS', 'true');
+  vi.stubEnv('EVOBOT_BOT_HANDOFFS', 'true');
   const id = groups.createBotGroup('alice', randomUUID(), {
     name: 'No manual grants',
     bot_profile_ids: [research, chief],
@@ -619,7 +619,7 @@ test('one Owner action prepares ordinary group chat without per-Dot scope or gra
 });
 
 test('new Dots get model-only defaults without starting a model request; missing model setup does not prevent creating the roster', async () => {
-  vi.stubEnv('MINICLAW_BOT_HANDOFFS', 'true');
+  vi.stubEnv('EVOBOT_BOT_HANDOFFS', 'true');
   const { prepareAvailableGroupChat } =
     await import('../src/bot-groups/chat-setup.js');
   const handoffs = await import('../src/bot-groups/handoff-store.js');
@@ -954,7 +954,7 @@ test('revocation fences reads/notifications and old add receipts cannot restore 
     (m: { kind: string; subject_id: string }) =>
       m.kind === 'user' && m.subject_id === 'bob',
   )!;
-  vi.stubEnv('MINICLAW_BOT_GROUPS', 'false');
+  vi.stubEnv('EVOBOT_BOT_GROUPS', 'false');
   expect(
     (
       await call(`/${group.id}/members/${bob.id}`, 'PATCH', {
@@ -969,7 +969,7 @@ test('revocation fences reads/notifications and old add receipts cannot restore 
     404,
   );
   expect((await call(`/${group.id}`, 'GET')).status).toBe(200);
-  vi.stubEnv('MINICLAW_BOT_GROUPS', 'true');
+  vi.stubEnv('EVOBOT_BOT_GROUPS', 'true');
   const retry = await (
     await call(`/${group.id}/members`, 'POST', input, 'alice', requestId)
   ).json();
@@ -1281,7 +1281,7 @@ test('renaming an existing Workspace preserves Group/message identities; explici
 test('default-off admission blocks all new grants/writes while retaining authorized archive/revocation/history', async () => {
   const { group } = await create();
   await invite(group.id, 'bob');
-  vi.stubEnv('MINICLAW_BOT_GROUPS', 'false');
+  vi.stubEnv('EVOBOT_BOT_GROUPS', 'false');
   const expected_revision = revision(group.id);
   expect(
     (

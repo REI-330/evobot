@@ -4,7 +4,7 @@ import path from 'node:path';
 import Database from 'better-sqlite3';
 import { randomUUID } from 'node:crypto';
 import { afterAll, expect, test, vi } from 'vitest';
-const root = fs.mkdtempSync(path.join(os.tmpdir(), 'miniclaw-v84-'));
+const root = fs.mkdtempSync(path.join(os.tmpdir(), 'evobot-v84-'));
 vi.mock('../src/config.js', async (original) => ({
   ...(await original<Record<string, unknown>>()),
   DATA_DIR: root,
@@ -20,7 +20,7 @@ afterAll(() => {
   fs.rmSync(root, { recursive: true, force: true });
 });
 test('v83 upgrade preserves the existing generic device grant, legacy wire digest and Team tables, and writes a private verified backup', () => {
-  vi.stubEnv('MINICLAW_DEVICE_NODES', 'true');
+  vi.stubEnv('EVOBOT_DEVICE_NODES', 'true');
   db.initDatabase();
   const now = new Date().toISOString();
   db.createUser({

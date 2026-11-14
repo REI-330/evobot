@@ -3,7 +3,7 @@ export const discussionCases = [
   {
     id: 'natural',
     prompt:
-      'OpenDot 用户觉得新建 Dot、找旧对话和进入设置绕路。讨论一个能在一天内完成的最小 UX 改进方案。活动聊天不能增加常驻底栏，优先复用现有创建面板和设置目录。',
+      'EvoBot 用户觉得新建 Dot、找旧对话和进入设置绕路。讨论一个能在一天内完成的最小 UX 改进方案。活动聊天不能增加常驻底栏，优先复用现有创建面板和设置目录。',
   },
   {
     id: 'correction',

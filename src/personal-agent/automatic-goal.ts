@@ -19,14 +19,14 @@ import { canExecuteOnHost } from '../host-execution-policy.js';
 import { selectNewProductRuntime } from './product-model.js';
 
 const CLOUD_GOAL_PROMPT =
-  'Execute only the frozen Goal context supplied by the MiniClaw Scheduler using the explicitly granted Cloud tools. Propose a private artifact for exact-content user approval. Do not claim completion without server-verified evidence.';
+  'Execute only the frozen Goal context supplied by the EvoBot Scheduler using the explicitly granted Cloud tools. Propose a private artifact for exact-content user approval. Do not claim completion without server-verified evidence.';
 const NODE_GOAL_PROMPT =
-  'Execute only the frozen Goal context supplied by the MiniClaw Scheduler. Read workspace evidence and propose a private artifact for explicit user approval. Do not claim completion without evidence.';
+  'Execute only the frozen Goal context supplied by the EvoBot Scheduler. Read workspace evidence and propose a private artifact for explicit user approval. Do not claim completion without evidence.';
 
 export function cloudGoalAvailable(ownerId: string, workspaceJid: string) {
   if (
-    process.env.MINICLAW_PERSONAL_GOALS !== 'true' ||
-    process.env.MINICLAW_CLOUD_GOALS !== 'true'
+    process.env.EVOBOT_PERSONAL_GOALS !== 'true' ||
+    process.env.EVOBOT_CLOUD_GOALS !== 'true'
   )
     return false;
   const workspace = getRegisteredGroup(workspaceJid);
@@ -68,14 +68,14 @@ export function provisionAutomaticGoal(
       'Cloud Goal requires enabled admission, an authorized workspace, a compatible model and artifact approval capability',
     );
   const cloud = requested === 'cloudflare-durable';
-  if (cloud && process.env.MINICLAW_CLOUD_GOALS !== 'true')
+  if (cloud && process.env.EVOBOT_CLOUD_GOALS !== 'true')
     throw new GoalConflict(
       'GOAL_RUNTIME_UNAVAILABLE',
       'Cloud Goal admission is disabled',
     );
   if (
     !cloud &&
-    process.env.MINICLAW_DURABLE_RUNTIME?.trim().toLowerCase() !== 'true'
+    process.env.EVOBOT_DURABLE_RUNTIME?.trim().toLowerCase() !== 'true'
   ) {
     if (requested)
       throw new GoalConflict(

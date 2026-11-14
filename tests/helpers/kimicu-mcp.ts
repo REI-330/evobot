@@ -70,7 +70,7 @@ export async function readKimiCuAppState(input: {
       protocolVersion: '2025-03-26',
       capabilities: {},
       clientInfo: {
-        name: input.clientName ?? 'opendot-product-fixture',
+        name: input.clientName ?? 'evobot-product-fixture',
         version: '1',
       },
     });

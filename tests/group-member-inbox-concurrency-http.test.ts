@@ -17,8 +17,8 @@ import {
   recordProof,
 } from './helpers/member-inbox-http-fixture.js';
 const flags = {
-  MINICLAW_GROUP_MEMBER_INBOX: 'true',
-  MINICLAW_GROUP_MEMBER_CONCURRENCY: 'true',
+  EVOBOT_GROUP_MEMBER_INBOX: 'true',
+  EVOBOT_GROUP_MEMBER_CONCURRENCY: 'true',
 };
 type Fixture = Awaited<ReturnType<typeof botHandoffHttpFixture>>;
 async function fresh(f: Fixture) {
@@ -777,8 +777,8 @@ test('restart preserves the original native inputs, fences old model capacity as
     expect(old).toHaveLength(2);
     await f.stop('SIGKILL');
     await waitFor(() => f.held.size === 0);
-    environment.MINICLAW_GROUP_MEMBER_CONCURRENCY = 'false';
-    environment.MINICLAW_GROUP_MEMBER_INBOX = 'false';
+    environment.EVOBOT_GROUP_MEMBER_CONCURRENCY = 'false';
+    environment.EVOBOT_GROUP_MEMBER_INBOX = 'false';
     after = true;
     await f.start();
     await waitFor(async () => {

@@ -14,7 +14,7 @@ vi.mock('../src/config.js', async (original) => ({
 const db = await import('../src/db.js');
 const store = await import('../src/personal-agent/mcp-session-store.js');
 const controls = await import('../src/personal-agent/mcp-approval-store.js');
-const oldFlag = process.env.MINICLAW_PI_MCP;
+const oldFlag = process.env.EVOBOT_PI_MCP;
 const managers: Awaited<ReturnType<typeof store.openSessionMcp>>[] = [];
 beforeAll(() => {
   db.initDatabase();
@@ -47,8 +47,8 @@ afterAll(async () => {
   await Promise.all(managers.map((m) => m.close()));
   db.closeDatabase();
   fs.rmSync(root, { recursive: true, force: true });
-  if (oldFlag === undefined) delete process.env.MINICLAW_PI_MCP;
-  else process.env.MINICLAW_PI_MCP = oldFlag;
+  if (oldFlag === undefined) delete process.env.EVOBOT_PI_MCP;
+  else process.env.EVOBOT_PI_MCP = oldFlag;
 });
 function session() {
   const id = randomUUID(),
@@ -131,7 +131,7 @@ async function open(id: string, consents: string[]) {
   return manager;
 }
 test('default off and unconfirmed/changed scope start no process; request IDs cannot cross owner or Session', () => {
-  delete process.env.MINICLAW_PI_MCP;
+  delete process.env.EVOBOT_PI_MCP;
   const id = session(),
     server = definition();
   expect(store.sessionMcpOptions(id, 'alice')).toMatchObject({
@@ -139,7 +139,7 @@ test('default off and unconfirmed/changed scope start no process; request IDs ca
     servers: [],
   });
   expect(server.starts()).toBe(0);
-  process.env.MINICLAW_PI_MCP = 'true';
+  process.env.EVOBOT_PI_MCP = 'true';
   const body = request(id, server.id);
   expect(() =>
     store.requestSessionMcpConsent(id, 'alice', {

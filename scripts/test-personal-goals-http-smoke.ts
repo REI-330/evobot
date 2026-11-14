@@ -30,7 +30,7 @@ async function main(): Promise<void> {
     fs.existsSync(path.join(repository, 'dist/index.js')),
     'Build backend first',
   );
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'miniclaw-goal-http-'));
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'evobot-goal-http-'));
   const port = await availablePort();
   const base = `http://127.0.0.1:${port}`;
   let child: ChildProcess | undefined;
@@ -72,7 +72,7 @@ async function main(): Promise<void> {
         NODE_ENV: 'test',
         TZ: 'Asia/Taipei',
         WEB_PORT: String(port),
-        MINICLAW_PERSONAL_GOALS: 'true',
+        EVOBOT_PERSONAL_GOALS: 'true',
       },
       stdio: 'ignore',
     });

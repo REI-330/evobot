@@ -18,14 +18,14 @@ import { installOptionalGroupModel } from './helpers/live-openai-model.js';
 
 test.skipIf(
   process.platform !== 'darwin' ||
-    !process.env.OPENDOT_TEST_KIMICU_PID ||
-    !process.env.OPENDOT_TEST_KIMICU_WINDOW_ID,
+    !process.env.EVOBOT_TEST_KIMICU_PID ||
+    !process.env.EVOBOT_TEST_KIMICU_WINDOW_ID,
 )(
   'real KimiCU paired device requires exact approvals for observation and action',
   async () => {
     const f = await botHandoffHttpFixture(undefined, {
-      MINICLAW_PI_MCP: 'true',
-      MINICLAW_DEVICE_NODES: 'true',
+      EVOBOT_PI_MCP: 'true',
+      EVOBOT_DEVICE_NODES: 'true',
     });
     const realModelPath = await installOptionalGroupModel(
       f,
@@ -34,9 +34,9 @@ test.skipIf(
     let node: ChildProcess | undefined;
     let nodeLog = { text: '' };
     const env = {
-      OPENDOT_KIMICU_APP_ID: 'net.opendot.kimi-fixture',
-      OPENDOT_KIMICU_PID: process.env.OPENDOT_TEST_KIMICU_PID!,
-      OPENDOT_KIMICU_WINDOW_ID: process.env.OPENDOT_TEST_KIMICU_WINDOW_ID!,
+      EVOBOT_KIMICU_APP_ID: 'net.evobot.kimi-fixture',
+      EVOBOT_KIMICU_PID: process.env.EVOBOT_TEST_KIMICU_PID!,
+      EVOBOT_KIMICU_WINDOW_ID: process.env.EVOBOT_TEST_KIMICU_WINDOW_ID!,
     };
     try {
       const group = await f.createGroup();
@@ -179,9 +179,9 @@ test.skipIf(
       else expect(f.requests).toHaveLength(0);
       expect(
         await readKimiCuAppState({
-          app: 'net.opendot.kimi-fixture',
-          pid: Number(env.OPENDOT_KIMICU_PID),
-          windowId: Number(env.OPENDOT_KIMICU_WINDOW_ID),
+          app: 'net.evobot.kimi-fixture',
+          pid: Number(env.EVOBOT_KIMICU_PID),
+          windowId: Number(env.EVOBOT_KIMICU_WINDOW_ID),
         }),
       ).toContain('Fixture action complete');
       expect(

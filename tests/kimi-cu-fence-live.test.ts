@@ -2,8 +2,8 @@ import { expect, test } from 'vitest';
 import { KimiCuBackend } from '../src/personal-agent/kimi-cu-backend.js';
 import { openKimiCuMcp } from './helpers/kimicu-mcp.js';
 
-const fixturePid = Number(process.env.OPENDOT_TEST_KIMICU_PID);
-const fixtureWindow = Number(process.env.OPENDOT_TEST_KIMICU_WINDOW_ID);
+const fixturePid = Number(process.env.EVOBOT_TEST_KIMICU_PID);
+const fixtureWindow = Number(process.env.EVOBOT_TEST_KIMICU_WINDOW_ID);
 
 test.skipIf(process.platform !== 'darwin' || !fixturePid || !fixtureWindow)(
   'real KimiCU rejects a different window and an old native snapshot',
@@ -13,7 +13,7 @@ test.skipIf(process.platform !== 'darwin' || !fixturePid || !fixtureWindow)(
       const initialized = await mcp.call('initialize', {
         protocolVersion: '2025-03-26',
         capabilities: {},
-        clientInfo: { name: 'opendot-kimicu-fence-fixture', version: '1' },
+        clientInfo: { name: 'evobot-kimicu-fence-fixture', version: '1' },
       });
       expect(initialized.error).toBeUndefined();
       mcp.notify('notifications/initialized');
@@ -29,7 +29,7 @@ test.skipIf(process.platform !== 'darwin' || !fixturePid || !fixtureWindow)(
         },
       };
       const scope = {
-        appId: 'net.opendot.kimi-fixture',
+        appId: 'net.evobot.kimi-fixture',
         pid: fixturePid,
         windowId: fixtureWindow,
       };

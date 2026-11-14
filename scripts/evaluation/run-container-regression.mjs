@@ -64,7 +64,7 @@ if (
   throw new Error('An explicitly local Unix-socket Docker context is required');
 const archive = cmd('git', ['archive', '--format=tar', revision]);
 if (archive.status !== 0) throw new Error('Unable to archive committed source');
-const temp = mkdtempSync(path.join(tmpdir(), 'opendot-container-eval-'));
+const temp = mkdtempSync(path.join(tmpdir(), 'evobot-container-eval-'));
 try {
   const imageFile = path.join(temp, 'image-id');
   const build = cmd(
@@ -106,12 +106,12 @@ try {
   );
   const line = (run.stdout ?? '')
     .split('\n')
-    .find((value) => value.startsWith('OPENDOT_EVAL_RESULT='));
+    .find((value) => value.startsWith('EVOBOT_EVAL_RESULT='));
   if (!line)
     throw new Error(
       `Isolated evaluation did not return a report (exit ${run.status ?? 'timeout'})`,
     );
-  const result = JSON.parse(line.slice('OPENDOT_EVAL_RESULT='.length));
+  const result = JSON.parse(line.slice('EVOBOT_EVAL_RESULT='.length));
   if (
     !Array.isArray(result.cases) ||
     result.cases.length !== suites.length ||
@@ -123,7 +123,7 @@ try {
   )
     throw new Error('Malformed isolated evaluation report');
   const report = {
-    format: 'opendot-container-regression-v2',
+    format: 'evobot-container-regression-v2',
     revision,
     datasetDigest: result.datasetDigest,
     datasetDigestScope: 'declared-fixture-files-and-required-assertions',

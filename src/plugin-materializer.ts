@@ -12,7 +12,7 @@
  *
  * Materialize strategy per plugin:
  *   1. target = runtime/{userId}/snapshots/{snapshotId}/{mp}/{plugin}
- *      marker = runtime/{userId}/snapshots/{snapshotId}/@miniclaw-runtime-markers/{mp}/{plugin}.json
+ *      marker = runtime/{userId}/snapshots/{snapshotId}/@evobot-runtime-markers/{mp}/{plugin}.json
  *   2. if target has plugin.json AND marker exists/validates → skip (already
  *      isolated-inode)
  *   3. else copyTreeIsolated catalog → tmp:
@@ -63,7 +63,7 @@ import {
  * `@` is rejected by NAME_SEGMENT_RE (/^[\w.-]+$/), so this directory name
  * can never collide with a marketplace / plugin / snapshot segment.
  */
-const MARKER_DIRNAME = '@miniclaw-runtime-markers';
+const MARKER_DIRNAME = '@evobot-runtime-markers';
 
 /**
  * Bumped only on a *semantic* change to the materialize strategy (e.g. swap
@@ -484,7 +484,7 @@ function copyTreeIsolated(src: string, dst: string): void {
   }
 }
 
-/** runtime/{userId}/snapshots/{snapshotId}/@miniclaw-runtime-markers/{mp}/{plugin}.json */
+/** runtime/{userId}/snapshots/{snapshotId}/@evobot-runtime-markers/{mp}/{plugin}.json */
 function getRuntimeMarkerPath(
   userId: string,
   snapshotId: string,

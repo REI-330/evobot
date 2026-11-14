@@ -2,11 +2,11 @@
 
 This opt-in fixture opens two partially overlapping solid-colour windows inside one
 synthetic app. Compile `main.swift` into a temporary `.app` with bundle ID
-`net.opendot.kimi-screenshot-fixture`, start it only with an unlocked Mac, and
+`net.evobot.kimi-screenshot-fixture`, start it only with an unlocked Mac, and
 use KimiCU's `list_windows` to select that process's green and red window IDs.
 Then run `tests/kimi-cu-screenshot-scope-live.test.ts` with
-`OPENDOT_TEST_KIMICU_COLOR_PID`, `OPENDOT_TEST_KIMICU_GREEN_WINDOW`, and
-`OPENDOT_TEST_KIMICU_RED_WINDOW` set to those exact IDs.
+`EVOBOT_TEST_KIMICU_COLOR_PID`, `EVOBOT_TEST_KIMICU_GREEN_WINDOW`, and
+`EVOBOT_TEST_KIMICU_RED_WINDOW` set to those exact IDs.
 
 Alternatively, after unlocking, run `node scripts/diagnostics/run-kimicu-window-scope.mjs`.
 It compiles and starts only this temporary fixture, takes its process and window

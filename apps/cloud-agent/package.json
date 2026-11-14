@@ -1,5 +1,5 @@
 {
-  "name": "@miniclaw/cloud-agent",
+  "name": "@evobot/cloud-agent",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -27,5 +27,5 @@
     "vitest": "4.1.8",
     "wrangler": "4.151.1"
   },
-  "description": "Cloudflare durable session runtime for OpenDot."
+  "description": "Cloudflare durable session runtime for EvoBot."
 }

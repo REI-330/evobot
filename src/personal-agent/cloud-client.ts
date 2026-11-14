@@ -193,7 +193,7 @@ export class CloudSessionClient {
     if (Buffer.byteLength(body, 'utf8') > CLOUD_MAX_BODY_BYTES)
       throw new CloudError(413, 'CLOUD_REQUEST_TOO_LARGE');
     const signed = await signedRequest(
-      process.env.MINICLAW_CLOUD_SHARED_SECRET ?? '',
+      process.env.EVOBOT_CLOUD_SHARED_SECRET ?? '',
       binding,
       url,
       method,

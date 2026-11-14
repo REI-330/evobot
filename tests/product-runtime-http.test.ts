@@ -135,8 +135,8 @@ test('formal product admission resumes the original Durable submission after kil
           HOME: path.join(root, 'home'),
           WEB_PORT: String(webPort),
           TZ: 'Asia/Taipei',
-          MINICLAW_DURABLE_RUNTIME: String(enabled),
-          MINICLAW_PERSONAL_GOALS: 'true',
+          EVOBOT_DURABLE_RUNTIME: String(enabled),
+          EVOBOT_PERSONAL_GOALS: 'true',
           PLUGIN_AUTO_SCAN: 'false',
         },
         stdio: ['ignore', 'ignore', 'ignore', 'ipc'],
@@ -150,7 +150,7 @@ test('formal product admission resumes the original Durable submission after kil
         port?: number;
       };
       if (
-        value.type !== 'miniclaw_fixture_listening_v1' ||
+        value.type !== 'evobot_fixture_listening_v1' ||
         value.pid !== child?.pid ||
         value.root !== root ||
         !Number.isInteger(value.port) ||
@@ -173,7 +173,7 @@ test('formal product admission resumes the original Durable submission after kil
         return false;
       }
     }, 120000);
-    if (process.env.MINICLAW_FIXTURE_TIMING === '1')
+    if (process.env.EVOBOT_FIXTURE_TIMING === '1')
       console.info(
         JSON.stringify({
           phase: 'product-backend-ready',
@@ -220,7 +220,7 @@ test('formal product admission resumes the original Durable submission after kil
       anthropicBaseUrl: `http://127.0.0.1:${providerPort}/v1`,
       anthropicApiKey: 'fixture-test-token',
       anthropicModel: 'fixture-model',
-      customEnv: { MINICLAW_MODEL_API: 'openai-completions' },
+      customEnv: { EVOBOT_MODEL_API: 'openai-completions' },
     });
     expect(configured.status).toBe(201);
     const groups = (await request('/api/groups')).body.groups as Record<

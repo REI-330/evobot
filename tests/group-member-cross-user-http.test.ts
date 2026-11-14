@@ -16,7 +16,7 @@ import { memberEnvelopes } from './helpers/member-envelopes.js';
 
 test('another account cannot enter a working member Group or lend its private native context to a peer request', async () => {
   const f = await botHandoffHttpFixture(undefined, {
-    MINICLAW_GROUP_MEMBER_INBOX: 'true',
+    EVOBOT_GROUP_MEMBER_INBOX: 'true',
   });
   let db: Database.Database | undefined, runId: string | undefined;
   const details: Record<string, unknown> = {};

@@ -9,8 +9,8 @@ import { cleanupLegacyPwaArtifacts } from './utils/legacyPwaCleanup';
 import './features/pocket/installation';
 
 if (typeof window !== 'undefined') {
-  window.__MINICLAW_HASH_ROUTER__ = shouldUseHashRouter();
-  if (window.__MINICLAW_HASH_ROUTER__) {
+  window.__EVOBOT_HASH_ROUTER__ = shouldUseHashRouter();
+  if (window.__EVOBOT_HASH_ROUTER__) {
     const entry = initialHashRoute(window.location, APP_BASE);
     if (entry) window.history.replaceState(window.history.state, '', entry);
   }

@@ -322,7 +322,7 @@ function modelOutput(
     device &&
     result.structuredContent &&
     typeof result.structuredContent === 'object' &&
-    '__opendot_device_attachment' in result.structuredContent
+    '__evobot_device_attachment' in result.structuredContent
   )
     output.push({
       type: 'text',

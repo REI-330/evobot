@@ -40,7 +40,7 @@ export async function botHandoffHttpFixture(
 ) {
   // macOS resolves /var to /private/var in the child process's cwd receipt.
   const root = fs.realpathSync(
-      fs.mkdtempSync(path.join(os.tmpdir(), 'miniclaw-bot-handoff-fault-')),
+      fs.mkdtempSync(path.join(os.tmpdir(), 'evobot-bot-handoff-fault-')),
     ),
     repository = fileURLToPath(new URL('../../', import.meta.url));
   const startupMilliseconds: number[] = [];
@@ -204,9 +204,9 @@ export async function botHandoffHttpFixture(
           ADMIN_HOST_ONLY_MODE: 'true',
           // Do not scan/install unrelated host marketplace plugins in this fixture.
           PLUGIN_AUTO_SCAN: 'false',
-          MINICLAW_DURABLE_RUNTIME: 'true',
-          MINICLAW_BOT_GROUPS: 'true',
-          MINICLAW_BOT_HANDOFFS: 'true',
+          EVOBOT_DURABLE_RUNTIME: 'true',
+          EVOBOT_BOT_GROUPS: 'true',
+          EVOBOT_BOT_HANDOFFS: 'true',
           TZ: 'UTC',
           ...cloudEnvironment,
         },
@@ -220,7 +220,7 @@ export async function botHandoffHttpFixture(
         root?: string;
         port?: number;
       };
-      if (value.type === 'miniclaw_fixture_listening_v1') {
+      if (value.type === 'evobot_fixture_listening_v1') {
         receipts.received++;
         if (value.pid !== child?.pid) receipts.wrongPid++;
         if (value.root !== root) receipts.wrongRoot++;
@@ -233,7 +233,7 @@ export async function botHandoffHttpFixture(
           receipts.invalidPort++;
       }
       if (
-        value.type !== 'miniclaw_fixture_listening_v1' ||
+        value.type !== 'evobot_fixture_listening_v1' ||
         value.pid !== child?.pid ||
         value.root !== root ||
         !Number.isInteger(value.port) ||
@@ -308,7 +308,7 @@ export async function botHandoffHttpFixture(
       throw error;
     });
     startupMilliseconds.push(Date.now() - processStartedAt);
-    if (process.env.MINICLAW_FIXTURE_TIMING === '1')
+    if (process.env.EVOBOT_FIXTURE_TIMING === '1')
       console.info(
         JSON.stringify({
           phase: 'backend-ready',
@@ -319,12 +319,12 @@ export async function botHandoffHttpFixture(
   const stop = async (signal: NodeJS.Signals = 'SIGTERM') => {
     if (child && child.exitCode === null && child.signalCode === null) {
       const stoppedAt = Date.now();
-      if (process.env.MINICLAW_FIXTURE_TIMING === '1')
+      if (process.env.EVOBOT_FIXTURE_TIMING === '1')
         console.info(JSON.stringify({ phase: 'backend-stop-begin', signal }));
       const exited = once(child, 'exit');
       child.kill(signal);
       await exited;
-      if (process.env.MINICLAW_FIXTURE_TIMING === '1')
+      if (process.env.EVOBOT_FIXTURE_TIMING === '1')
         console.info(
           JSON.stringify({
             phase: 'backend-stop-done',
@@ -366,7 +366,7 @@ export async function botHandoffHttpFixture(
         anthropicBaseUrl: `http://127.0.0.1:${(provider.address() as { port: number }).port}/v1`,
         anthropicApiKey: 'synthetic-bot-fault-key',
         anthropicModel: 'fixture-model',
-        customEnv: { MINICLAW_MODEL_API: 'openai-completions' },
+        customEnv: { EVOBOT_MODEL_API: 'openai-completions' },
       }),
     );
     const options = await json<{ workspaces: { jid: string }[] }>(

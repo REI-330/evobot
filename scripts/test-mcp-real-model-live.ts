@@ -8,8 +8,8 @@ import {
   waitFor,
 } from '../tests/helpers/bot-handoff-http-fixture.js';
 
-const configPath = process.env.MINICLAW_GROUP_MODEL_CONFIG;
-const outputPath = process.env.MINICLAW_MCP_EVIDENCE_PATH;
+const configPath = process.env.EVOBOT_GROUP_MODEL_CONFIG;
+const outputPath = process.env.EVOBOT_MCP_EVIDENCE_PATH;
 assert(
   configPath && outputPath,
   'Private model config and report path required',
@@ -21,7 +21,7 @@ assert(
     model.apiKey &&
     model.api === 'openai-completions',
 );
-const f = await botHandoffHttpFixture(undefined, { MINICLAW_PI_MCP: 'true' });
+const f = await botHandoffHttpFixture(undefined, { EVOBOT_PI_MCP: 'true' });
 const report: {
   passed: boolean;
   stage?: string;
@@ -44,7 +44,7 @@ try {
       anthropicBaseUrl: model.baseUrl,
       anthropicModel: model.model,
       customEnv: {
-        MINICLAW_MODEL_API: model.api,
+        EVOBOT_MODEL_API: model.api,
       },
     }),
   );

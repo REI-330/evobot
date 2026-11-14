@@ -70,7 +70,7 @@ test('Cloud Handoff repairs the original lost admission ACK across Node store/se
     true,
   );
   const secret = 'synthetic-cloud-handoff-association-control-key';
-  vi.stubEnv('MINICLAW_CLOUD_SHARED_SECRET', secret);
+  vi.stubEnv('EVOBOT_CLOUD_SHARED_SECRET', secret);
   db.initDatabase();
   runtime.startProductRuntimeService();
   const now = new Date().toISOString();
@@ -140,7 +140,7 @@ test('Cloud Handoff repairs the original lost admission ACK across Node store/se
     anthropicBaseUrl: `http://127.0.0.1:${(provider.address() as { port: number }).port}/v1`,
     anthropicApiKey: 'synthetic-association-model-key',
     anthropicModel: 'association-model',
-    customEnv: { MINICLAW_MODEL_API: 'openai-completions' },
+    customEnv: { EVOBOT_MODEL_API: 'openai-completions' },
   });
   const selected = models.productModelConfiguration('web:alice', p.id);
   // Internal, reviewed storage setup only: public Group Cloud admission remains OFF.
@@ -262,13 +262,13 @@ test('Cloud Handoff repairs the original lost admission ACK across Node store/se
         },
         resourcePersistencePath: path.join(root, 'workerd'),
         bindings: {
-          MINICLAW_CLOUD_ADMISSION: String(admission),
-          MINICLAW_CLOUD_SHARED_SECRET: secret,
-          MINICLAW_CLOUD_ORIGIN: 'https://cloud.fixture',
-          MINICLAW_AUTHORITY_ORIGIN: 'https://authority.fixture',
+          EVOBOT_CLOUD_ADMISSION: String(admission),
+          EVOBOT_CLOUD_SHARED_SECRET: secret,
+          EVOBOT_CLOUD_ORIGIN: 'https://cloud.fixture',
+          EVOBOT_AUTHORITY_ORIGIN: 'https://authority.fixture',
         },
         serviceBindings: {
-          MINICLAW_AUTHORITY_SERVICE: async (request: Request) => {
+          EVOBOT_AUTHORITY_SERVICE: async (request: Request) => {
             if (
               suppressProgress &&
               new URL(request.url).pathname.endsWith('/progress')

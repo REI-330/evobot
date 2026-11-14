@@ -1,19 +1,19 @@
 #!/usr/bin/env node
-// Opt-in Docker/virtiofs diagnostic, not an OpenDot end-to-end test. The caller
+// Opt-in Docker/virtiofs diagnostic, not an EvoBot end-to-end test. The caller
 // supplies a disposable directory shared with the daemon; no existing session
 // or credentials are used. A failing root control makes the process fail.
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 
-const sharedRoot = process.env.OPENDOT_LOCK_TEST_ROOT;
-const image = process.env.OPENDOT_LOCK_TEST_IMAGE;
+const sharedRoot = process.env.EVOBOT_LOCK_TEST_ROOT;
+const image = process.env.EVOBOT_LOCK_TEST_IMAGE;
 if (!sharedRoot || !image) {
-  console.error('Set OPENDOT_LOCK_TEST_ROOT to a Docker-shared directory and OPENDOT_LOCK_TEST_IMAGE to the locally built agent image.');
+  console.error('Set EVOBOT_LOCK_TEST_ROOT to a Docker-shared directory and EVOBOT_LOCK_TEST_IMAGE to the locally built agent image.');
   process.exit(2);
 }
 const root = fs.realpathSync(sharedRoot);
-const fixture = fs.mkdtempSync(path.join(root, 'opendot-lock-watch-'));
+const fixture = fs.mkdtempSync(path.join(root, 'evobot-lock-watch-'));
 const agent = path.join(fixture, 'agent');
 fs.mkdirSync(agent, { mode: 0o700 });
 fs.writeFileSync(path.join(agent, 'auth.json'), '{}', { mode: 0o600 });

@@ -166,7 +166,7 @@ type PendingCommand = {
  * Unknown acceptance retains the exact key and payload for a user-led retry. */
 export function useGroupCommand(scope: string) {
   const actor = useAuthStore((state) => state.user?.id);
-  const key = `miniclaw:bot-group-command:${actor}:${scope}`;
+  const key = `evobot:bot-group-command:${actor}:${scope}`;
   const [pending, setPending] = useState<PendingCommand | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');

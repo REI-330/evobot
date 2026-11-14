@@ -15,8 +15,8 @@ import {
   memberEnvelopes,
 } from './helpers/member-inbox-http-fixture.js';
 const flags = {
-  MINICLAW_GROUP_MEMBER_INBOX: 'true',
-  MINICLAW_GROUP_MEMBER_CONCURRENCY: 'true',
+  EVOBOT_GROUP_MEMBER_INBOX: 'true',
+  EVOBOT_GROUP_MEMBER_CONCURRENCY: 'true',
 };
 
 test('stopping one active member fences only its lease and preserves the other native execution', async () => {

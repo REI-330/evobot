@@ -8,8 +8,8 @@ import { afterAll, describe, expect, test, vi } from 'vitest';
 const repoRoot = path.resolve(import.meta.dirname, '..');
 const testRoot = fs.mkdtempSync(
   path.join(
-    process.env.MINICLAW_CONTAINER_TEST_ROOT ?? os.tmpdir(),
-    'miniclaw-container-permissions-',
+    process.env.EVOBOT_CONTAINER_TEST_ROOT ?? os.tmpdir(),
+    'evobot-container-permissions-',
   ),
 );
 
@@ -22,7 +22,7 @@ vi.mock('../src/config.js', async (importOriginal) => {
     DATA_DIR: path.join(testRoot, 'data'),
     GROUPS_DIR: path.join(testRoot, 'data', 'groups'),
     STORE_DIR: path.join(testRoot, 'data', 'db'),
-    CONTAINER_IMAGE: 'miniclaw-agent:test',
+    CONTAINER_IMAGE: 'evobot-agent:test',
     TIMEZONE: 'UTC',
   };
 });
@@ -165,9 +165,9 @@ describe('buildContainerArgs identity contract', () => {
     });
     expect(envArgs(args)).toEqual(
       expect.arrayContaining([
-        'MINICLAW_HOST_IDENTITY_MODE=direct',
-        'MINICLAW_HOST_UID=1002',
-        'MINICLAW_HOST_GID=1234',
+        'EVOBOT_HOST_IDENTITY_MODE=direct',
+        'EVOBOT_HOST_UID=1002',
+        'EVOBOT_HOST_GID=1234',
       ]),
     );
   });
@@ -184,26 +184,26 @@ describe('buildContainerArgs identity contract', () => {
       uid: 1002,
       gid: 1002,
     });
-    expect(envArgs(args)).toContain(`MINICLAW_HOST_IDENTITY_MODE=${mode}`);
+    expect(envArgs(args)).toContain(`EVOBOT_HOST_IDENTITY_MODE=${mode}`);
     expect(
-      envArgs(args).some((arg) => arg.startsWith('MINICLAW_HOST_UID=')),
+      envArgs(args).some((arg) => arg.startsWith('EVOBOT_HOST_UID=')),
     ).toBe(false);
     expect(
-      envArgs(args).some((arg) => arg.startsWith('MINICLAW_HOST_GID=')),
+      envArgs(args).some((arg) => arg.startsWith('EVOBOT_HOST_GID=')),
     ).toBe(false);
   });
 });
 
 // Opt-in: exercise Docker's actual bind parser and daemon behavior using a
 // local image and a disposable host directory, without network access.
-const bindImage = process.env.MINICLAW_DOCKER_BIND_TEST_IMAGE;
+const bindImage = process.env.EVOBOT_DOCKER_BIND_TEST_IMAGE;
 describe.skipIf(!bindImage)('actual Docker bind mounts', () => {
   test('binds quoted paths read-only and rejects a missing source', () => {
     const temp = fs.realpathSync(
       fs.mkdtempSync(
         path.join(
-          process.env.MINICLAW_DOCKER_BIND_TEST_ROOT ?? os.tmpdir(),
-          'opendot-bind-',
+          process.env.EVOBOT_DOCKER_BIND_TEST_ROOT ?? os.tmpdir(),
+          'evobot-bind-',
         ),
       ),
     );
@@ -292,19 +292,19 @@ describe('entrypoint permission contract', () => {
 
   test('uses fixed root-owned helpers and shadows stale malicious env values', () => {
     expect(entrypoint).toContain('source /app/session-permissions.sh');
-    expect(entrypoint).toContain('miniclaw_source_runtime_env');
+    expect(entrypoint).toContain('evobot_source_runtime_env');
     expect(helper).toContain(
       '/usr/local/bin/node /app/session-permissions-watcher.mjs',
     );
-    expect(helper).not.toContain('MINICLAW_SESSION_PERMISSION_HELPER:-');
+    expect(helper).not.toContain('EVOBOT_SESSION_PERMISSION_HELPER:-');
     expect(helper).not.toContain('groupmod --non-unique');
-    expect(helper).toContain('local MINICLAW_SESSION_ROOT=');
-    expect(helper).toContain('local MINICLAW_INTERNAL_WATCHER_PID=');
+    expect(helper).toContain('local EVOBOT_SESSION_ROOT=');
+    expect(helper).toContain('local EVOBOT_INTERNAL_WATCHER_PID=');
     expect(entrypoint).toContain(
       'npx tsc --outDir /tmp/dist --incremental false',
     );
     expect(
-      entrypoint.indexOf('miniclaw_prepare_generated_path dist'),
+      entrypoint.indexOf('evobot_prepare_generated_path dist'),
     ).toBeLessThan(
       entrypoint.indexOf('ln -s /app/node_modules /tmp/dist/node_modules'),
     );
@@ -530,8 +530,8 @@ describe('entrypoint permission contract', () => {
 });
 
 const integrationImage =
-  process.env.MINICLAW_CONTAINER_PERMISSION_TEST_IMAGE ??
-  'helsome/miniclaw-agent:latest';
+  process.env.EVOBOT_CONTAINER_PERMISSION_TEST_IMAGE ??
+  'rei330/evobot-agent:latest';
 let integrationImageAvailable = false;
 try {
   execFileSync('docker', ['image', 'inspect', integrationImage], {
@@ -634,10 +634,10 @@ describe.skipIf(!integrationImageAvailable)(
           shadow_gid=$(getent group shadow | cut -d: -f3)
           original_gid=$(id -g node)
           test -n "$shadow_gid"
-          MINICLAW_HOST_IDENTITY_MODE=direct
-          MINICLAW_HOST_UID=12346
-          MINICLAW_HOST_GID="$shadow_gid"
-          miniclaw_configure_node_identity
+          EVOBOT_HOST_IDENTITY_MODE=direct
+          EVOBOT_HOST_UID=12346
+          EVOBOT_HOST_GID="$shadow_gid"
+          evobot_configure_node_identity
           install -o 12346 -g "$shadow_gid" -m 0600 /dev/null /tmp/host-owned
           setpriv --reuid=12346 --regid="$original_gid" --clear-groups -- \
             test -r /tmp/host-owned
@@ -656,10 +656,10 @@ describe.skipIf(!integrationImageAvailable)(
           source /app/session-permissions.sh
           shadow_gid=$(getent group shadow | cut -d: -f3)
           original_gid=$(id -g node)
-          MINICLAW_HOST_IDENTITY_MODE=direct
-          MINICLAW_HOST_UID=12346
-          MINICLAW_HOST_GID="$shadow_gid"
-          miniclaw_configure_node_identity
+          EVOBOT_HOST_IDENTITY_MODE=direct
+          EVOBOT_HOST_UID=12346
+          EVOBOT_HOST_GID="$shadow_gid"
+          evobot_configure_node_identity
           test "$(id -u node)" = 12346
           test "$(id -g node)" = "$original_gid"
           install -o 12346 -g "$shadow_gid" -m 0600 /dev/null /tmp/host-owned
@@ -676,8 +676,8 @@ describe.skipIf(!integrationImageAvailable)(
       for (const mode of ['userns', 'unknown']) {
         expect(() =>
           runHelper(`
-            MINICLAW_HOST_IDENTITY_MODE=${mode}
-            miniclaw_configure_node_identity
+            EVOBOT_HOST_IDENTITY_MODE=${mode}
+            evobot_configure_node_identity
           `),
         ).toThrow();
       }
@@ -696,16 +696,16 @@ describe.skipIf(!integrationImageAvailable)(
             chmod 0700 "$root"
             chmod 0600 "$root/legacy-file"
           done
-          MINICLAW_HOST_IDENTITY_MODE=rootless
-          miniclaw_configure_node_identity
-          miniclaw_start_session_permission_watcher
+          EVOBOT_HOST_IDENTITY_MODE=rootless
+          evobot_configure_node_identity
+          evobot_start_session_permission_watcher
           for root in /home/node/.claude /home/node/.feishu-cli \
             /workspace/group /workspace/ipc /workspace/extra; do
             test "$(stat -c '%u:%g:%a' "$root")" = '0:1000:2770'
             test "$(stat -c '%u:%g:%a' "$root/legacy-file")" = \
               '0:1000:660'
           done
-          miniclaw_stop_session_permission_watcher
+          evobot_stop_session_permission_watcher
           printf upgraded-before-ready
         `),
       ).toBe('upgraded-before-ready');
@@ -721,14 +721,14 @@ describe.skipIf(!integrationImageAvailable)(
           chown 1000:1000 /home/node/.feishu-cli /workspace/group /workspace/extra
           chmod 0700 /home/node/.claude /home/node/.feishu-cli \
             /workspace/group /workspace/ipc /workspace/extra
-          MINICLAW_HOST_IDENTITY_MODE=rootless
-          miniclaw_configure_node_identity
-          miniclaw_start_session_permission_watcher
+          EVOBOT_HOST_IDENTITY_MODE=rootless
+          evobot_configure_node_identity
+          evobot_start_session_permission_watcher
           for root in /home/node/.claude /home/node/.feishu-cli \
             /workspace/group /workspace/ipc /workspace/extra; do
             test "$(stat -c '%u:%g:%a' "$root")" = '0:1000:2770'
           done
-          miniclaw_stop_session_permission_watcher
+          evobot_stop_session_permission_watcher
           printf mixed-upgraded
         `),
       ).toBe('mixed-upgraded');
@@ -740,9 +740,9 @@ describe.skipIf(!integrationImageAvailable)(
           source /app/session-permissions.sh
           mkdir -p /home/node/.claude /workspace/{group,ipc,extra}
           chown 1234:1234 /workspace/group
-          MINICLAW_HOST_IDENTITY_MODE=rootless
-          miniclaw_configure_node_identity
-          miniclaw_start_session_permission_watcher
+          EVOBOT_HOST_IDENTITY_MODE=rootless
+          evobot_configure_node_identity
+          evobot_start_session_permission_watcher
         `),
       ).toThrow();
     });
@@ -755,15 +755,15 @@ describe.skipIf(!integrationImageAvailable)(
           chown -R 1000:1000 /home/node/.claude /workspace/group
           chmod 0777 /home/node/.claude
           chmod 0666 /home/node/.claude/token.json
-          MINICLAW_HOST_IDENTITY_MODE=direct
-          MINICLAW_HOST_UID=12346
-          MINICLAW_HOST_GID=12347
-          miniclaw_configure_node_identity
-          miniclaw_migrate_direct_managed_paths
+          EVOBOT_HOST_IDENTITY_MODE=direct
+          EVOBOT_HOST_UID=12346
+          EVOBOT_HOST_GID=12347
+          evobot_configure_node_identity
+          evobot_migrate_direct_managed_paths
           printf '%s|%s|%s' \
             "$(stat -c '%u:%g:%a' /home/node/.claude/token.json)" \
             "$(stat -c '%u:%g' /workspace/group/canary)" \
-            "$(find /home/node/.claude -maxdepth 1 -name '.miniclaw-owner-v2-*' | wc -l)"
+            "$(find /home/node/.claude -maxdepth 1 -name '.evobot-owner-v2-*' | wc -l)"
         `),
       ).toBe('12346:12347:600|1000:1000|0');
     });
@@ -773,16 +773,16 @@ describe.skipIf(!integrationImageAvailable)(
         runImageScript(`
           source /app/session-permissions.sh
           mkdir -p /home/node/.claude /workspace/{group,ipc,extra}
-          touch /home/node/.claude/.miniclaw-owner-v2-12346-12347
+          touch /home/node/.claude/.evobot-owner-v2-12346-12347
           touch /home/node/.claude/credential
           chown -R 1000:1000 /home/node/.claude
-          chmod 0600 /home/node/.claude/.miniclaw-owner-v2-12346-12347
+          chmod 0600 /home/node/.claude/.evobot-owner-v2-12346-12347
           chmod 0666 /home/node/.claude/credential
-          MINICLAW_HOST_IDENTITY_MODE=direct
-          MINICLAW_HOST_UID=12346
-          MINICLAW_HOST_GID=12347
-          miniclaw_configure_node_identity
-          miniclaw_migrate_direct_managed_paths
+          EVOBOT_HOST_IDENTITY_MODE=direct
+          EVOBOT_HOST_UID=12346
+          EVOBOT_HOST_GID=12347
+          evobot_configure_node_identity
+          evobot_migrate_direct_managed_paths
           stat -c '%u:%g:%a' /home/node/.claude/credential
         `),
       ).toBe('12346:12347:600');
@@ -796,10 +796,10 @@ describe.skipIf(!integrationImageAvailable)(
             /workspace/{group,ipc,extra}
           node -e "const fs=require('fs'); for(let i=0;i<2000;i++) fs.writeFileSync('/home/node/.feishu-cli/f'+i,'',{mode:0o666})"
           chown -R 1000:1000 /home/node/.claude /home/node/.feishu-cli
-          MINICLAW_HOST_IDENTITY_MODE=direct
-          MINICLAW_HOST_UID=12346
-          MINICLAW_HOST_GID=12347
-          miniclaw_configure_node_identity
+          EVOBOT_HOST_IDENTITY_MODE=direct
+          EVOBOT_HOST_UID=12346
+          EVOBOT_HOST_GID=12347
+          evobot_configure_node_identity
           for round in $(seq 1 5); do
             node /app/session-permissions-watcher.mjs --migrate-direct &
             first=$!
@@ -808,7 +808,7 @@ describe.skipIf(!integrationImageAvailable)(
             wait "$first"
             wait "$second"
           done
-          test "$(find /home/node/.feishu-cli -name '.miniclaw-owner-v2-*' | wc -l)" = 0
+          test "$(find /home/node/.feishu-cli -name '.evobot-owner-v2-*' | wc -l)" = 0
           stat -c '%u:%g:%a' /home/node/.feishu-cli/f1
         `),
       ).toBe('12346:12347:600');
@@ -819,14 +819,14 @@ describe.skipIf(!integrationImageAvailable)(
         runImageScript(`
           source /app/session-permissions.sh
           mkdir -p /home/node/.claude /workspace/{group,ipc,extra}
-          MINICLAW_HOST_IDENTITY_MODE=direct
-          MINICLAW_HOST_UID=12346
-          MINICLAW_HOST_GID=12347
-          miniclaw_configure_node_identity
-          miniclaw_migrate_direct_managed_paths
+          EVOBOT_HOST_IDENTITY_MODE=direct
+          EVOBOT_HOST_UID=12346
+          EVOBOT_HOST_GID=12347
+          evobot_configure_node_identity
+          evobot_migrate_direct_managed_paths
           install -o 12346 -g 12347 -m 0666 /dev/null \
             /home/node/.claude/runtime-created
-          miniclaw_stop_session_permission_watcher
+          evobot_stop_session_permission_watcher
           stat -c '%u:%g:%a' /home/node/.claude/runtime-created
         `),
       ).toBe('12346:12347:600');
@@ -915,10 +915,10 @@ describe.skipIf(!integrationImageAvailable)(
         runImageScript(`
           source /app/session-permissions.sh
           mkdir -p /home/node/.claude /workspace/{group,ipc,extra}
-          MINICLAW_HOST_IDENTITY_MODE=host-root
-          miniclaw_configure_node_identity
-          miniclaw_prepare_mounted_paths
-          miniclaw_start_session_permission_watcher
+          EVOBOT_HOST_IDENTITY_MODE=host-root
+          evobot_configure_node_identity
+          evobot_prepare_mounted_paths
+          evobot_start_session_permission_watcher
           install -d -o 0 -g 0 -m 0700 /workspace/group/live
           install -o 0 -g 0 -m 0600 /dev/null /workspace/group/live/file
           for attempt in $(seq 1 200); do
@@ -930,7 +930,7 @@ describe.skipIf(!integrationImageAvailable)(
             --clear-groups -- test -r /workspace/group/live/file
           test "$(stat -c %a /workspace/group/live)" = 700
           test "$(stat -c %a /workspace/group/live/file)" = 600
-          miniclaw_stop_session_permission_watcher
+          evobot_stop_session_permission_watcher
           printf repaired
         `),
       ).toBe('repaired');
@@ -965,7 +965,7 @@ describe.skipIf(!integrationImageAvailable)(
 
     test('restrictive prompt bind is copied read-only without touching source', () => {
       const prompts = fs.mkdtempSync(path.join(testRoot, 'runtime-prompts-'));
-      const prompt = path.join(prompts, 'identity.miniclaw.md');
+      const prompt = path.join(prompts, 'identity.evobot.md');
       fs.writeFileSync(prompt, 'runtime prompt', { mode: 0o600 });
       fs.chmodSync(prompts, 0o700);
       fs.chmodSync(prompt, 0o600);
@@ -976,13 +976,13 @@ describe.skipIf(!integrationImageAvailable)(
           `
             node /app/session-prompts-copy.mjs
             test "$(stat -c '%u:%g:%a' /tmp/prompts)" = '0:0:555'
-            test "$(stat -c '%u:%g:%a' /tmp/prompts/identity.miniclaw.md)" = \
+            test "$(stat -c '%u:%g:%a' /tmp/prompts/identity.evobot.md)" = \
               '0:0:444'
             setpriv --reuid="$(id -u node)" --regid="$(id -g node)" \
               --clear-groups -- sh -ceu '
-                test "$(cat /tmp/prompts/identity.miniclaw.md)" = "runtime prompt"
-                test ! -w /tmp/prompts/identity.miniclaw.md
-                test ! -w /app/prompts/identity.miniclaw.md
+                test "$(cat /tmp/prompts/identity.evobot.md)" = "runtime prompt"
+                test ! -w /tmp/prompts/identity.evobot.md
+                test ! -w /app/prompts/identity.evobot.md
               '
             printf copied
           `,
@@ -996,9 +996,9 @@ describe.skipIf(!integrationImageAvailable)(
       const envResult = runHelper(
         `
         printf '%s\n' '%TSD-Header-###%' 'SHOULD_NOT_RUN=yes' > /workspace/env-dir/env
-        export MINICLAW_HOST_IDENTITY_MODE=virtualized MINICLAW_INTERNAL_IDENTITY_MODE=virtualized
-        export MINICLAW_INTERNAL_RUNTIME_UID=1000 MINICLAW_INTERNAL_RUNTIME_GID=1000 MINICLAW_INTERNAL_WATCHER_PID=''
-        if miniclaw_source_runtime_env; then exit 1; fi
+        export EVOBOT_HOST_IDENTITY_MODE=virtualized EVOBOT_INTERNAL_IDENTITY_MODE=virtualized
+        export EVOBOT_INTERNAL_RUNTIME_UID=1000 EVOBOT_INTERNAL_RUNTIME_GID=1000 EVOBOT_INTERNAL_WATCHER_PID=''
+        if evobot_source_runtime_env; then exit 1; fi
         test -z "\${SHOULD_NOT_RUN:-}"
         printf blocked
       `,
@@ -1041,11 +1041,11 @@ describe.skipIf(!integrationImageAvailable)(
       fs.writeFileSync(
         path.join(envDir, 'env'),
         [
-          "MINICLAW_HOST_IDENTITY_MODE='unknown'",
-          "MINICLAW_INTERNAL_IDENTITY_MODE='pwned'",
-          "MINICLAW_INTERNAL_WATCHER_PID='1'",
-          "MINICLAW_SESSION_ROOT='/'",
-          "MINICLAW_SESSION_PERMISSION_HELPER='/workspace/group/evil.sh'",
+          "EVOBOT_HOST_IDENTITY_MODE='unknown'",
+          "EVOBOT_INTERNAL_IDENTITY_MODE='pwned'",
+          "EVOBOT_INTERNAL_WATCHER_PID='1'",
+          "EVOBOT_SESSION_ROOT='/'",
+          "EVOBOT_SESSION_PERMISSION_HELPER='/workspace/group/evil.sh'",
           "PROJECT_ENV='kept'",
         ].join('\n'),
         { mode: 0o600 },
@@ -1053,14 +1053,14 @@ describe.skipIf(!integrationImageAvailable)(
       expect(
         runHelper(
           `
-            MINICLAW_HOST_IDENTITY_MODE=direct
-            MINICLAW_INTERNAL_IDENTITY_MODE=direct
-            MINICLAW_INTERNAL_WATCHER_PID=4242
-            miniclaw_source_runtime_env
+            EVOBOT_HOST_IDENTITY_MODE=direct
+            EVOBOT_INTERNAL_IDENTITY_MODE=direct
+            EVOBOT_INTERNAL_WATCHER_PID=4242
+            evobot_source_runtime_env
             printf '%s:%s:%s:%s' \
-              "$MINICLAW_HOST_IDENTITY_MODE" \
-              "$MINICLAW_INTERNAL_IDENTITY_MODE" \
-              "$MINICLAW_INTERNAL_WATCHER_PID" \
+              "$EVOBOT_HOST_IDENTITY_MODE" \
+              "$EVOBOT_INTERNAL_IDENTITY_MODE" \
+              "$EVOBOT_INTERNAL_WATCHER_PID" \
               "$PROJECT_ENV"
           `,
           ['-v', `${envDir}:/workspace/env-dir:ro`],
@@ -1108,16 +1108,16 @@ NODE
           runHelper(`
             mkdir -p /home/node/.claude/agent /workspace/{group,ipc,extra}
             chown -R node:node /home/node/.claude /workspace/{group,ipc,extra}
-            export MINICLAW_INTERNAL_IDENTITY_MODE=virtualized
+            export EVOBOT_INTERNAL_IDENTITY_MODE=virtualized
             node /app/session-permissions-watcher.mjs --watch-node-owned-mounts --native-watch >/tmp/native-watch.log 2>&1 &
             watcher_pid=$!
             trap 'kill "$watcher_pid" 2>/dev/null || true; wait "$watcher_pid" 2>/dev/null || true; chmod -R a+rwx /home/node/.claude' EXIT
             for attempt in $(seq 1 500); do
-              [ -e /run/miniclaw-session-watcher.ready ] && break
+              [ -e /run/evobot-session-watcher.ready ] && break
               kill -0 "$watcher_pid"
               sleep 0.02
             done
-            test -e /run/miniclaw-session-watcher.ready
+            test -e /run/evobot-session-watcher.ready
             if setpriv --reuid=node --regid=node --clear-groups -- kill -KILL "$watcher_pid" 2>/dev/null; then
               echo 'unprivileged user could kill watcher' >&2
               exit 1
@@ -1138,7 +1138,7 @@ NODE
               sleep 0.02
             done
             test "$(stat -c %a /home/node/.claude/agent/persistent)" = 700
-            test ! -e /run/miniclaw-session-watcher.failed
+            test ! -e /run/evobot-session-watcher.failed
             kill -0 "$watcher_pid"
             kill "$watcher_pid"
             wait "$watcher_pid"
@@ -1187,7 +1187,7 @@ NODE
             node /app/session-permissions-watcher.mjs &
             watcher_pid=$!
             for attempt in $(seq 1 200); do
-              [ -e /run/miniclaw-session-watcher.ready ] && break
+              [ -e /run/evobot-session-watcher.ready ] && break
               kill -0 "$watcher_pid"
               sleep 0.02
             done
@@ -1204,7 +1204,7 @@ NODE
             printf '%s:%s:%s' \
               "$(stat -c '%u:%g:%a' "$outside")" \
               "$(cat "$outside")" \
-              "$([ -e /run/miniclaw-session-watcher.failed ] && echo failed || echo safe)"
+              "$([ -e /run/evobot-session-watcher.failed ] && echo failed || echo safe)"
           `),
       ).toBe('12345:12345:640:outside-canary:safe');
     }, 30_000);
@@ -1216,7 +1216,7 @@ NODE
             node /app/session-permissions-watcher.mjs &
             watcher_pid=$!
             for attempt in $(seq 1 200); do
-              [ -e /run/miniclaw-session-watcher.ready ] && break
+              [ -e /run/evobot-session-watcher.ready ] && break
               kill -0 "$watcher_pid"
               sleep 0.02
             done

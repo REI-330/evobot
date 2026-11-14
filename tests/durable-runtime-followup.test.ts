@@ -20,8 +20,8 @@ test('main chat stays on the coding agent unless the durable main flag is on and
   expect(durableMainFlagsEnabled({})).toBe(false);
   expect(
     durableMainFlagsEnabled({
-      MINICLAW_DURABLE_RUNTIME: 'true',
-      MINICLAW_DURABLE_MAIN: 'true',
+      EVOBOT_DURABLE_RUNTIME: 'true',
+      EVOBOT_DURABLE_MAIN: 'true',
     }),
   ).toBe(true);
   expect(
@@ -150,10 +150,10 @@ test('restart resumes a node durable session and does not fail a blocked one', (
 
 test('cloud model step limit stays 24 unless an operator raises it within the ceiling', () => {
   expect(cloudModelStepLimit({})).toBe(24);
-  expect(cloudModelStepLimit({ MINICLAW_CLOUD_MAX_MODEL_STEPS: '48' })).toBe(
+  expect(cloudModelStepLimit({ EVOBOT_CLOUD_MAX_MODEL_STEPS: '48' })).toBe(
     48,
   );
-  expect(cloudModelStepLimit({ MINICLAW_CLOUD_MAX_MODEL_STEPS: '99' })).toBe(
+  expect(cloudModelStepLimit({ EVOBOT_CLOUD_MAX_MODEL_STEPS: '99' })).toBe(
     24,
   );
   expect(CLOUD_MODEL_STEP_CEILING).toBe(64);

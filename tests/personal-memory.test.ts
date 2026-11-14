@@ -73,10 +73,10 @@ beforeAll(() => {
       ip_address: null,
       user_agent: null,
     });
-    cookies.set(id, `miniclaw_session=${auth.signSessionToken(token)}`);
+    cookies.set(id, `evobot_session=${auth.signSessionToken(token)}`);
   }
 });
-beforeEach(() => vi.stubEnv('MINICLAW_PERSONAL_MEMORY', 'true'));
+beforeEach(() => vi.stubEnv('EVOBOT_PERSONAL_MEMORY', 'true'));
 afterEach(() => {
   vi.unstubAllEnvs();
   host.endHostPrivilegeRevocation('alice');
@@ -168,7 +168,7 @@ test('management requires authentication, explicit consent and exact Home/destin
       )
     ).status,
   ).toBe(404);
-  vi.stubEnv('MINICLAW_PERSONAL_MEMORY', 'false');
+  vi.stubEnv('EVOBOT_PERSONAL_MEMORY', 'false');
   expect((await request('/')).status).toBe(404);
   expect(
     await json<{ enabled: boolean }>(await request('/availability')),

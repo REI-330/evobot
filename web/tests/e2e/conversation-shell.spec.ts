@@ -30,7 +30,7 @@ test('Chief opens the authorized existing conversation; one rail and a measured 
 }) => {
   test.setTimeout(120000);
   const f = await botHandoffHttpFixture(undefined, {
-    MINICLAW_PERSONAL_GOALS: 'true',
+    EVOBOT_PERSONAL_GOALS: 'true',
   });
   try {
     await f.json(

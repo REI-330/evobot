@@ -19,7 +19,7 @@ test('real Group API/timeline converges across desktop, hash mobile and invited 
   test.setTimeout(150000);
   const repository = fileURLToPath(new URL('../../../', import.meta.url));
   const root = fs.mkdtempSync(
-    path.join(os.tmpdir(), 'miniclaw-group-product-'),
+    path.join(os.tmpdir(), 'evobot-group-product-'),
   );
   const desktop = await browser.newContext({
     viewport: { width: 1440, height: 1000 },
@@ -53,8 +53,8 @@ test('real Group API/timeline converges across desktop, hash mobile and invited 
         WEB_PORT: String(port),
         CORS_ALLOWED_ORIGINS: origin,
         ADMIN_HOST_ONLY_MODE: 'true',
-        MINICLAW_DURABLE_RUNTIME: 'false',
-        MINICLAW_BOT_GROUPS: 'true',
+        EVOBOT_DURABLE_RUNTIME: 'false',
+        EVOBOT_BOT_GROUPS: 'true',
         TZ: 'UTC',
       },
       stdio: ['ignore', 'pipe', 'pipe'],
@@ -159,7 +159,7 @@ test('real Group API/timeline converges across desktop, hash mobile and invited 
       .getByLabel('群聊名称', { exact: true })
       .fill('Research team');
     await expect(
-      computer.getByRole('checkbox', { name: 'Miniclaw', exact: true }),
+      computer.getByRole('checkbox', { name: 'EvoBot', exact: true }),
     ).toBeChecked();
     await expect(computer.getByRole('combobox')).toHaveCount(0);
     await computer
@@ -177,7 +177,7 @@ test('real Group API/timeline converges across desktop, hash mobile and invited 
       created.members
         .filter((m) => m.kind === 'bot')
         .map((m) => m.display_name),
-    ).toEqual(['Miniclaw']);
+    ).toEqual(['EvoBot']);
     await computer
       .getByRole('button', { name: '群聊设置', exact: true })
       .click();
@@ -491,7 +491,7 @@ test('real Group API/timeline converges across desktop, hash mobile and invited 
     await phone
       .getByRole('button', { name: 'Dot 和对话', exact: true })
       .click();
-    await picker.getByRole('link', { name: /^Miniclaw(?:\s|$)/ }).click();
+    await picker.getByRole('link', { name: /^EvoBot(?:\s|$)/ }).click();
     await expect(phone).toHaveURL(/#\/chat\//);
     await phone.goBack();
     await expect(

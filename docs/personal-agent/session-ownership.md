@@ -2,7 +2,7 @@
 
 Existing Coding Agent/JSONL and Node Durable Sessions retain their persisted
 runtime. An opt-in Cloud Session uses the same product Session and authenticated
-message/snapshot/control APIs. `MINICLAW_CLOUD_RUNTIME=true` permits an explicit
+message/snapshot/control APIs. `EVOBOT_CLOUD_RUNTIME=true` permits an explicit
 `runtime: "cloudflare-durable"` on new Session creation; it does not change the
 default selector or reassign historical Sessions. The Web/PWA sidebar shows its
 Cloud creation action only when the owner can use that configured option.
@@ -98,7 +98,7 @@ and WebSocket invalidations reuse that product state.
 Managed Cloud Goals have a per-TaskRun grant/ownership handoff;
 see [goals-and-tasks.md](goals-and-tasks.md). Exact-content approvals and scoped
 Personal Memory are implemented in the Cloud tool gateway. New Cloud Goals can
-be explicitly selected behind `MINICLAW_CLOUD_GOALS`; missing selection retains
+be explicitly selected behind `EVOBOT_CLOUD_GOALS`; missing selection retains
 the existing Node behavior. Fenced mid-model pause/cancel and checkpoint recovery
 are implemented. Cloud Local Device tools remain unfinished. Real
 Cloudflare deployment/hibernation and real model/device acceptance remain Pending;

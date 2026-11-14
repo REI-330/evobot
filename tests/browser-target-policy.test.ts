@@ -29,7 +29,7 @@ function fixture() {
   let clock = 1000,
     allowed = true;
   const lockDirectory = fs.mkdtempSync(
-    path.join(fs.realpathSync(os.tmpdir()), 'opendot-browser-lock-'),
+    path.join(fs.realpathSync(os.tmpdir()), 'evobot-browser-lock-'),
   );
   const policy = new BrowserTargetPolicy({
     resourceId: 'browser-1',

@@ -12,7 +12,7 @@ test.each(['disable', 'edit', 'delete'] as const)(
   'MCP %s fences startup/grants and closes the actual Durable child before acknowledging configuration',
   async (mode) => {
     const f = await botHandoffHttpFixture(undefined, {
-      MINICLAW_PI_MCP: 'true',
+      EVOBOT_PI_MCP: 'true',
     });
     const ledger = path.join(f.root, 'effects.jsonl');
     const records = () =>

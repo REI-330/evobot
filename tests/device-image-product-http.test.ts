@@ -13,8 +13,8 @@ import {
 
 async function verifyImageAttachment(imageKind: string) {
   const f = await botHandoffHttpFixture(undefined, {
-    MINICLAW_PI_MCP: 'true',
-    MINICLAW_DEVICE_NODES: 'true',
+    EVOBOT_PI_MCP: 'true',
+    EVOBOT_DEVICE_NODES: 'true',
   });
   let node: ChildProcess | undefined;
   let nodeLog = '';

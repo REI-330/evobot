@@ -26,7 +26,7 @@ const testSource = createHash('sha256')
 // No permission is granted until a normal first Run has opened the native owner.
 test('the same Group Dot Session gains explicitly granted tools on a later Run and drops them after restart', async () => {
   const f = await botHandoffHttpFixture(undefined, {
-    MINICLAW_GROUP_MEMBER_INBOX: 'true',
+    EVOBOT_GROUP_MEMBER_INBOX: 'true',
   });
   let storage: Database.Database | undefined;
   let modelFailure: unknown;
@@ -298,7 +298,7 @@ test.each([false, true])(
   'replacing a live grant with keepTool=%s fences the pending approval, and a later Run requires fresh consent',
   async (keepTool) => {
     const f = await botHandoffHttpFixture(undefined, {
-      MINICLAW_GROUP_MEMBER_INBOX: 'true',
+      EVOBOT_GROUP_MEMBER_INBOX: 'true',
     });
     let storage: Database.Database | undefined;
     try {

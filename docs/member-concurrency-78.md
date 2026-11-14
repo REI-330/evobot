@@ -6,8 +6,8 @@
 
 ## 行为与边界
 
-同时设置 `MINICLAW_GROUP_MEMBER_INBOX=true` 和
-`MINICLAW_GROUP_MEMBER_CONCURRENCY=true` 后，新的成员模式讨论可选择 2–8 个 Dot。
+同时设置 `EVOBOT_GROUP_MEMBER_INBOX=true` 和
+`EVOBOT_GROUP_MEMBER_CONCURRENCY=true` 后，新的成员模式讨论可选择 2–8 个 Dot。
 创建群聊与保存讨论设置不调用模型。明确 @ 的成员各自接收冻结输入；
 没有点名时仅先响应的 Dot 开始，其余成员按实际问题或后续 @ 加入。
 普通用户插话不会唤醒所有空闲成员。
@@ -80,7 +80,7 @@ payload，不放宽旧 owner 或 pending-turn 约束。
 编译器尚未执行。随后使用 Node 直接调用相同 TypeScript/Vite 入口，后端、Web、Runner
 三项构建分别通过；不将这个替代结果描述为原始 Make 命令通过。
 
-父分支 `97c4` 的 CI [run 127](https://github.com/helsome/OpenDot/actions/runs/40130523548)
+父分支 `97c4` 的 CI [run 127](https://github.com/REI-330/evobot/actions/runs/40130523548)
 为 failure，三个 job 的步骤与日志均不可读，原因未确认。上述属于该阶段记录；后续父实现的
 [完整本地门禁](verification/runtime-gates-2026-10-25.md) 已通过，但不能代替当前
 改动的完整回归或远程 CI。

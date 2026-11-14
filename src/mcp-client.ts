@@ -52,7 +52,7 @@ export interface McpDispatchConnection {
 /** A single connection lifetime. Reconnect and side-effect retry are deliberately absent. */
 export class ManagedMcpConnection {
   private readonly client = new McpClient({
-    name: 'opendot-managed-mcp',
+    name: 'evobot-managed-mcp',
     version: '1',
     capabilities: {},
     requestTimeoutMs: 10000,

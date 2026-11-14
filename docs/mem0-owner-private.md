@@ -32,7 +32,7 @@ The credential uses the existing Host AES-GCM key with owner/record/purpose
 binding. A missing key, disabled owner or Dot, or absent policy fails closed.
 The policy has independent recall and capture flags and defaults to disabled.
 Only a freshly committed private Product Input searches, once, with a
-1.5-second default timeout; set `MINICLAW_MEM0_RECALL_TIMEOUT_MS` to an integer from 100 through 10000 to adjust it for the Host network. Invalid values use the default. Concurrent retries wait for that decision. The Host stores
+1.5-second default timeout; set `EVOBOT_MEM0_RECALL_TIMEOUT_MS` to an integer from 100 through 10000 to adjust it for the Host network. Invalid values use the default. Concurrent retries wait for that decision. The Host stores
 either encrypted hits or a terminal degraded receipt. Restart and retry read
 the same snapshot; a previously admitted/submitted input with no snapshot never
 starts a retrospective search. Native generation reads only frozen data and
@@ -88,7 +88,7 @@ explicit product/runtime decision and independent end-to-end recall and capture
 acceptance; #110 remains open for that scope.
 
 Search and capture share a persistent daily owner/Dot request limit (default
-100, configurable by `MINICLAW_MEM0_DAILY_BUDGET`). Authentication failures
+100, configurable by `EVOBOT_MEM0_DAILY_BUDGET`). Authentication failures
 open a circuit for the current credential/policy version; rate limits honor
 the server retry interval, while network failures temporarily pause requests.
 Exhaustion pauses optional memory operations without modifying saved settings.

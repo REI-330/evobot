@@ -11,7 +11,7 @@ import {
 } from './helpers/bot-handoff-http-fixture.js';
 
 test('cached private recall retains distinct generation traces and feedback in the same session', async () => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'opendot-mem0-cache-'));
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'evobot-mem0-cache-'));
   const traces = path.join(root, 'traces');
   const ledger = path.join(root, 'mem0');
   const collector = http.createServer((req, res) => {

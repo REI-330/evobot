@@ -15,7 +15,7 @@ const CatalogSchema = z
         name: z
           .string()
           .regex(/^mcp__[A-Za-z0-9_-]{1,59}$/)
-          .refine((v) => !v.startsWith('mcp__miniclaw__')),
+          .refine((v) => !v.startsWith('mcp__evobot__')),
         description: z.string().max(16384),
         inputSchema: z
           .record(z.string(), z.unknown())

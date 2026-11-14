@@ -241,7 +241,7 @@ export function proposeCloudDeviceRequest(
       return previous;
     }
     if (
-      process.env.MINICLAW_CLOUD_DEVICES !== 'true' ||
+      process.env.EVOBOT_CLOUD_DEVICES !== 'true' ||
       !deviceNodesEnabled()
     )
       throw new DeviceError('DEVICE_CLOUD_ADMISSION_DISABLED');

@@ -101,7 +101,7 @@ beforeAll(async () => {
     anthropicBaseUrl: `http://127.0.0.1:${(provider.address() as { port: number }).port}/v1`,
     anthropicApiKey: 'synthetic-goal-provider-key',
     anthropicModel: 'goal-fixture-model',
-    customEnv: { MINICLAW_MODEL_API: 'openai-completions' },
+    customEnv: { EVOBOT_MODEL_API: 'openai-completions' },
   }).id;
   runtime.startProductRuntimeService();
 });
@@ -240,7 +240,7 @@ function ref(grant: CloudExecutionGrant) {
   };
 }
 async function call(id: string, suffix: string, body: unknown) {
-  vi.stubEnv('MINICLAW_CLOUD_SHARED_SECRET', secret);
+  vi.stubEnv('EVOBOT_CLOUD_SHARED_SECRET', secret);
   return routes.fetch(
     await wire.signedRequest(
       secret,
@@ -799,7 +799,7 @@ test('input proofs preserve the original Goal execution after takeover and rejec
 });
 
 test('Cloud approvals are scoped to the original Goal/run, produce real evidence, and cannot move to a later occurrence', async () => {
-  vi.stubEnv('MINICLAW_CLOUD_APPROVALS', 'true');
+  vi.stubEnv('EVOBOT_CLOUD_APPROVALS', 'true');
   const value = managed(),
     claim = start(value),
     grant = product.issueCloudGoalExecution(value.sessionId, claim);
@@ -1386,7 +1386,7 @@ test('oversized serialized Cloud Goal input is rejected before runtime provision
       method: 'POST',
       headers: {
         'content-type': 'application/json',
-        cookie: `miniclaw_session=${auth.signSessionToken(token)}`,
+        cookie: `evobot_session=${auth.signSessionToken(token)}`,
       },
       body: JSON.stringify({
         chatJid: 'web:alice',

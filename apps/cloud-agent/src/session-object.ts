@@ -126,7 +126,7 @@ class BoundedPiHarness extends PiHarness {
 
 class RuntimeDelivery extends LifecycleCapability {
   constructor(private readonly owner: CloudSession) {
-    super('miniclaw-runtime-delivery');
+    super('evobot-runtime-delivery');
   }
   async schedule(wake: CloudWake) {
     await this.lifecycle.jobs.push({
@@ -166,7 +166,7 @@ class RuntimeDelivery extends LifecycleCapability {
       });
   }
   async prepareProjection() {
-    if (this.owner.binding().execution_authority !== 'miniclaw-product') return;
+    if (this.owner.binding().execution_authority !== 'evobot-product') return;
     // A native commit can arrive after projectResults' last revision check but
     // before Lifecycle applies that job's old completion. Upsert the wake even
     // when a job exists: the public SDK queue supersedes its in-flight outcome.
@@ -735,7 +735,7 @@ export class CloudSession extends DurableObject<Env> {
     try {
       const scope = await authenticate(
         new Request(url, { headers: { Authorization: authorization } }),
-        this.env.MINICLAW_CLOUD_SHARED_SECRET ?? '',
+        this.env.EVOBOT_CLOUD_SHARED_SECRET ?? '',
         '',
       );
       if (
@@ -1004,7 +1004,7 @@ export class CloudSession extends DurableObject<Env> {
     }
   }
   async projectResults(): Promise<LifecycleJobOutcome> {
-    if (this.binding().execution_authority !== 'miniclaw-product') return;
+    if (this.binding().execution_authority !== 'evobot-product') return;
     const revision = this.ctx.storage.sql
       .exec<{ revision: number }>('SELECT revision FROM mc_binding WHERE id=1')
       .toArray()[0].revision;
@@ -1294,7 +1294,7 @@ export class CloudSession extends DurableObject<Env> {
         });
         const scope = await authenticate(
           request,
-          this.env.MINICLAW_CLOUD_SHARED_SECRET ?? '',
+          this.env.EVOBOT_CLOUD_SHARED_SECRET ?? '',
           raw,
         );
         const binding = this.binding();
@@ -1430,7 +1430,7 @@ export class CloudSession extends DurableObject<Env> {
             headers: { Authorization: authorization },
             body: raw,
           }),
-          this.env.MINICLAW_CLOUD_SHARED_SECRET ?? '',
+          this.env.EVOBOT_CLOUD_SHARED_SECRET ?? '',
           raw,
         );
         const binding = this.binding();
@@ -1467,7 +1467,7 @@ export class CloudSession extends DurableObject<Env> {
         });
         const scope = await authenticate(
           request,
-          this.env.MINICLAW_CLOUD_SHARED_SECRET ?? '',
+          this.env.EVOBOT_CLOUD_SHARED_SECRET ?? '',
           raw,
         );
         if (
@@ -1504,7 +1504,7 @@ export class CloudSession extends DurableObject<Env> {
       });
       const scope = await authenticate(
         request,
-        this.env.MINICLAW_CLOUD_SHARED_SECRET ?? '',
+        this.env.EVOBOT_CLOUD_SHARED_SECRET ?? '',
         raw,
       );
       const provision = ProvisionSchema.parse(JSON.parse(raw));
@@ -1524,7 +1524,7 @@ export class CloudSession extends DurableObject<Env> {
         if (previous.value !== JSON.stringify(binding))
           throw new CloudError(409, 'CLOUD_IDENTITY_CONFLICT');
       } else {
-        if (this.env.MINICLAW_CLOUD_ADMISSION !== 'true')
+        if (this.env.EVOBOT_CLOUD_ADMISSION !== 'true')
           throw new CloudError(404, 'CLOUD_ADMISSION_DISABLED');
         this.ctx.storage.sql.exec(
           'INSERT INTO mc_binding(id,value) VALUES (1,?)',
@@ -1769,7 +1769,7 @@ export class CloudSession extends DurableObject<Env> {
         });
         const scope = await authenticate(
           request,
-          this.env.MINICLAW_CLOUD_SHARED_SECRET ?? '',
+          this.env.EVOBOT_CLOUD_SHARED_SECRET ?? '',
           raw,
         );
         if (!scopeMatches(this.binding(), scope))
@@ -1803,7 +1803,7 @@ export class CloudSession extends DurableObject<Env> {
         });
         const scope = await authenticate(
           request,
-          this.env.MINICLAW_CLOUD_SHARED_SECRET ?? '',
+          this.env.EVOBOT_CLOUD_SHARED_SECRET ?? '',
           raw,
         );
         if (!scopeMatches(this.binding(), scope))
@@ -1842,7 +1842,7 @@ export class CloudSession extends DurableObject<Env> {
       const raw = await boundedBody(request);
       const scope = await authenticate(
         request,
-        this.env.MINICLAW_CLOUD_SHARED_SECRET ?? '',
+        this.env.EVOBOT_CLOUD_SHARED_SECRET ?? '',
         raw,
       );
       if (!scopeMatches(this.binding(), scope))
@@ -1945,7 +1945,7 @@ export class CloudSession extends DurableObject<Env> {
       if (request.method === 'GET' && !suffix)
         return json(await this.snapshot());
       if (request.method === 'POST' && suffix === 'abort') {
-        if (this.binding().execution_authority === 'miniclaw-product')
+        if (this.binding().execution_authority === 'evobot-product')
           throw new CloudError(403, 'CLOUD_PRODUCT_CONTROL_REQUIRED');
         const input = InputSchema.pick({ request_id: true }).parse(
           JSON.parse(raw),

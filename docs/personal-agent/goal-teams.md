@@ -7,7 +7,7 @@ executor, business timer, message bus or approval system.
 
 ## Admission and ownership
 
-`MINICLAW_GOAL_TEAMS=true` explicitly permits new Team associations alongside
+`EVOBOT_GOAL_TEAMS=true` explicitly permits new Team associations alongside
 the existing Personal Goals, Groups and Handoffs flags. It defaults off. A new
 Goal may include `team: { group_id, bot_member_ids }` through `POST /api/goals`
 with its original `Idempotency-Key`. Select one or two distinct existing Bot

@@ -13,7 +13,7 @@ import {
 
 test('Node Durable records generation provenance when private Mem0 recall changes the model input', async () => {
   const root = fs.mkdtempSync(
-    path.join(os.tmpdir(), 'opendot-mem0-observation-'),
+    path.join(os.tmpdir(), 'evobot-mem0-observation-'),
   );
   const traces = path.join(root, 'spans.jsonl');
   const ledger = path.join(root, 'mem0.jsonl');
@@ -343,7 +343,7 @@ test('Node Durable records generation provenance when private Mem0 recall change
 }, 120000);
 
 test('an observation source failure does not suppress private recall or the model result', async () => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'opendot-mem0-obs-failure-'));
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'evobot-mem0-obs-failure-'));
   const collector = http.createServer((request, response) => {
     request.resume();
     request.on('end', () => response.writeHead(200).end('{}'));

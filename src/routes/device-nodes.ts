@@ -327,7 +327,7 @@ routes.get('/availability', (c) =>
   c.json({
     enabled: creationEnabled(),
     cloud_enabled:
-      creationEnabled() && process.env.MINICLAW_CLOUD_DEVICES === 'true',
+      creationEnabled() && process.env.EVOBOT_CLOUD_DEVICES === 'true',
   }),
 );
 routes.get('/settings', (c) => {

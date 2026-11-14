@@ -8,8 +8,8 @@ test('real model completes three private turns through the mobile UI', async ({
   page,
 }) => {
   test.setTimeout(480000);
-  const configPath = process.env.MINICLAW_GROUP_MODEL_CONFIG;
-  const evidenceDir = process.env.MINICLAW_GROUP_UI_EVIDENCE_DIR;
+  const configPath = process.env.EVOBOT_GROUP_MODEL_CONFIG;
+  const evidenceDir = process.env.EVOBOT_GROUP_UI_EVIDENCE_DIR;
   test.skip(
     !configPath || !evidenceDir,
     'requires explicit real model and evidence paths',
@@ -41,8 +41,8 @@ test('real model completes three private turns through the mobile UI', async ({
         anthropicBaseUrl: model.baseUrl,
         anthropicModel: model.model,
         customEnv: {
-          MINICLAW_MODEL_API: model.api,
-          MINICLAW_MODEL_MAX_OUTPUT_TOKENS: '8192',
+          EVOBOT_MODEL_API: model.api,
+          EVOBOT_MODEL_MAX_OUTPUT_TOKENS: '8192',
         },
       }),
     );

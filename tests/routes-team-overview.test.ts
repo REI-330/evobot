@@ -4,7 +4,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { afterAll, beforeAll, expect, test, vi } from 'vitest';
-const root = fs.mkdtempSync(path.join(os.tmpdir(), 'miniclaw-team-overview-'));
+const root = fs.mkdtempSync(path.join(os.tmpdir(), 'evobot-team-overview-'));
 vi.mock('../src/config.js', async (original) => ({
   ...(await original<Record<string, unknown>>()),
   DATA_DIR: root,
@@ -23,8 +23,8 @@ let groupId = '',
   goalId = '';
 beforeAll(() => {
   db.initDatabase();
-  vi.stubEnv('MINICLAW_BOT_GROUPS', 'true');
-  vi.stubEnv('MINICLAW_PERSONAL_GOALS', 'true');
+  vi.stubEnv('EVOBOT_BOT_GROUPS', 'true');
+  vi.stubEnv('EVOBOT_PERSONAL_GOALS', 'true');
   const now = new Date().toISOString();
   for (const id of ['alice', 'bob']) {
     db.createUser({
@@ -57,7 +57,7 @@ beforeAll(() => {
       ip_address: null,
       user_agent: null,
     });
-    cookies.set(id, 'miniclaw_session=' + auth.signSessionToken(token));
+    cookies.set(id, 'evobot_session=' + auth.signSessionToken(token));
   }
   groupId = groups.createBotGroup('alice', randomUUID(), {
     workspace_jid: 'web:alice',

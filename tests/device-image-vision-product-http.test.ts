@@ -13,8 +13,8 @@ import {
 
 test.each(['png', 'jpeg'])('paired device %s screenshot reaches a vision model once without entering durable history', async (imageKind) => {
   const f = await botHandoffHttpFixture(undefined, {
-    MINICLAW_PI_MCP: 'true',
-    MINICLAW_DEVICE_NODES: 'true',
+    EVOBOT_PI_MCP: 'true',
+    EVOBOT_DEVICE_NODES: 'true',
   });
   let node: ChildProcess | undefined;
   let nodeLog = '';
@@ -38,8 +38,8 @@ test.each(['png', 'jpeg'])('paired device %s screenshot reaches a vision model o
     await f.json(
       await f.call(`/api/config/claude/providers/${providerId}`, 'PATCH', {
         customEnv: {
-          MINICLAW_MODEL_API: 'openai-completions',
-          MINICLAW_MODEL_VISION_INPUT: 'true',
+          EVOBOT_MODEL_API: 'openai-completions',
+          EVOBOT_MODEL_VISION_INPUT: 'true',
         },
       }),
     );

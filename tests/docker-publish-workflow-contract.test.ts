@@ -67,10 +67,10 @@ describe('Docker image distribution contract', () => {
   });
 
   test('uses published images by default without implicit local builds at runtime', () => {
-    expect(read('src/config.ts')).toContain("'helsome/miniclaw-agent:latest'");
+    expect(read('src/config.ts')).toContain("'rei330/evobot-agent:latest'");
     const makefile = read('Makefile');
     expect(makefile).toContain(
-      'CONTAINER_IMAGE ?= helsome/miniclaw-agent:latest',
+      'CONTAINER_IMAGE ?= rei330/evobot-agent:latest',
     );
     expect(makefile).toContain('docker-pull:');
     expect(makefile).toContain('docker pull "$(CONTAINER_IMAGE)"');
@@ -113,15 +113,15 @@ describe('Docker image distribution contract', () => {
 
     expect(smoke).toContain('docker run --detach --interactive');
     expect(smoke).not.toContain('--entrypoint');
-    expect(smoke).toContain('--env MINICLAW_HOST_IDENTITY_MODE=host-root');
-    expect(smoke).toContain('--env MINICLAW_HOST_IDENTITY_MODE=direct');
-    expect(smoke).toContain('--env "MINICLAW_HOST_UID=$smoke_host_uid"');
-    expect(smoke).toContain('--env "MINICLAW_HOST_GID=$smoke_host_gid"');
+    expect(smoke).toContain('--env EVOBOT_HOST_IDENTITY_MODE=host-root');
+    expect(smoke).toContain('--env EVOBOT_HOST_IDENTITY_MODE=direct');
+    expect(smoke).toContain('--env "EVOBOT_HOST_UID=$smoke_host_uid"');
+    expect(smoke).toContain('--env "EVOBOT_HOST_GID=$smoke_host_gid"');
     expect(smoke).toContain('"${smoke_identity_args[@]}"');
     expect(smoke).not.toContain(
-      '--env MINICLAW_HOST_IDENTITY_MODE=virtualized',
+      '--env EVOBOT_HOST_IDENTITY_MODE=virtualized',
     );
-    expect(smoke).not.toContain('--env MINICLAW_HOST_IDENTITY_MODE=rootless');
+    expect(smoke).not.toContain('--env EVOBOT_HOST_IDENTITY_MODE=rootless');
     expect(smoke).toContain(
       '--tmpfs /home/node/.claude:rw,nosuid,nodev,noexec',
     );
@@ -142,7 +142,7 @@ describe('Docker image distribution contract', () => {
 
 test('make uses the app Docker endpoint from dotenv without executing dotenv values', () => {
   const temporary = fs.mkdtempSync(
-    path.join(os.tmpdir(), 'miniclaw-docker-env-'),
+    path.join(os.tmpdir(), 'evobot-docker-env-'),
   );
   try {
     const bin = path.join(temporary, 'bin');
@@ -155,13 +155,13 @@ test('make uses the app Docker endpoint from dotenv without executing dotenv val
     );
     fs.writeFileSync(
       path.join(bin, 'docker'),
-      '#!/bin/sh\nprintf \'%s\' "$DOCKER_HOST" > "$MINICLAW_DOCKER_TEST_LOG"\n',
+      '#!/bin/sh\nprintf \'%s\' "$DOCKER_HOST" > "$EVOBOT_DOCKER_TEST_LOG"\n',
       { mode: 0o755 },
     );
     const env: NodeJS.ProcessEnv = {
       ...process.env,
       PATH: bin + path.delimiter + process.env.PATH,
-      MINICLAW_DOCKER_TEST_LOG: output,
+      EVOBOT_DOCKER_TEST_LOG: output,
     };
     delete env.DOCKER_HOST;
     const result = spawnSync(

@@ -28,7 +28,7 @@ export async function cloudBotHandoffHttpFixture(
   } = {},
 ) {
   const directory = fs.mkdtempSync(
-    path.join(os.tmpdir(), 'miniclaw-cloud-bot-bridge-'),
+    path.join(os.tmpdir(), 'evobot-cloud-bot-bridge-'),
   );
   const requireCloud = createRequire(
     new URL('../../apps/cloud-agent/package.json', import.meta.url),
@@ -174,26 +174,26 @@ export async function cloudBotHandoffHttpFixture(
     const cloudEnvironment = {
       ...(options.memberInbox
         ? {
-            MINICLAW_GROUP_MEMBER_INBOX: 'true',
-            MINICLAW_GROUP_MEMBER_CONCURRENCY: 'true',
-            MINICLAW_GROUP_MEMBER_CLOUD: 'true',
+            EVOBOT_GROUP_MEMBER_INBOX: 'true',
+            EVOBOT_GROUP_MEMBER_CONCURRENCY: 'true',
+            EVOBOT_GROUP_MEMBER_CLOUD: 'true',
           }
         : {}),
       ...(options.deviceNodes
-        ? { MINICLAW_DEVICE_NODES: 'true', MINICLAW_CLOUD_DEVICES: 'true' }
+        ? { EVOBOT_DEVICE_NODES: 'true', EVOBOT_CLOUD_DEVICES: 'true' }
         : {}),
       ...(options.goalTeams
         ? {
-            MINICLAW_PERSONAL_GOALS: 'true',
-            MINICLAW_GOAL_TEAMS: 'true',
-            MINICLAW_CLOUD_GOALS: 'true',
+            EVOBOT_PERSONAL_GOALS: 'true',
+            EVOBOT_GOAL_TEAMS: 'true',
+            EVOBOT_CLOUD_GOALS: 'true',
           }
         : {}),
-      MINICLAW_CLOUD_RUNTIME: 'true',
-      MINICLAW_CLOUD_BOT_HANDOFFS: 'true',
-      MINICLAW_CLOUD_APPROVALS: 'true',
-      MINICLAW_CLOUD_SHARED_SECRET: secret,
-      MINICLAW_CLOUD_ORIGIN: 'https://cloud.fixture',
+      EVOBOT_CLOUD_RUNTIME: 'true',
+      EVOBOT_CLOUD_BOT_HANDOFFS: 'true',
+      EVOBOT_CLOUD_APPROVALS: 'true',
+      EVOBOT_CLOUD_SHARED_SECRET: secret,
+      EVOBOT_CLOUD_ORIGIN: 'https://cloud.fixture',
     };
     product = await botHandoffHttpFixture(preload, cloudEnvironment);
     const bundle = fileURLToPath(
@@ -204,7 +204,7 @@ export async function cloudBotHandoffHttpFixture(
     const start = (admission: boolean) =>
       new Miniflare(
         convertV4MiniflareOptions({
-          name: 'miniclaw-cloud-bot-product',
+          name: 'evobot-cloud-bot-product',
           telemetry: { enabled: false },
           modules: true,
           scriptPath: bundle,
@@ -216,13 +216,13 @@ export async function cloudBotHandoffHttpFixture(
           },
           resourcePersistencePath: path.join(directory, 'workerd'),
           bindings: {
-            MINICLAW_CLOUD_ADMISSION: String(admission),
-            MINICLAW_CLOUD_SHARED_SECRET: secret,
-            MINICLAW_CLOUD_ORIGIN: 'https://cloud.fixture',
-            MINICLAW_AUTHORITY_ORIGIN: 'https://authority.fixture',
+            EVOBOT_CLOUD_ADMISSION: String(admission),
+            EVOBOT_CLOUD_SHARED_SECRET: secret,
+            EVOBOT_CLOUD_ORIGIN: 'https://cloud.fixture',
+            EVOBOT_AUTHORITY_ORIGIN: 'https://authority.fixture',
           },
           serviceBindings: {
-            MINICLAW_AUTHORITY_SERVICE: async (request: Request) => {
+            EVOBOT_AUTHORITY_SERVICE: async (request: Request) => {
               const body = await request.text();
               if (request.url.includes('/model/') && JSON.parse(body).member) {
                 modelSources.push(JSON.parse(body).member.source);
@@ -329,13 +329,13 @@ export async function cloudBotHandoffHttpFixture(
       },
       submissionAcknowledgementLosses: () => [...submissionAckLosses],
       restartNode: async (admit = true, memberAdmission?: boolean) => {
-        cloudEnvironment.MINICLAW_CLOUD_BOT_HANDOFFS = String(admit);
+        cloudEnvironment.EVOBOT_CLOUD_BOT_HANDOFFS = String(admit);
         if (memberAdmission !== undefined) {
-          cloudEnvironment.MINICLAW_GROUP_MEMBER_INBOX =
+          cloudEnvironment.EVOBOT_GROUP_MEMBER_INBOX =
             String(memberAdmission);
-          cloudEnvironment.MINICLAW_GROUP_MEMBER_CONCURRENCY =
+          cloudEnvironment.EVOBOT_GROUP_MEMBER_CONCURRENCY =
             String(memberAdmission);
-          cloudEnvironment.MINICLAW_GROUP_MEMBER_CLOUD =
+          cloudEnvironment.EVOBOT_GROUP_MEMBER_CLOUD =
             String(memberAdmission);
         }
         await product!.stop('SIGKILL');

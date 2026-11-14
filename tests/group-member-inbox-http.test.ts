@@ -44,7 +44,7 @@ ProductRuntimeService.prototype.submit = async function (...args) {
   let storage: Database.Database | undefined;
   try {
     f = await botHandoffHttpFixture(preload, {
-      MINICLAW_GROUP_MEMBER_INBOX: 'true',
+      EVOBOT_GROUP_MEMBER_INBOX: 'true',
     });
     const { groupId, people } = await freshMemberGroup(f);
     const content = `DEDUP_${randomUUID()}`,
@@ -126,7 +126,7 @@ ProductRuntimeService.prototype.submit = async function (...args) {
 }, 180_000);
 
 test('the default-off gate admits no work; cross-group recipients stay asleep and live removal fences an already running member', async () => {
-  const environment = { MINICLAW_GROUP_MEMBER_INBOX: 'false' };
+  const environment = { EVOBOT_GROUP_MEMBER_INBOX: 'false' };
   const f = await botHandoffHttpFixture(undefined, environment);
   let storage: Database.Database | undefined;
   try {
@@ -146,7 +146,7 @@ test('the default-off gate admits no work; cross-group recipients stay asleep an
     expect((await f.snapshot(groupId)).discussion?.settings).toBeNull();
     expect(f.requests).toHaveLength(0);
     await f.stop();
-    environment.MINICLAW_GROUP_MEMBER_INBOX = 'true';
+    environment.EVOBOT_GROUP_MEMBER_INBOX = 'true';
     await f.start();
     snapshot = await f.snapshot(groupId);
     await f.json(await configure());
@@ -249,7 +249,7 @@ test('the default-off gate admits no work; cross-group recipients stay asleep an
 
 test('two freshly selected Dots exchange native inputs while the sender is unfinished; corrections steer at a safe boundary', async () => {
   const f = await botHandoffHttpFixture(undefined, {
-    MINICLAW_GROUP_MEMBER_INBOX: 'true',
+    EVOBOT_GROUP_MEMBER_INBOX: 'true',
   });
   let storage: Database.Database | undefined;
   try {
@@ -440,7 +440,7 @@ test('two freshly selected Dots exchange native inputs while the sender is unfin
 
 test('restart reconciles the original member inputs and native submissions, charging retries without duplicate public replies', async () => {
   const f = await botHandoffHttpFixture(undefined, {
-    MINICLAW_GROUP_MEMBER_INBOX: 'true',
+    EVOBOT_GROUP_MEMBER_INBOX: 'true',
   });
   let storage: Database.Database | undefined;
   try {
@@ -579,7 +579,7 @@ test('a crash after the product Stop fence joins the real native checkpoint on r
     preload,
     `import { ProductRuntimeService } from ${JSON.stringify(runtimeModule)};\nProductRuntimeService.prototype.stopGroupDiscussionSession = async function () { await new Promise(() => {}); };\n`,
   );
-  const environment = { MINICLAW_GROUP_MEMBER_INBOX: 'true' };
+  const environment = { EVOBOT_GROUP_MEMBER_INBOX: 'true' };
   let f: Awaited<ReturnType<typeof botHandoffHttpFixture>> | undefined;
   let storage: Database.Database | undefined;
   try {
@@ -628,7 +628,7 @@ test('a crash after the product Stop fence joins the real native checkpoint on r
     ).toEqual({ cancel_epoch: 1 });
     await f.stop('SIGKILL');
     await stopped;
-    environment.MINICLAW_GROUP_MEMBER_INBOX = 'false';
+    environment.EVOBOT_GROUP_MEMBER_INBOX = 'false';
     await f.start();
     await waitFor(
       async () =>

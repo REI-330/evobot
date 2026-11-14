@@ -19,8 +19,8 @@ import {
   redactDiscussionEvidence,
 } from './lib/discussion-real-provider.js';
 
-const credentialFile = process.env.MINICLAW_GROUP_MODEL_CONFIG;
-const output = process.env.MINICLAW_GROUP_EVIDENCE_PATH;
+const credentialFile = process.env.EVOBOT_GROUP_MODEL_CONFIG;
+const output = process.env.EVOBOT_GROUP_EVIDENCE_PATH;
 assert(
   credentialFile && output,
   'Private configuration and output paths are required',
@@ -102,8 +102,8 @@ try {
   );
   report.script_sha256 = hash(fs.readFileSync(new URL(import.meta.url)));
   f = await botHandoffHttpFixture(undefined, {
-    MINICLAW_GROUP_MEMBER_INBOX: 'true',
-    MINICLAW_GROUP_MEMBER_CONCURRENCY: 'true',
+    EVOBOT_GROUP_MEMBER_INBOX: 'true',
+    EVOBOT_GROUP_MEMBER_CONCURRENCY: 'true',
   });
   db = new Database(path.join(f.root, 'data/db/messages.db'), {
     readonly: true,
@@ -208,7 +208,7 @@ try {
       name: 'Private natural member comparison',
       anthropicBaseUrl: observer.baseUrl,
       anthropicModel: credentials.model,
-      customEnv: { MINICLAW_MODEL_API: credentials.api },
+      customEnv: { EVOBOT_MODEL_API: credentials.api },
     }),
   );
   await f.json(

@@ -10,7 +10,7 @@ describe('agent runtime migration contracts', () => {
   it('selects Pi by default and rejects unknown runtime selectors', () => {
     expect(resolveAgentRuntimeKind({})).toBe('pi');
     expect(resolveAgentRuntimeKind({ AGENT_RUNTIME: 'pi' })).toBe('pi');
-    expect(resolveAgentRuntimeKind({ MINICLAW_AGENT_RUNTIME: 'pi' })).toBe(
+    expect(resolveAgentRuntimeKind({ EVOBOT_AGENT_RUNTIME: 'pi' })).toBe(
       'pi',
     );
     expect(() => resolveAgentRuntimeKind({ AGENT_RUNTIME: 'other' })).toThrow(
@@ -32,10 +32,10 @@ describe('agent runtime migration contracts', () => {
           handler,
         } as any,
       ],
-      { namespace: 'mcp__miniclaw' },
+      { namespace: 'mcp__evobot' },
     );
 
-    expect(tool.name).toBe('mcp__miniclaw__send_message');
+    expect(tool.name).toBe('mcp__evobot__send_message');
     const result = await tool.execute(
       'tool-call-1',
       { text: 'hello' },

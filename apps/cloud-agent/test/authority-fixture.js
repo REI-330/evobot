@@ -149,15 +149,16 @@ export default {
       loseArtifactAck = true;
       return Response.json({ ok: true });
     }
+    const authPrefix = 'EvoBotCloud ';
     const header = request.headers.get('Authorization') ?? '';
-    if (!header.startsWith('MiniClawCloud '))
+    if (!header.startsWith(authPrefix))
       return new Response(null, { status: 401 });
     if (header.includes('fixture-model-key')) leakedKey = true;
     if (!allowed) return new Response(null, { status: 409 });
     const claims = JSON.parse(
       atob(
         header
-          .slice(14)
+          .slice(authPrefix.length)
           .split('.')[0]
           .replaceAll('-', '+')
           .replaceAll('_', '/'),

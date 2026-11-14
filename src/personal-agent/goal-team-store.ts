@@ -124,9 +124,9 @@ export function goalTeam(goalId: string): GoalTeam | undefined {
  * model/tool call still repeat the existing live admission/authority checks. */
 export function goalTeamChoices(ownerId: string) {
   if (
-    process.env.MINICLAW_GOAL_TEAMS !== 'true' ||
-    process.env.MINICLAW_BOT_GROUPS !== 'true' ||
-    process.env.MINICLAW_BOT_HANDOFFS !== 'true'
+    process.env.EVOBOT_GOAL_TEAMS !== 'true' ||
+    process.env.EVOBOT_BOT_GROUPS !== 'true' ||
+    process.env.EVOBOT_BOT_HANDOFFS !== 'true'
   )
     return [];
   return listBotGroups(ownerId)
@@ -200,9 +200,9 @@ export function bindGoalTeam(
   raw: z.infer<typeof GoalTeamSchema>,
 ) {
   if (
-    process.env.MINICLAW_GOAL_TEAMS !== 'true' ||
-    process.env.MINICLAW_BOT_GROUPS !== 'true' ||
-    process.env.MINICLAW_BOT_HANDOFFS !== 'true'
+    process.env.EVOBOT_GOAL_TEAMS !== 'true' ||
+    process.env.EVOBOT_BOT_GROUPS !== 'true' ||
+    process.env.EVOBOT_BOT_HANDOFFS !== 'true'
   )
     throw new BotGroupError('GOAL_TEAM_ADMISSION_DISABLED');
   const input = GoalTeamSchema.parse(raw),

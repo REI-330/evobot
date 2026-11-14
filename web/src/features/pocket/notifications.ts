@@ -1,7 +1,7 @@
 import { APP_BASE, withBasePath } from '../../utils/url';
 import { appNotificationIconUrl } from '../../utils/brand';
 
-const PREFERENCE = 'miniclaw:pocket:notifications';
+const PREFERENCE = 'evobot:pocket:notifications';
 let enabled =
   typeof Notification !== 'undefined' && Notification.permission === 'granted';
 let lastNoticeAt = 0;
@@ -130,10 +130,10 @@ export async function notifyPocketIfHidden(
   const now = Date.now();
   if (!test && now - lastNoticeAt < 1000) return;
   lastNoticeAt = now;
-  const title = 'Miniclaw';
+  const title = 'EvoBot';
   const options: NotificationOptions = {
     body: test ? '通知已启用。' : body || '有新的会话结果，打开查看。',
-    tag: 'miniclaw-pocket-activity',
+    tag: 'evobot-pocket-activity',
     icon: appNotificationIconUrl,
     data: { url: new URL(withBasePath('/chat'), location.origin).href },
   };

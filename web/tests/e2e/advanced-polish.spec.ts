@@ -51,7 +51,7 @@ test('advanced pages keep real API guards, theme geometry and touch settings foc
         for (const theme of ['light', 'dark']) {
           await page.goto(f.origin + '/settings?tab=profile');
           await page.evaluate(
-            (value) => localStorage.setItem('miniclaw-theme', value),
+            (value) => localStorage.setItem('evobot-theme', value),
             theme,
           );
           await page.reload();
@@ -78,10 +78,10 @@ test('advanced pages keep real API guards, theme geometry and touch settings foc
             if (label === 'about')
               await expect(
                 page.getByRole('link', {
-                  name: 'helsome/OpenDot',
+                  name: 'REI-330/evobot',
                   exact: true,
                 }),
-              ).toHaveAttribute('href', 'https://github.com/helsome/OpenDot');
+              ).toHaveAttribute('href', 'https://github.com/REI-330/evobot');
             const bounds = await page
               .getByRole('heading', {
                 name: title,

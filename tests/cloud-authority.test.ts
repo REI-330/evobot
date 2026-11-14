@@ -114,7 +114,7 @@ beforeAll(async () => {
     anthropicBaseUrl: `http://127.0.0.1:${address.port}/v1`,
     anthropicApiKey: 'synthetic-product-provider-key',
     anthropicModel: 'product-configured-model',
-    customEnv: { MINICLAW_MODEL_API: 'openai-completions' },
+    customEnv: { EVOBOT_MODEL_API: 'openai-completions' },
   }).id;
   runtime.startProductRuntimeService();
 });
@@ -200,7 +200,7 @@ async function call(
   input: unknown,
   requestId?: string,
 ) {
-  vi.stubEnv('MINICLAW_CLOUD_SHARED_SECRET', secret);
+  vi.stubEnv('EVOBOT_CLOUD_SHARED_SECRET', secret);
   const path = `/api/cloud-runtime/${b.session_id}/objects/${'a'.repeat(64)}/${suffix}${requestId ? '/' + requestId : ''}`;
   return routes.fetch(
     await wire.signedRequest(
@@ -227,7 +227,7 @@ test('persists Cloud owner in the existing product transaction, leaves old Sessi
   expect(store.productRouterKind(node)).toBe('node-durable');
   expect(store.productRouterKind(cloud)).toBe('cloudflare-durable');
   const original = binding(cloud);
-  vi.stubEnv('MINICLAW_CLOUD_RUNTIME', 'false');
+  vi.stubEnv('EVOBOT_CLOUD_RUNTIME', 'false');
   db.closeDatabase();
   db.initDatabase();
   expect(binding(cloud)).toEqual(original);
@@ -299,7 +299,7 @@ test('private policy requires signed exact scope and binding; Cookie, tampering 
         `https://product.fixture/api/cloud-runtime/${b.session_id}/objects/${'a'.repeat(64)}/policy`,
         {
           method: 'POST',
-          headers: { cookie: 'miniclaw_session=fixture' },
+          headers: { cookie: 'evobot_session=fixture' },
           body: JSON.stringify(body),
         },
       )
@@ -759,20 +759,20 @@ test('late read/result authority does not grant execution and completion retries
 });
 
 test('Cloud Memory is explicitly granted at creation and the model proxy cannot widen that binding', async () => {
-  vi.stubEnv('MINICLAW_CLOUD_RUNTIME', 'true');
-  vi.stubEnv('MINICLAW_CLOUD_ORIGIN', 'https://cloud.fixture');
-  vi.stubEnv('MINICLAW_CLOUD_SHARED_SECRET', secret);
+  vi.stubEnv('EVOBOT_CLOUD_RUNTIME', 'true');
+  vi.stubEnv('EVOBOT_CLOUD_ORIGIN', 'https://cloud.fixture');
+  vi.stubEnv('EVOBOT_CLOUD_SHARED_SECRET', secret);
   expect(
     model.selectNewProductRuntime('web:alice', 'cloudflare-durable').cloud
       ?.tool_capabilities,
   ).toBeUndefined();
-  vi.stubEnv('MINICLAW_CLOUD_MEMORY', 'true');
-  vi.stubEnv('MINICLAW_PERSONAL_MEMORY', 'true');
+  vi.stubEnv('EVOBOT_CLOUD_MEMORY', 'true');
+  vi.stubEnv('EVOBOT_PERSONAL_MEMORY', 'true');
   expect(
     model.selectNewProductRuntime('web:alice', 'cloudflare-durable').cloud
       ?.tool_capabilities,
   ).toEqual(['read_personal_memory']);
-  vi.stubEnv('MINICLAW_CLOUD_APPROVALS', 'true');
+  vi.stubEnv('EVOBOT_CLOUD_APPROVALS', 'true');
   expect(
     model.selectNewProductRuntime('web:alice', 'cloudflare-durable').cloud
       ?.tool_capabilities,
@@ -817,8 +817,8 @@ test('Cloud Memory is explicitly granted at creation and the model proxy cannot 
 });
 
 test('signed Cloud Memory gateway retains original grants, read receipts and live revocation', async () => {
-  vi.stubEnv('MINICLAW_CLOUD_MEMORY', 'true');
-  vi.stubEnv('MINICLAW_PERSONAL_MEMORY', 'true');
+  vi.stubEnv('EVOBOT_CLOUD_MEMORY', 'true');
+  vi.stubEnv('EVOBOT_PERSONAL_MEMORY', 'true');
   db.setRegisteredGroup('web:alice-home', {
     name: 'Home',
     folder: 'alice-home',
@@ -923,7 +923,7 @@ test('signed Cloud Memory gateway retains original grants, read receipts and liv
     ((await (await call(b, 'tools', input)).json()) as typeof snapshot).output
       .entries,
   ).toEqual([]);
-  vi.stubEnv('MINICLAW_PERSONAL_MEMORY', 'false');
+  vi.stubEnv('EVOBOT_PERSONAL_MEMORY', 'false');
   expect(
     (
       (await (await call(b, 'tools', input)).json()) as {
@@ -931,7 +931,7 @@ test('signed Cloud Memory gateway retains original grants, read receipts and liv
       }
     ).output.status,
   ).toBe('disabled');
-  vi.stubEnv('MINICLAW_CLOUD_MEMORY', 'false');
+  vi.stubEnv('EVOBOT_CLOUD_MEMORY', 'false');
   expect((await call(b, 'tools', input)).status).toBe(403);
 });
 
@@ -951,7 +951,7 @@ async function artifactInput(taskId: number, content: string) {
 }
 
 test('Cloud artifact proposals require exact approval, immutable generation/call binding and original receipts for execution', async () => {
-  vi.stubEnv('MINICLAW_CLOUD_APPROVALS', 'true');
+  vi.stubEnv('EVOBOT_CLOUD_APPROVALS', 'true');
   const approvals = await import('../src/personal-agent/approval-store.js');
   const b = binding(session(true, 6, true, ['create_approved_artifact']));
   const input = await artifactInput(101, 'Cloud approved exact content');
@@ -1031,7 +1031,7 @@ test('Cloud artifact proposals require exact approval, immutable generation/call
 });
 
 test('Cloud artifact partial effects become uncertain without overwrite and an Abort intent fences a late execute', async () => {
-  vi.stubEnv('MINICLAW_CLOUD_APPROVALS', 'true');
+  vi.stubEnv('EVOBOT_CLOUD_APPROVALS', 'true');
   const approvals = await import('../src/personal-agent/approval-store.js');
   const b = binding(session(true, 6, true, ['create_approved_artifact']));
   const input = await artifactInput(201, 'Expected complete contents');
@@ -1100,7 +1100,7 @@ test('Cloud artifact partial effects become uncertain without overwrite and an A
 });
 
 test('Cloud artifact recovery cannot create a missing approval and execution expiry denies late writes', async () => {
-  vi.stubEnv('MINICLAW_CLOUD_APPROVALS', 'true');
+  vi.stubEnv('EVOBOT_CLOUD_APPROVALS', 'true');
   const b = binding(session(true, 6, true, ['create_approved_artifact']));
   const input = await artifactInput(301, 'Expires with original Session grant');
   expect(
@@ -1148,7 +1148,7 @@ test('Cloud artifact recovery cannot create a missing approval and execution exp
 });
 
 test('Cloud authorization expiring after the actual file effect records uncertainty instead of replaying a write', async () => {
-  vi.stubEnv('MINICLAW_CLOUD_APPROVALS', 'true');
+  vi.stubEnv('EVOBOT_CLOUD_APPROVALS', 'true');
   const approvals = await import('../src/personal-agent/approval-store.js');
   const b = binding(session(true, 6, true, ['create_approved_artifact']));
   const input = await artifactInput(

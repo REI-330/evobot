@@ -91,7 +91,7 @@ export class ExecutionRecovery extends LifecycleCapability {
     private readonly ctx: DurableObjectState,
     private readonly host: RecoveryHost,
   ) {
-    super('miniclaw-execution-recovery');
+    super('evobot-execution-recovery');
   }
   initialize() {
     this.ctx.storage.sql.exec(`CREATE TABLE IF NOT EXISTS mc_execution_recovery(

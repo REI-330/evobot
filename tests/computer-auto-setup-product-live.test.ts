@@ -17,10 +17,10 @@ test.skipIf(
   'enabling computer setup makes its tools available to a new private session',
   async () => {
     const f = await botHandoffHttpFixture(undefined, {
-      MINICLAW_PI_MCP: 'true',
-      MINICLAW_DEVICE_NODES: 'true',
+      EVOBOT_PI_MCP: 'true',
+      EVOBOT_DEVICE_NODES: 'true',
     });
-    const serverId = `opendot_computer_${randomUUID().replaceAll('-', '')}`;
+    const serverId = `evobot_computer_${randomUUID().replaceAll('-', '')}`;
     fs.symlinkSync(path.resolve('dist'), path.join(f.root, 'dist'));
     fs.symlinkSync(path.resolve('scripts'), path.join(f.root, 'scripts'));
     try {
@@ -77,7 +77,7 @@ test.skipIf(
           ),
         ),
       ).toBe(true);
-      if (process.env.OPENDOT_TEST_KIMICU_PID) {
+      if (process.env.EVOBOT_TEST_KIMICU_PID) {
         const names = Object.fromEntries(
           JSON.parse(consent.catalog_json).map((entry: any) => [
             entry.identity.original_name,
@@ -99,13 +99,13 @@ test.skipIf(
               tool: {
                 name: names.list_windows,
                 arguments: {
-                  application: 'net.opendot.kimi-screenshot-fixture',
+                  application: 'net.evobot.kimi-screenshot-fixture',
                 },
               },
             };
           if (results.length === 1) {
             const text = String(results[0].content);
-            const beforeTitle = text.split('OpenDot Green Fixture')[0];
+            const beforeTitle = text.split('EvoBot Green Fixture')[0];
             const handle = beforeTitle
               .match(
                 /[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/gi,
@@ -117,7 +117,7 @@ test.skipIf(
                     name: names.observe_window,
                     arguments: {
                       window: handle,
-                      label: 'Fixture — OpenDot Green Fixture',
+                      label: 'Fixture — EvoBot Green Fixture',
                     },
                   },
                 }
@@ -146,7 +146,7 @@ test.skipIf(
                       token,
                       action: 'click',
                       index: Number(index),
-                      label: 'Fixture — OpenDot Green Fixture',
+                      label: 'Fixture — EvoBot Green Fixture',
                       element,
                     },
                   },

@@ -9,7 +9,7 @@ import {
 } from '../scripts/lib/discussion-comparison-evidence.js';
 test('store-local conversation 1 is isolated in distinct physical native stores; aliases and missing stores fail', () => {
   const root = fs.mkdtempSync(
-    path.join(os.tmpdir(), 'miniclaw-native-identity-'),
+    path.join(os.tmpdir(), 'evobot-native-identity-'),
   );
   try {
     fs.mkdirSync(path.join(root, 'durable-sessions'));

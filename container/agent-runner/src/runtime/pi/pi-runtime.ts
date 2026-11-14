@@ -136,9 +136,9 @@ export class PiRuntimeAdapter implements AgentRuntime {
       ? [
           ...new Set(
             allowedNames.flatMap((name) => {
-              if (name === 'mcp__miniclaw__*') {
+              if (name === 'mcp__evobot__*') {
                 return customTools
-                  .filter((tool) => tool.name.startsWith('mcp__miniclaw__'))
+                  .filter((tool) => tool.name.startsWith('mcp__evobot__'))
                   .map((tool) => tool.name);
               }
               return [toolAliases[name] || name];

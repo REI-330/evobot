@@ -382,7 +382,7 @@ test('Cloud Team waits for an exact local file grant and resumes its original na
       },
     ]);
     expect(JSON.stringify(evidence.device_evidence)).not.toContain(content);
-    const proofDir = process.env.MINICLAW_MEMBER_PROOF_DIR;
+    const proofDir = process.env.EVOBOT_MEMBER_PROOF_DIR;
     if (proofDir) {
       fs.mkdirSync(proofDir, { recursive: true, mode: 0o700 });
       const hash = (value: string | Buffer) =>

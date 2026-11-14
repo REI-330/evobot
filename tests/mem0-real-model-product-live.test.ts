@@ -17,20 +17,20 @@ import {
   readLiveOpenAIModel,
 } from './helpers/live-openai-model.js';
 
-const keyFile = process.env.OPENDOT_TEST_MEM0_KEY_FILE;
-const modelFile = process.env.MINICLAW_GROUP_MODEL_CONFIG;
+const keyFile = process.env.EVOBOT_TEST_MEM0_KEY_FILE;
+const modelFile = process.env.EVOBOT_GROUP_MODEL_CONFIG;
 test.skipIf(!keyFile || !modelFile)(
   'real model recalls real Mem0 in a fresh private session',
   async () => {
     const runtime =
-      process.env.OPENDOT_TEST_MEM0_RUNTIME === 'node-durable'
+      process.env.EVOBOT_TEST_MEM0_RUNTIME === 'node-durable'
         ? 'node-durable'
         : 'local-pi';
     const marker =
       runtime === 'node-durable'
         ? 'silver lantern limeade'
         : 'violet nebula cocoa';
-    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'opendot-real-memory-'));
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'evobot-real-memory-'));
     const ledger = path.join(tmp, 'events');
     const events = () =>
       fs.existsSync(ledger)
@@ -47,9 +47,9 @@ test.skipIf(!keyFile || !modelFile)(
     const f = await botHandoffHttpFixture(
       path.resolve('tests/fixtures/mem0-live-observer.mjs'),
       {
-        OPENDOT_REAL_MEM0_LEDGER: ledger,
+        EVOBOT_REAL_MEM0_LEDGER: ledger,
         NODE_USE_ENV_PROXY: '1',
-        MINICLAW_MEM0_RECALL_TIMEOUT_MS: '10000',
+        EVOBOT_MEM0_RECALL_TIMEOUT_MS: '10000',
         HTTPS_PROXY: process.env.HTTPS_PROXY ?? '',
         HTTP_PROXY: process.env.HTTP_PROXY ?? '',
         NO_PROXY: process.env.NO_PROXY ?? '',

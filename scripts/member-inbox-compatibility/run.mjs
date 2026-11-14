@@ -92,7 +92,7 @@ const extension = path.join(
 );
 const output = path.resolve(
   flags['--output'] ||
-    fs.mkdtempSync(path.join(os.tmpdir(), 'miniclaw-compat-evidence-')),
+    fs.mkdtempSync(path.join(os.tmpdir(), 'evobot-compat-evidence-')),
 );
 fs.mkdirSync(output, { recursive: true, mode: 0o700 });
 assert.equal(
@@ -114,7 +114,7 @@ for (const name of [
   fs.writeFileSync(path.join(output, 'probe-source', name), bytes);
 }
 const sandbox = fs.realpathSync(
-  fs.mkdtempSync(path.join(os.tmpdir(), 'miniclaw-compat77-')),
+  fs.mkdtempSync(path.join(os.tmpdir(), 'evobot-compat77-')),
 );
 const project = path.join(sandbox, 'project'),
   mesh = path.join(sandbox, 'messenger');

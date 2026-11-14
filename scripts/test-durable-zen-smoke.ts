@@ -12,14 +12,14 @@ async function main(): Promise<void> {
   const configuration = readZenModelConfiguration();
   const models = createZenModels(configuration);
   const rootDir = fs.mkdtempSync(
-    path.join(os.tmpdir(), 'miniclaw-zen-durable-'),
+    path.join(os.tmpdir(), 'evobot-zen-durable-'),
   );
   try {
     const result = await runDurableModelSmoke({
       models,
       model: { provider: ZEN_PROVIDER_ID, modelId: configuration.modelId },
       databasePath: path.join(rootDir, 'runtime.sqlite'),
-      expected: 'MINICLAW_DURABLE_ZEN_SMOKE_OK',
+      expected: 'EVOBOT_DURABLE_ZEN_SMOKE_OK',
     });
     process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
     if (!result.exactMatch) process.exitCode = 1;

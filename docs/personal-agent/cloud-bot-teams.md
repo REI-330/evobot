@@ -15,7 +15,7 @@ PiHarness, SQLite, Lifecycle/Alarm, business Scheduler, encrypted Provider,
 Workspace/Goal ACL, artifact approvals and result outbox remain the original
 implementations. The combined branch has exercised real local Node/workerd/
 Scheduler/browser Goal execution; Provider responses and hostname routing are
-fixtures. `MINICLAW_CLOUD_GOALS` stays opt-in, never enabled by Group membership.
+fixtures. `EVOBOT_CLOUD_GOALS` stays opt-in, never enabled by Group membership.
 
 The original worktree's unrelated uncommitted recovery-controls work remains
 untouched. Existing private Native/Coding/Cloud identities are not adopted or
@@ -239,7 +239,7 @@ remains Pending.
 
 ## Formal opt-in Group API and UI
 
-`MINICLAW_CLOUD_BOT_HANDOFFS=true` additionally requires the existing Groups,
+`EVOBOT_CLOUD_BOT_HANDOFFS=true` additionally requires the existing Groups,
 Handoffs and Cloud Runtime flags, valid HTTPS gateway/shared-secret configuration
 and an authorized OpenAI-Completions Provider. It defaults off. Only the current
 Group Owner may create a reviewed `cloudflare-durable` grant for an owned Bot
@@ -253,7 +253,7 @@ enabled `create_approved_artifact`. Native-only `read_workspace_file` is rejecte
 for Cloud, and `inspect_text` is rejected for Native. Global Cloud Memory/tool
 defaults are replaced with this reviewed list; Group membership does not grant
 Personal Memory, MCP, Shell or device access. Artifact admission also requires
-`MINICLAW_CLOUD_APPROVALS=true`. The form exposes runtime selection and appropriate
+`EVOBOT_CLOUD_APPROVALS=true`. The form exposes runtime selection and appropriate
 tool labels inside the existing Owner grant controls.
 
 Turning off new Cloud Handoff admission does not change existing ownership,

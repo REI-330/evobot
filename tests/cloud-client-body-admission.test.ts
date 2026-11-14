@@ -55,7 +55,7 @@ test('rejects a valid-length message whose JSON escapes exceed the Worker limit 
 
 test('allows a serialized message at the exact byte limit and records its receipt', async () => {
   vi.stubEnv(
-    'MINICLAW_CLOUD_SHARED_SECRET',
+    'EVOBOT_CLOUD_SHARED_SECRET',
     'synthetic-cloud-secret-at-least-32-bytes',
   );
   let wireBytes = 0;

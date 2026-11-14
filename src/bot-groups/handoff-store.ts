@@ -46,10 +46,10 @@ export const handoffDigest = (value: unknown) =>
 export class BotHandoffSuspended extends Error {}
 export const cloudBotHandoffsEnabled = () =>
   [
-    'MINICLAW_BOT_GROUPS',
-    'MINICLAW_BOT_HANDOFFS',
-    'MINICLAW_CLOUD_RUNTIME',
-    'MINICLAW_CLOUD_BOT_HANDOFFS',
+    'EVOBOT_BOT_GROUPS',
+    'EVOBOT_BOT_HANDOFFS',
+    'EVOBOT_CLOUD_RUNTIME',
+    'EVOBOT_CLOUD_BOT_HANDOFFS',
   ].every((key) => process.env[key] === 'true');
 const unavailable = () =>
   new BotGroupError('BOT_HANDOFF_AUTHORITY_UNAVAILABLE');
@@ -298,8 +298,8 @@ export function grantBotRuntime(
           (input.tool_capabilities.includes('inspect_text') ||
             input.tool_capabilities.includes('read_device_file'))) ||
         (input.tool_capabilities.includes('read_device_file') &&
-          (process.env.MINICLAW_CLOUD_DEVICES !== 'true' ||
-            process.env.MINICLAW_DEVICE_NODES !== 'true'))
+          (process.env.EVOBOT_CLOUD_DEVICES !== 'true' ||
+            process.env.EVOBOT_DEVICE_NODES !== 'true'))
       )
         throw new BotGroupError('BOT_HANDOFF_TOOL_NOT_GRANTED', 400);
       const now = new Date().toISOString(),
@@ -661,8 +661,8 @@ export function admitDiscussionWorkHandoff(actorId: string, workId: string) {
       member.role !== 'owner' ||
       group.state !== 'active' ||
       !provisioner ||
-      process.env.MINICLAW_BOT_HANDOFFS !== 'true' ||
-      process.env.MINICLAW_BOT_GROUPS !== 'true'
+      process.env.EVOBOT_BOT_HANDOFFS !== 'true' ||
+      process.env.EVOBOT_BOT_GROUPS !== 'true'
     )
       throw unavailable();
     const origin = db()
@@ -1530,7 +1530,7 @@ export function fenceBlockedBotHandoff(sessionId: string) {
       .get(row.group_id) as { last_seq: number };
     db()
       .prepare(
-        "INSERT INTO bot_group_messages(id,group_id,seq,kind,author_kind,author_id,author_name,content,mentions,source,created_at) VALUES(?,?,?,'system_event','system','miniclaw-runtime','MiniClaw','Bot 任务已停止，需要核对授权或检查点','[]',?,?)",
+        "INSERT INTO bot_group_messages(id,group_id,seq,kind,author_kind,author_id,author_name,content,mentions,source,created_at) VALUES(?,?,?,'system_event','system','evobot-runtime','EvoBot','Bot 任务已停止，需要核对授权或检查点','[]',?,?)",
       )
       .run(
         id,
@@ -1593,8 +1593,8 @@ export function prepareBotHandoffControl(
         throw new BotGroupError('BOT_HANDOFF_ALREADY_SETTLED');
       if (input.action === 'start') {
         if (
-          process.env.MINICLAW_BOT_GROUPS !== 'true' ||
-          process.env.MINICLAW_BOT_HANDOFFS !== 'true' ||
+          process.env.EVOBOT_BOT_GROUPS !== 'true' ||
+          process.env.EVOBOT_BOT_HANDOFFS !== 'true' ||
           !provisioner ||
           row.session_id ||
           row.state !== 'waiting_for_authorization'
@@ -1704,7 +1704,7 @@ export function finishStoppedBotHandoffCancellation(id: string) {
       .get(row.group_id) as { last_seq: number };
     db()
       .prepare(
-        "INSERT INTO bot_group_messages(id,group_id,seq,kind,author_kind,author_id,author_name,content,mentions,source,created_at) VALUES(?,?,?,'system_event','system','miniclaw-runtime','MiniClaw',?,'[]',?,?)",
+        "INSERT INTO bot_group_messages(id,group_id,seq,kind,author_kind,author_id,author_name,content,mentions,source,created_at) VALUES(?,?,?,'system_event','system','evobot-runtime','EvoBot',?,'[]',?,?)",
       )
       .run(
         messageId,
@@ -1973,8 +1973,8 @@ export function delegateBotHandoff(
     { parent_handoff_id: parentId, ...input },
     () => {
       if (
-        process.env.MINICLAW_BOT_HANDOFFS !== 'true' ||
-        process.env.MINICLAW_BOT_GROUPS !== 'true'
+        process.env.EVOBOT_BOT_HANDOFFS !== 'true' ||
+        process.env.EVOBOT_BOT_GROUPS !== 'true'
       )
         throw unavailable();
       const context = botGroupReadContext(actorId, parent.group_id);

@@ -178,7 +178,7 @@ test('model interruption/SIGKILL reattaches the same Handoff, input, native Subm
 
 test('a committed native answer retries only its Group projection after a delivery-transaction fault, without another model call', async () => {
   const fixture = await botHandoffHttpFixture(
-    process.env.MINICLAW_TEST_HANDOFF_PRELOAD,
+    process.env.EVOBOT_TEST_HANDOFF_PRELOAD,
   );
   try {
     const group = await fixture.createGroup();

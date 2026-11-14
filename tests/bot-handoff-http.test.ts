@@ -1,4 +1,4 @@
-// Actual compiled MiniClaw HTTP process + official Pi Durable SQLite/Task owner.
+// Actual compiled EvoBot HTTP process + official Pi Durable SQLite/Task owner.
 // The loopback OpenAI SSE response is synthetic; no live vendor is exercised.
 import { spawn, type ChildProcess } from 'node:child_process';
 import { createServer } from 'node:http';
@@ -39,7 +39,7 @@ async function port() {
 
 test('the formal Group message API dispatches only its authorized Chief and projects an actual native Submission/Task answer once (HTTP model simulated)', async () => {
   const root = fs.mkdtempSync(
-      path.join(os.tmpdir(), 'miniclaw-bot-native-http-'),
+      path.join(os.tmpdir(), 'evobot-bot-native-http-'),
     ),
     repository = process.cwd();
   const origin = `http://127.0.0.1:${await port()}`;
@@ -109,9 +109,9 @@ test('the formal Group message API dispatches only its authorized Chief and proj
         WEB_PORT: new URL(origin).port,
         CORS_ALLOWED_ORIGINS: origin,
         ADMIN_HOST_ONLY_MODE: 'true',
-        MINICLAW_DURABLE_RUNTIME: 'true',
-        MINICLAW_BOT_GROUPS: 'true',
-        MINICLAW_BOT_HANDOFFS: 'true',
+        EVOBOT_DURABLE_RUNTIME: 'true',
+        EVOBOT_BOT_GROUPS: 'true',
+        EVOBOT_BOT_HANDOFFS: 'true',
         TZ: 'UTC',
       },
       stdio: ['ignore', 'pipe', 'pipe'],
@@ -151,7 +151,7 @@ test('the formal Group message API dispatches only its authorized Chief and proj
           anthropicBaseUrl: `http://127.0.0.1:${(provider.address() as { port: number }).port}/v1`,
           anthropicApiKey: 'synthetic-bot-native-key',
           anthropicModel: 'fixture-model',
-          customEnv: { MINICLAW_MODEL_API: 'openai-completions' },
+          customEnv: { EVOBOT_MODEL_API: 'openai-completions' },
         })
       ).status,
     ).toBe(201);

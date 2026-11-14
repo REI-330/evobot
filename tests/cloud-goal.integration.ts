@@ -59,8 +59,8 @@ afterAll(async () => {
 
 test('real Scheduler claims install two Cloud runs into one Root, recover lost ACK and pending approval, and settle real artifact evidence', async () => {
   const secret = 'synthetic-native-cloud-goal-signing-key';
-  vi.stubEnv('MINICLAW_CLOUD_SHARED_SECRET', secret);
-  vi.stubEnv('MINICLAW_CLOUD_APPROVALS', 'true');
+  vi.stubEnv('EVOBOT_CLOUD_SHARED_SECRET', secret);
+  vi.stubEnv('EVOBOT_CLOUD_APPROVALS', 'true');
   db.initDatabase();
   runtime.startProductRuntimeService();
   const now = new Date().toISOString();
@@ -149,7 +149,7 @@ test('real Scheduler claims install two Cloud runs into one Root, recover lost A
     anthropicBaseUrl: `http://127.0.0.1:${(provider.address() as { port: number }).port}/v1`,
     anthropicApiKey: 'synthetic-native-goal-provider-key',
     anthropicModel: 'goal-model',
-    customEnv: { MINICLAW_MODEL_API: 'openai-completions' },
+    customEnv: { EVOBOT_MODEL_API: 'openai-completions' },
   });
   const authority = serve({
     fetch: (request) => routes.fetch(request),
@@ -252,7 +252,7 @@ test('real Scheduler claims install two Cloud runs into one Root, recover lost A
   function startWorker() {
     return new Miniflare(
       convertV4MiniflareOptions({
-        name: 'miniclaw-cloud-agent',
+        name: 'evobot-cloud-agent',
         telemetry: { enabled: false },
         modules: true,
         scriptPath: path.resolve('apps/cloud-agent/dist/worker.js'),
@@ -264,13 +264,13 @@ test('real Scheduler claims install two Cloud runs into one Root, recover lost A
         },
         resourcePersistencePath: path.join(root, 'workerd'),
         bindings: {
-          MINICLAW_CLOUD_ADMISSION: 'true',
-          MINICLAW_CLOUD_SHARED_SECRET: secret,
-          MINICLAW_CLOUD_ORIGIN: 'https://cloud.fixture',
-          MINICLAW_AUTHORITY_ORIGIN: 'https://authority.fixture',
+          EVOBOT_CLOUD_ADMISSION: 'true',
+          EVOBOT_CLOUD_SHARED_SECRET: secret,
+          EVOBOT_CLOUD_ORIGIN: 'https://cloud.fixture',
+          EVOBOT_AUTHORITY_ORIGIN: 'https://authority.fixture',
         },
         serviceBindings: {
-          MINICLAW_AUTHORITY_SERVICE: async (request: Request) =>
+          EVOBOT_AUTHORITY_SERVICE: async (request: Request) =>
             fetch(
               `http://127.0.0.1:${authorityPort}${new URL(request.url).pathname}`,
               {

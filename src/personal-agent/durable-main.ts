@@ -19,8 +19,8 @@ export function durableMainFlagsEnabled(
   env: NodeJS.ProcessEnv = process.env,
 ): boolean {
   return (
-    env.MINICLAW_DURABLE_RUNTIME?.trim().toLowerCase() === 'true' &&
-    env.MINICLAW_DURABLE_MAIN?.trim().toLowerCase() === 'true'
+    env.EVOBOT_DURABLE_RUNTIME?.trim().toLowerCase() === 'true' &&
+    env.EVOBOT_DURABLE_MAIN?.trim().toLowerCase() === 'true'
   );
 }
 

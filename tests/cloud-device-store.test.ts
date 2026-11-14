@@ -82,14 +82,14 @@ function agent(id: string, selection: RuntimeSelection) {
 }
 function fixture(requireResource = false) {
   for (const name of [
-    'MINICLAW_PERSONAL_GOALS',
-    'MINICLAW_GOAL_TEAMS',
-    'MINICLAW_BOT_GROUPS',
-    'MINICLAW_BOT_HANDOFFS',
-    'MINICLAW_CLOUD_RUNTIME',
-    'MINICLAW_CLOUD_BOT_HANDOFFS',
-    'MINICLAW_CLOUD_DEVICES',
-    'MINICLAW_DEVICE_NODES',
+    'EVOBOT_PERSONAL_GOALS',
+    'EVOBOT_GOAL_TEAMS',
+    'EVOBOT_BOT_GROUPS',
+    'EVOBOT_BOT_HANDOFFS',
+    'EVOBOT_CLOUD_RUNTIME',
+    'EVOBOT_CLOUD_BOT_HANDOFFS',
+    'EVOBOT_CLOUD_DEVICES',
+    'EVOBOT_DEVICE_NODES',
   ])
     vi.stubEnv(name, 'true');
   const receipt = groups.createBotGroup('alice', randomUUID(), {

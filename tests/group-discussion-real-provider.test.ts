@@ -199,7 +199,7 @@ test('evidence removes configured secrets, model identity, endpoints and private
 
 test('malformed private configuration never exposes the JSON credential fragment in an error', () => {
   const dir = fs.mkdtempSync(
-    path.join(os.tmpdir(), 'miniclaw-private-config-'),
+    path.join(os.tmpdir(), 'evobot-private-config-'),
   );
   const file = path.join(dir, 'private.json');
   try {

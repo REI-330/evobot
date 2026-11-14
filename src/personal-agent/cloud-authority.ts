@@ -95,7 +95,7 @@ export function assertCloudAuthority(
     if (binding[name] !== scope[name])
       throw new CloudError(404, 'CLOUD_SESSION_NOT_FOUND');
   if (
-    binding.execution_authority !== 'miniclaw-product' ||
+    binding.execution_authority !== 'evobot-product' ||
     (!readOnly && deadlineAt <= Date.now())
   )
     throw new CloudError(409, 'CLOUD_EXECUTION_SUSPENDED');

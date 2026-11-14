@@ -48,5 +48,5 @@ test('preserves namespaced OpenAI model IDs rather than treating the namespace a
     api: 'openai-completions',
   });
   expect(result.modelId).toBe('vendor/model-name');
-  expect(result.providerId).toBe('miniclaw-openai');
+  expect(result.providerId).toBe('evobot-openai');
 });

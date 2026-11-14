@@ -129,7 +129,7 @@ for (const mode of [
               anthropicBaseUrl: original.anthropicBaseUrl,
               anthropicModel: 'must-not-be-selected',
               anthropicApiKey: 'synthetic-unused-canary',
-              customEnv: { MINICLAW_MODEL_API: 'openai-completions' },
+              customEnv: { EVOBOT_MODEL_API: 'openai-completions' },
             }),
           );
           await f.json(

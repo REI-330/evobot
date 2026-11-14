@@ -4,5 +4,5 @@ export default defineConfig({
   ...base,
   testMatch: 'member-concurrency.spec.ts',
   outputDir:
-    '../.claude/skills/verify-miniclaw/artifacts/member-concurrency/browser',
+    '../.claude/skills/verify-evobot/artifacts/member-concurrency/browser',
 });

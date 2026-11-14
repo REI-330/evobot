@@ -32,7 +32,7 @@ import {
 
 const EMPTY_AGENTS: AgentInfo[] = [];
 const EMPTY_QUEUE: QueuedFollowUp[] = [];
-const REMOTE_ORIGIN_KEY = 'miniclaw:pocket:remote-origin';
+const REMOTE_ORIGIN_KEY = 'evobot:pocket:remote-origin';
 const BUTTON =
   'min-h-11 rounded-lg border px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50';
 
@@ -61,14 +61,14 @@ export function PocketTrigger() {
       aria-label="跨设备接续"
       title="跨设备接续"
       className="product-icon-action"
-      onClick={() => window.dispatchEvent(new Event('opendot:open-pocket'))}
+      onClick={() => window.dispatchEvent(new Event('evobot:open-pocket'))}
     >
       <Smartphone size={18} aria-hidden="true" />
     </button>
   );
 }
 
-/** Pi Pocket-style client controls over OpenDot's existing authorized APIs. */
+/** Pi Pocket-style client controls over EvoBot's existing authorized APIs. */
 export function PocketPanel() {
   const route = useLocation();
   const owner = useAuthStore((s) => s.user?.id);
@@ -146,8 +146,8 @@ export function PocketPanel() {
       setNotifications(notificationsEnabled());
       setOpen(true);
     };
-    window.addEventListener('opendot:open-pocket', show);
-    return () => window.removeEventListener('opendot:open-pocket', show);
+    window.addEventListener('evobot:open-pocket', show);
+    return () => window.removeEventListener('evobot:open-pocket', show);
   }, []);
 
   useEffect(() => {
@@ -483,7 +483,7 @@ export function PocketPanel() {
                 <p className="text-xs text-muted-foreground">
                   {durable
                     ? '队列与操作回执以聊天上方的服务端快照为准；未确认的操作不会自动重发。'
-                    : '排队消息、编辑、排序和删除继续使用聊天输入区原有队列。Steer 沿用 OpenDot 现有服务端语义。'}
+                    : '排队消息、编辑、排序和删除继续使用聊天输入区原有队列。Steer 沿用 EvoBot 现有服务端语义。'}
                 </p>
               </section>
             )}
@@ -546,7 +546,7 @@ export function PocketPanel() {
               </p>
             </section>
             <section className="space-y-2" aria-label="Tailscale 接入">
-              <h3 className="font-medium">在运行 OpenDot 的电脑上执行</h3>
+              <h3 className="font-medium">在运行 EvoBot 的电脑上执行</h3>
               <code className="block overflow-x-auto rounded-lg border p-3 text-xs">
                 node scripts/pocket-access.mjs --serve
               </code>

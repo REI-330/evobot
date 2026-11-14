@@ -1,8 +1,8 @@
-appId: cc.miniclaw.desktop
-productName: OpenDot
-copyright: Copyright © 2026 OpenDot contributors
+appId: cc.evobot.desktop
+productName: EvoBot
+copyright: Copyright © 2026 EvoBot contributors
 electronVersion: 39.8.10
-icon: assets/miniclaw-icon.png
+icon: assets/evobot-icon.png
 
 directories:
   output: release
@@ -20,7 +20,7 @@ asar: true
 
 mac:
   category: public.app-category.productivity
-  icon: assets/miniclaw.icns
+  icon: assets/evobot.icns
   target:
     - dmg
     - zip

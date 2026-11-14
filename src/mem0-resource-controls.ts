@@ -35,7 +35,7 @@ const db = () => {
   return connection;
 };
 function dailyLimit(): number {
-  const raw = process.env.MINICLAW_MEM0_DAILY_BUDGET;
+  const raw = process.env.EVOBOT_MEM0_DAILY_BUDGET;
   if (raw === undefined || raw === '') return 100;
   const parsed = Number(raw);
   return Number.isSafeInteger(parsed) && parsed >= 0 && parsed <= 100000

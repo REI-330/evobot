@@ -71,7 +71,7 @@ export async function installLiveOpenAIModel(
       name: options.name,
       anthropicBaseUrl: options.baseUrl ?? model.baseUrl,
       anthropicModel: model.model,
-      customEnv: { MINICLAW_MODEL_API: model.api },
+      customEnv: { EVOBOT_MODEL_API: model.api },
     }),
   );
   await f.json(
@@ -84,12 +84,12 @@ export async function installLiveOpenAIModel(
   });
 }
 
-/** Installs MINICLAW_GROUP_MODEL_CONFIG when present. Synthetic mode stays available otherwise. */
+/** Installs EVOBOT_GROUP_MODEL_CONFIG when present. Synthetic mode stays available otherwise. */
 export async function installOptionalGroupModel(
   f: LiveModelFixture,
   name: string,
 ): Promise<string | undefined> {
-  const file = process.env.MINICLAW_GROUP_MODEL_CONFIG;
+  const file = process.env.EVOBOT_GROUP_MODEL_CONFIG;
   if (!file) return undefined;
   await installLiveOpenAIModel(f, readLiveOpenAIModel(file), { name });
   return file;

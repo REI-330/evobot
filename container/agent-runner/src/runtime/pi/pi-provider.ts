@@ -20,7 +20,7 @@ function splitModelRef(value: string): { providerId: string; modelId: string } {
 }
 
 /**
- * Bridge the existing Miniclaw provider env contract to Pi ModelRuntime.
+ * Bridge the existing EvoBot provider env contract to Pi ModelRuntime.
  * Custom Anthropic/OpenAI-compatible endpoints are registered as a separate provider
  * so Pi's built-in Anthropic catalog and credentials remain untouched.
  */
@@ -57,7 +57,7 @@ export async function resolvePiProvider(
     custom && api === 'openai-completions'
       ? { providerId: 'openai', modelId: rawModel }
       : splitModelRef(rawModel || 'claude-sonnet');
-  const providerId = custom ? `miniclaw-${split.providerId}` : split.providerId;
+  const providerId = custom ? `evobot-${split.providerId}` : split.providerId;
 
   if (custom) {
     if (!input.baseUrl?.trim()) {
@@ -67,7 +67,7 @@ export async function resolvePiProvider(
       throw new Error('Pi custom provider requires ANTHROPIC_MODEL');
     }
     modelRuntime.registerProvider(providerId, {
-      name: `Miniclaw ${split.providerId} compatible provider`,
+      name: `EvoBot ${split.providerId} compatible provider`,
       baseUrl: input.baseUrl.trim(),
       api,
       ...(input.apiKey?.trim() ? { apiKey: input.apiKey.trim() } : {}),

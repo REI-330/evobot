@@ -50,7 +50,7 @@ export class ApprovalWaits
     private readonly exclusive: <T>(work: () => Promise<T>) => Promise<T>,
     private readonly execution?: ApprovalExecutionPolicy,
   ) {
-    super('miniclaw-approval-waits');
+    super('evobot-approval-waits');
   }
   initialize() {
     this.ctx.storage.sql.exec(`CREATE TABLE IF NOT EXISTS mc_approval_waits(

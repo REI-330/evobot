@@ -32,7 +32,7 @@ export class HandoffLifecycle extends LifecycleCapability {
     private readonly ctx: DurableObjectState,
     private readonly host: Host,
   ) {
-    super('miniclaw-handoff-lifecycle');
+    super('evobot-handoff-lifecycle');
   }
   initialize() {
     this.ctx.storage.sql.exec(`CREATE TABLE IF NOT EXISTS mc_handoff_lifecycle(

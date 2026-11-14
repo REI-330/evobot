@@ -1,10 +1,10 @@
 {
-  "name": "miniclaw-desktop",
+  "name": "evobot-desktop",
   "version": "1.0.0",
   "private": true,
-  "description": "Electron desktop shell for OpenDot.",
+  "description": "Electron desktop shell for EvoBot.",
   "main": "dist/main.cjs",
   "author": "helson",
   "license": "MIT",
-  "homepage": "https://github.com/helsome/OpenDot#readme"
+  "homepage": "https://github.com/REI-330/evobot#readme"
 }

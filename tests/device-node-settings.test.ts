@@ -8,8 +8,8 @@ vi.mock('../src/config.js', async (original) => ({ ...(await original<Record<str
 const settings = await import('../src/personal-agent/device-node-settings.js');
 beforeEach(() => {
   vi.unstubAllEnvs();
-  delete process.env.MINICLAW_DEVICE_NODES;
-  delete process.env.MINICLAW_PI_MCP;
+  delete process.env.EVOBOT_DEVICE_NODES;
+  delete process.env.EVOBOT_PI_MCP;
   fs.rmSync(path.join(root, 'config'), { recursive: true, force: true });
 });
 afterAll(() => { vi.unstubAllEnvs(); fs.rmSync(root, { recursive: true, force: true }); });
@@ -27,11 +27,11 @@ test('device admission is off by default and explicit opt-in is private and pers
 
 test('environment overrides saved settings and invalid files fail closed', () => {
   settings.saveDeviceNodeSettings(true);
-  vi.stubEnv('MINICLAW_DEVICE_NODES', 'false');
+  vi.stubEnv('EVOBOT_DEVICE_NODES', 'false');
   expect(settings.deviceNodesEnabled()).toBe(false);
   expect(() => settings.saveDeviceNodeSettings(true)).toThrow();
-  vi.unstubAllEnvs(); delete process.env.MINICLAW_DEVICE_NODES;
-  vi.stubEnv('MINICLAW_PI_MCP', 'false');
+  vi.unstubAllEnvs(); delete process.env.EVOBOT_DEVICE_NODES;
+  vi.stubEnv('EVOBOT_PI_MCP', 'false');
   expect(settings.deviceNodesEnabled()).toBe(true);
   expect(settings.piMcpEnabled()).toBe(false);
   fs.chmodSync(path.join(root, 'config/device-nodes.json'), 0o644);

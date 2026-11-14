@@ -322,8 +322,8 @@ describe('attachStdoutHandler — framed output parsing (marker collision)', () 
     return collected;
   }
 
-  const S = '---MINICLAW_OUTPUT_START---';
-  const E = '---MINICLAW_OUTPUT_END---';
+  const S = '---EVOBOT_OUTPUT_START---';
+  const E = '---EVOBOT_OUTPUT_END---';
 
   test('classifies a failed SDK query from a warm runner before the idle callback', async () => {
     const out = await runParser([

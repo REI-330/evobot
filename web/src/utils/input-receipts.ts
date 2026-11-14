@@ -2,7 +2,7 @@
 // silently turn an uncertain request into a fresh execution. Only hashes/IDs
 // are stored here; drafts and credentials are not copied into this journal.
 const memory = new Map<string, Record<string, string>>();
-const prefix = 'miniclaw:input-receipts:';
+const prefix = 'evobot:input-receipts:';
 function read(owner: string): Record<string, string> {
   try {
     const parsed: unknown = JSON.parse(

@@ -183,7 +183,7 @@ test.each([
       instructions: '',
       deadline_at: Date.now() + 60000,
       max_model_steps: 4,
-      execution_authority: 'miniclaw-product',
+      execution_authority: 'evobot-product',
       tool_capabilities: [],
       ...(group
         ? { group_session: { group_id: groupId, profile_id: profileId } }
@@ -252,9 +252,9 @@ test.each([
     const secret = 'safe-member-rejection-fixture-key-32';
     let calls = 0;
     const transport = {
-      MINICLAW_AUTHORITY_ORIGIN: 'https://authority.fixture',
-      MINICLAW_CLOUD_SHARED_SECRET: secret,
-      MINICLAW_AUTHORITY_SERVICE: {
+      EVOBOT_AUTHORITY_ORIGIN: 'https://authority.fixture',
+      EVOBOT_CLOUD_SHARED_SECRET: secret,
+      EVOBOT_AUTHORITY_SERVICE: {
         fetch: async (request: Request) => {
           calls++;
           const raw = await request.text();
@@ -318,7 +318,7 @@ test.each([
       instructions: '',
       deadline_at: Date.now() + 60000,
       max_model_steps: 4,
-      execution_authority: 'miniclaw-product',
+      execution_authority: 'evobot-product',
       tool_capabilities: [],
       group_session: { group_id: groupId, profile_id: profileId },
     };
@@ -333,9 +333,9 @@ test.each([
           | ReturnType<typeof MemberSendBindingSchema.parse>
           | undefined;
         const transport = {
-          MINICLAW_AUTHORITY_ORIGIN: 'https://authority.fixture',
-          MINICLAW_CLOUD_SHARED_SECRET: secret,
-          MINICLAW_AUTHORITY_SERVICE: {
+          EVOBOT_AUTHORITY_ORIGIN: 'https://authority.fixture',
+          EVOBOT_CLOUD_SHARED_SECRET: secret,
+          EVOBOT_AUTHORITY_SERVICE: {
             fetch: async (request: Request) => {
               const raw = await request.text();
               expect(await authenticate(request, secret, raw)).toMatchObject({
@@ -423,7 +423,7 @@ test.each([
                 // terminal Tool memos after successful completion.
                 expect(
                   (await storage.task(input.task_id as TaskId, BG))?.memos?.[
-                    'miniclaw.member.send.v1'
+                    'evobot.member.send.v1'
                   ],
                 ).toEqual(chosen);
                 const serialized = JSON.stringify(input.binding),

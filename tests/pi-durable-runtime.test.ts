@@ -21,7 +21,7 @@ import {
   PiDurableRuntimeAdapter,
 } from '../src/personal-agent/durable-runtime.js';
 
-const testRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'miniclaw-pi-durable-'));
+const testRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'evobot-pi-durable-'));
 afterAll(() => fs.rmSync(testRoot, { recursive: true, force: true }));
 
 describe('Pi Durable runtime pilot', () => {
@@ -32,7 +32,7 @@ describe('Pi Durable runtime pilot', () => {
   });
 
   test('does not open storage when the runtime flag is off', async () => {
-    vi.stubEnv('MINICLAW_DURABLE_RUNTIME', 'false');
+    vi.stubEnv('EVOBOT_DURABLE_RUNTIME', 'false');
     const adapter = await PiDurableRuntimeAdapter.openWhenEnabled({
       databasePath: path.join(testRoot, 'disabled', 'runtime.sqlite'),
       registry: createRegistry(),
@@ -50,7 +50,7 @@ describe('Pi Durable runtime pilot', () => {
       databasePath,
       registry: createRegistry(),
       authorizeConversation: () => {
-        throw new Error('denied by MiniClaw ACL');
+        throw new Error('denied by EvoBot ACL');
       },
       recordInputRequest: () => undefined,
     });
@@ -80,7 +80,7 @@ describe('Pi Durable runtime pilot', () => {
     await adapter.activate(() => undefined);
     await expect(
       adapter.submitInput(1 as ConversationId, 'req-1', 'test'),
-    ).rejects.toThrow('denied by MiniClaw ACL');
+    ).rejects.toThrow('denied by EvoBot ACL');
     await adapter.close();
   });
 
@@ -329,7 +329,7 @@ describe('Pi Durable runtime pilot', () => {
       { phase: 'step'; number: number },
       number
     >({
-      name: 'miniclaw.test.checkpoint-work',
+      name: 'evobot.test.checkpoint-work',
       version: 1,
       initial: () => ({ phase: 'step', number: 1 }),
       phases: {
@@ -372,7 +372,7 @@ describe('Pi Durable runtime pilot', () => {
 
     const registry = createRegistry();
     registry.install(
-      defineExtension({ name: 'miniclaw-pilot', tasks: [Work] }),
+      defineExtension({ name: 'evobot-pilot', tasks: [Work] }),
     );
     const open = async () =>
       Harness.open(

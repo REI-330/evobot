@@ -17,7 +17,7 @@ const TASK_ALLOWANCE_MS = 12 * 60 * 60 * 1000;
 const DEFAULT_APP_MINUTES = 10;
 
 export function computerReadsRequireApproval(): boolean {
-  return process.env.OPENDOT_COMPUTER_REQUIRE_READ_APPROVAL === 'true';
+  return process.env.EVOBOT_COMPUTER_REQUIRE_READ_APPROVAL === 'true';
 }
 
 /** Read-only computer calls, and mutating calls covered by an earlier allowance,
@@ -62,7 +62,7 @@ export function rememberComputerAllowance(
 ): void {
   if (allowance !== 'task' && allowance !== 'app') return;
   if (computerApprovalTier(approval.intent.original_name) !== 'mutate') return;
-  if (!approval.intent.server_id.startsWith('opendot_computer_')) return;
+  if (!approval.intent.server_id.startsWith('evobot_computer_')) return;
   const now = Date.now();
   if (allowance === 'task') {
     grantComputerAllowance({

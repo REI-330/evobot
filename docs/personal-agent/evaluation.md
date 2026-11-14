@@ -61,7 +61,7 @@ Live Provider/model, deployed Cloudflare, physical device/Safari, real IM and
 Cloud Group execution remain unverified/unimplemented as described above.
 The original October 15 backend and separate original M4 worktree edits remain
 untouched. #38 passed **all three** remote checks at 1debc6a in
-[run 39127754920](https://github.com/helsome/OpenDot/actions/runs/39127754920),
+[run 39127754920](https://github.com/REI-330/evobot/actions/runs/39127754920),
 superseding its earlier Pending marker below. #39's remote validate is still
 running; do not attribute #38's CI result to another head.
 
@@ -148,7 +148,7 @@ queue-edit/Steer and inherited Memory/MCP/device capabilities are not implemente
 by this slice. Remote CI for this new increment is pending its pushed head.
 
 Earlier PR #37 is independently Draft/reviewable and all three remote checks
-passed in [run 39120866213](https://github.com/helsome/OpenDot/actions/runs/39120866213).
+passed in [run 39120866213](https://github.com/REI-330/evobot/actions/runs/39120866213).
 That supersedes its older remote-CI Pending statement below. PR #36 likewise
 passed all three checks in run 39118093373; main remains unchanged.
 
@@ -213,11 +213,11 @@ journeys also pass (53.1 seconds), preserving generic Workspace tab restoration
 while fencing explicit Bot entry to main. Runtime/HTTP/Cookie/SQLite/private-process and
 reverse-proxy infrastructure is real local execution. Model output and the
 explicit empty-Profile-list UI fault are simulated; iOS flags run in Chromium.
-Remote CI for Draft PR #36 commit `99227bd3d199abed84698277f9f283d43378abb3` passed all three jobs (`validate`, `cloud-agent`, `cloud-authority`): [run 39118093373](https://github.com/helsome/OpenDot/actions/runs/39118093373). Physical iOS, live vendor and production deployment remain unverified.
+Remote CI for Draft PR #36 commit `99227bd3d199abed84698277f9f283d43378abb3` passed all three jobs (`validate`, `cloud-agent`, `cloud-authority`): [run 39118093373](https://github.com/REI-330/evobot/actions/runs/39118093373). Physical iOS, live vendor and production deployment remain unverified.
 
 ## Explicit Cloud Goal admission and background recovery — 2026-10-18
 
-Implemented: explicit default-off `MINICLAW_CLOUD_GOALS` admission through the
+Implemented: explicit default-off `EVOBOT_CLOUD_GOALS` admission through the
 existing Goal API/page, immutable runtime selection for a new owned Session,
 transactional permission/configuration/100-run/core-context validation, and
 bounded prior-result excerpts without changing stored snapshots. Missing runtime
@@ -772,7 +772,7 @@ tools, session branching and full Skills/MCP/OAuth/Docker Durable parity.
 
 The configured-model live entry was rerun with the requested Zen endpoint and
 `cat-jam-free`; it exits **2 / Pending**, `secure_environment_binding_missing`
-for `MINICLAW_ZEN_API_KEY`, before inference. Current environment status still has
+for `EVOBOT_ZEN_API_KEY`, before inference. Current environment status still has
 no runtime/secret bindings and has restricted network policy; its saved draft is
 not proof of active bindings or outbound access. No chat credential was copied,
 model substituted, production service changed or full Goal completion claimed.
@@ -862,7 +862,7 @@ used only disposable data.
 
 Re-running `npm run test:personal-agent-live` with the authorized nonsecret Zen
 URL/model still exits **2 / Pending** with
-`secure_environment_binding_missing: MINICLAW_ZEN_API_KEY`. No external model
+`secure_environment_binding_missing: EVOBOT_ZEN_API_KEY`. No external model
 inference was attempted and no alternative model substituted. The environment
 draft declares the secure requirement, but the running instance has no ready
 binding. No plaintext chat credential was copied into commands, source or logs.
@@ -877,7 +877,7 @@ The overall Personal Agent Goal is not complete.
 
 The Goal follow-up connects the existing product flow rather than a separate demo endpoint: signed `POST /api/goals` atomically creates Goal/task/Session, the existing Scheduler freezes and owns the occurrence, and the formal Durable Session executes the original Inbox input. Model/provider configuration remains the existing encrypted product configuration. Schema v73 and the reclaim rule must ship together with this dispatcher.
 
-Local gates passed: `make typecheck`, `npm run build:all`, Runner self-test and Electron typecheck/main/preload bundles. Full Vitest passed **352 files, 2,936 tests, 23 skipped** (exit 0); Chromium passed **13 tests** (exit 0). Logs: `/tmp/miniclaw-goal-durable-{typecheck,build,vitest,e2e,runner,electron}.log`. The browser fixture has a separate checked TypeScript configuration. No live provider is included in these counts.
+Local gates passed: `make typecheck`, `npm run build:all`, Runner self-test and Electron typecheck/main/preload bundles. Full Vitest passed **352 files, 2,936 tests, 23 skipped** (exit 0); Chromium passed **13 tests** (exit 0). Logs: `/tmp/evobot-goal-durable-{typecheck,build,vitest,e2e,runner,electron}.log`. The browser fixture has a separate checked TypeScript configuration. No live provider is included in these counts.
 
 The browser case creates one Goal through the desktop page, joins that Session from an independent mobile login, closes the desktop page, SIGKILLs the actual backend executor, restarts with the new-Session flag off and checks the original conversation/submission/approval IDs. Mobile then approves, reads the verified artifact, and observes Goal completion plus successful existing outbox delivery. This is one simulated-model Goal journey, not a collection of unrelated mock endpoints. It also exercises an existing populated desktop Session cache, which previously discarded the new Goal link before refreshing it.
 
@@ -889,21 +889,21 @@ The HTTP fault suite additionally injects a product completion receipt ahead of 
 
 Failures found and fixed by integration: missing chat-container creation inside Goal provisioning; the legacy Goal-state gate rejecting an already-charged approval wait during recovery; and Scheduler lookup using a stale process workspace cache after first-time setup. Current code resolves managed Goal ownership from the database and requires a live started claim in the executing process before Harness activation. Stale or unbound executors cannot activate it.
 
-Approval [Draft PR #6](https://github.com/helsome/OpenDot/pull/6), commit `0914ca7`, passed actual GitHub CI [run 38910266533](https://github.com/helsome/OpenDot/actions/runs/38910266533). Main is unchanged. Goal follow-up CI is separate from that result.
+Approval [Draft PR #6](https://github.com/REI-330/evobot/pull/6), commit `0914ca7`, passed actual GitHub CI [run 38910266533](https://github.com/REI-330/evobot/actions/runs/38910266533). Main is unchanged. Goal follow-up CI is separate from that result.
 
 ## Controlled artifact approval follow-up
 
-Schema v72 and the formal tool/API/UI now support exact-content private-artifact approval. Full Vitest passed **351 files, 2,922 tests, 23 skipped** (exit 0), Typecheck/Build passed, and all **13 Chromium E2E tests** passed. Logs: `/tmp/miniclaw-product-approval-{typecheck,build,vitest,e2e,tests}.log`. The browser case adds actual mobile approval, desktop state convergence and verified artifact reads against the compiled backend. Product HTTP recovery now SIGKILLs while awaiting approval, restarts on the original input/tool intent, rejects a changed digest and accepts two concurrent approvals with one actual file effect. The local provider remains simulated.
+Schema v72 and the formal tool/API/UI now support exact-content private-artifact approval. Full Vitest passed **351 files, 2,922 tests, 23 skipped** (exit 0), Typecheck/Build passed, and all **13 Chromium E2E tests** passed. Logs: `/tmp/evobot-product-approval-{typecheck,build,vitest,e2e,tests}.log`. The browser case adds actual mobile approval, desktop state convergence and verified artifact reads against the compiled backend. Product HTTP recovery now SIGKILLs while awaiting approval, restarts on the original input/tool intent, rejects a changed digest and accepts two concurrent approvals with one actual file effect. The local provider remains simulated.
 
 Five focused tests check owner/parameter/decision binding, persisted pending consent, a post-effect receipt gap without file rewrite, partial effects becoming uncertain, current authorization before writes, and a private pre-v72 migration backup. An additional `product-artifact-recovery.test.ts` SIGKILLs an actual process immediately after file fsync but before the receipt; a fresh process reconciles the same file inode/mtime and completes one receipt. The exception seam also remains covered. These are process-crash tests, not power-loss tests. The pending-approval case kills the actual server process. Existing Makefile backup/restore tests now round-trip a real private artifact with mode 0600. Initial HTTP fixture failure was traced to creating a Session after intentionally disabling the creation flag; the fixture now creates it while enabled and asserts its persisted runtime kind.
 
-Foundation [Draft PR #4](https://github.com/helsome/OpenDot/pull/4), commit `77a96b6`, passed actual GitHub CI [run 38908341650](https://github.com/helsome/OpenDot/actions/runs/38908341650); its isolated archived tree also passed Typecheck and all 9 focused migration/store tests. Formal dispatch [Draft PR #5](https://github.com/helsome/OpenDot/pull/5), commit `4078084`, passed actual GitHub CI [run 38908396420](https://github.com/helsome/OpenDot/actions/runs/38908396420). These results do not establish Goal/Scheduler execution, a live external model or general external-write safety.
+Foundation [Draft PR #4](https://github.com/REI-330/evobot/pull/4), commit `77a96b6`, passed actual GitHub CI [run 38908341650](https://github.com/REI-330/evobot/actions/runs/38908341650); its isolated archived tree also passed Typecheck and all 9 focused migration/store tests. Formal dispatch [Draft PR #5](https://github.com/REI-330/evobot/pull/5), commit `4078084`, passed actual GitHub CI [run 38908396420](https://github.com/REI-330/evobot/actions/runs/38908396420). These results do not establish Goal/Scheduler execution, a live external model or general external-write safety.
 
 ## Formal product Session Durable integration
 
 The stacked product-session implementation connects the compiled product backend, authenticated Session creation, `/api/messages`, persisted runtime selection, configured provider, actual workspace read tool, and original Durable Inbox submissions. Schema v71 preserves existing JSONL/Coding identities. This is an opt-in Host Session path, not a completed Goal/Scheduler migration.
 
-Local gates: `make typecheck`, `npm run build:all`, changed-file Prettier/docs checks, and full `npm test -- --run` passed (349 files, **2,916 passed, 23 skipped**, exit 0). The current Chromium suite passed **13 tests** (exit 0). Runner self-test, Electron typecheck and main/preload bundles passed; Electron GUI execution remains unverified. Logs are `/tmp/miniclaw-product-runtime-{typecheck,build,vitest,e2e,runner,electron}.log`; environment is Node 24.19.0, Linux, system Chromium, disposable private databases. Skipped tests remain skipped and do not count as acceptance.
+Local gates: `make typecheck`, `npm run build:all`, changed-file Prettier/docs checks, and full `npm test -- --run` passed (349 files, **2,916 passed, 23 skipped**, exit 0). The current Chromium suite passed **13 tests** (exit 0). Runner self-test, Electron typecheck and main/preload bundles passed; Electron GUI execution remains unverified. Logs are `/tmp/evobot-product-runtime-{typecheck,build,vitest,e2e,runner,electron}.log`; environment is Node 24.19.0, Linux, system Chromium, disposable private databases. Skipped tests remain skipped and do not count as acceptance.
 
 `tests/product-runtime-http.test.ts` starts the actual backend process and signed authenticated HTTP APIs with a local OpenAI-compatible SSE provider. It SIGKILLs/restarts the actual executor, verifies the same conversation/submission IDs and single user/result projections, and reads a real temporary workspace file through the official Harness tool path. A second restart injects mismatched product receipts: that Session is blocked before activation while an independent Session recovers. Duration-budget expiry and user revocation stop actual held model connections, and revoked work does not restart. Duplicate creation/input IDs return the original receipt; changed payloads fail. These are real OS/HTTP/SQLite/file/authorization tests with **simulated model output**, not a real external model or physical device run.
 
@@ -911,13 +911,13 @@ Local gates: `make typecheck`, `npm run build:all`, changed-file Prettier/docs c
 
 Store/migration tests verify immutable runtime/owner bindings, cross-owner denial, flag-independent recovery, private pre-v71 backup and preservation of JSONL Session IDs. Backup tests snapshot committed WAL state and exclude coordinators/sidecars. Adapter negative tests reject a missing bound root or foreign conversations before activation. Backup/restore was tested only with temporary data; no production restore was performed.
 
-Pocket integration is available as [Draft PR #3](https://github.com/helsome/OpenDot/pull/3), commit `7950668`. Its actual GitHub `validate` job passed: [run 38902022615](https://github.com/helsome/OpenDot/actions/runs/38902022615). Results below describe earlier branches and are historical evidence, not CI results for the product-session changes.
+Pocket integration is available as [Draft PR #3](https://github.com/REI-330/evobot/pull/3), commit `7950668`. Its actual GitHub `validate` job passed: [run 38902022615](https://github.com/REI-330/evobot/actions/runs/38902022615). Results below describe earlier branches and are historical evidence, not CI results for the product-session changes.
 
 ## Pocket + Goal integration acceptance
 
 `agent/pocket-integration` merges the full Pocket fix branch into `fe520f5` without changing main. GitHub's API was rechecked: PR #2 is open/unmerged, and `fe520f5` has no Check Runs or workflow runs. Those historical local results are not CI evidence.
 
-The combined tree passed `make typecheck`, `npm run build:all`, changed-file Prettier/docs checks, and full Vitest (344 files, 2,904 passed, 23 skipped; exit 0). Chromium passed 13 tests (exit 0), including `product-session-continuity.spec.ts`, which starts the compiled product server, uses two independent authenticated browser contexts, and verifies same-Session persisted history after mobile offline/reconnect without cross-session history or duplicate messages. The same build exposes Goals and Pocket controls. Messages are seeded transcript fixtures, not a model run; live execution, Queue/Steer effects, and runtime recovery remain separate acceptance work. Local logs: `/tmp/miniclaw-pocket-integration-{typecheck,build,vitest,e2e}.log`. Environment: Node 24, Linux, system Chromium, isolated disposable database for the product browser case.
+The combined tree passed `make typecheck`, `npm run build:all`, changed-file Prettier/docs checks, and full Vitest (344 files, 2,904 passed, 23 skipped; exit 0). Chromium passed 13 tests (exit 0), including `product-session-continuity.spec.ts`, which starts the compiled product server, uses two independent authenticated browser contexts, and verifies same-Session persisted history after mobile offline/reconnect without cross-session history or duplicate messages. The same build exposes Goals and Pocket controls. Messages are seeded transcript fixtures, not a model run; live execution, Queue/Steer effects, and runtime recovery remain separate acceptance work. Local logs: `/tmp/evobot-pocket-integration-{typecheck,build,vitest,e2e}.log`. Environment: Node 24, Linux, system Chromium, isolated disposable database for the product browser case.
 
 ## Combined integration branch
 
@@ -948,7 +948,7 @@ On `agent/goal-mode-pocket` based on `feat/pi-pocket-continuity`: `make typechec
 
 ## Personal Goal engine branch evidence
 
-`agent/personal-goal-engine` is stacked on the Durable pilot. Goal execution still uses the existing MiniClaw Scheduler and Pi Coding Agent. The optional `MINICLAW_PERSONAL_GOALS=true` feature does not connect product sessions to the experimental Durable adapter.
+`agent/personal-goal-engine` is stacked on the Durable pilot. Goal execution still uses the existing EvoBot Scheduler and Pi Coding Agent. The optional `EVOBOT_PERSONAL_GOALS=true` feature does not connect product sessions to the experimental Durable adapter.
 
 - Full Vitest: 342 files passed, 2,897 tests passed, 23 skipped. Goal-specific suites include 10 real SQLite store/budget tests, 8 authenticated HTTP route tests, and 2 schema-v69-to-v70 migration tests. Route tests use actual signed sessions and database records but simulate Scheduler callbacks.
 - `make typecheck`, including the newly checked browser fixtures, `npm run build:all`, format/docs checks, agent-runner self-test, Electron typecheck, and Electron main/preload bundle builds passed. Electron GUI/package installation was not exercised.
@@ -977,7 +977,7 @@ Reproduce the automated Goal checks with `npx vitest run tests/personal-goal-sto
 
 Do not describe simulated tasks as a real model run or live external side effect. The goal-mode end-to-end demonstration remains pending.
 
-The latest environment check found no `MINICLAW_ZEN_API_KEY` binding. An unauthenticated metadata read of `https://opencode.ai/zen/go/v1/models` returned HTTP 200 on 2026-10-16; its 37-model public list did not include the requested `cat-jam-free`. Listing absence alone does not prove an authenticated generation will fail. No model was silently substituted and no chat credential was copied into files, command arguments or logs. Real-model acceptance remains pending secure binding and confirmation of an available authorized model. The existing `npm run test:durable-zen-real-model` command exercises the official Harness/SQLite model chain; it has not passed a live request in this environment. npm metadata was rechecked: official Pi Durable remains 1.3.0 with Node >=22.19.0, matching the pinned dependency.
+The latest environment check found no `EVOBOT_ZEN_API_KEY` binding. An unauthenticated metadata read of `https://opencode.ai/zen/go/v1/models` returned HTTP 200 on 2026-10-16; its 37-model public list did not include the requested `cat-jam-free`. Listing absence alone does not prove an authenticated generation will fail. No model was silently substituted and no chat credential was copied into files, command arguments or logs. Real-model acceptance remains pending secure binding and confirmation of an available authorized model. The existing `npm run test:durable-zen-real-model` command exercises the official Harness/SQLite model chain; it has not passed a live request in this environment. npm metadata was rechecked: official Pi Durable remains 1.3.0 with Node >=22.19.0, matching the pinned dependency.
 
 ## Durable Session snapshot and ordered invalidation integration
 
@@ -985,13 +985,13 @@ Branch `agent/durable-session-control`, stacked on Goal execution PR #7 (commit 
 
 `tests/durable-control-client.test.tsx` verifies gaps, old HTTP fences, process epochs, disconnect, Session/account switches and denied reads using simulated HTTP responses. Product HTTP and two-login Chromium tests additionally assert actual busy-to-idle convergence around execution and original-checkpoint process restart. These tests use a simulated HTTP model provider; they do not establish real-model or physical-device acceptance. Queue edit/reorder/cancel controls and the gated proactive workflow remain pending.
 
-Validation on this branch: full Vitest **353 files / 2,939 passed / 23 skipped**; all **13 Chromium E2E passed (36.0 s)**; `make typecheck`, backend/Web/runner builds, runner self-test, Electron typecheck/bundles, Prettier/docs checks and changed-file credential-pattern scan passed. The initial browser attempt could not start 12 video-enabled cases because the Playwright FFmpeg download was blocked (HTTP 403); rerunning with system `/usr/bin/ffmpeg` in a temporary Playwright cache preserved video capture and all assertions. Reproduce locally with `PLAYWRIGHT_BROWSERS_PATH=/tmp/miniclaw-playwright-system PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm --prefix web run test:e2e` after linking the system FFmpeg executable at that cache's `ffmpeg-1011/ffmpeg-linux`. The cache is an environment setup artifact, not a repository dependency change. No live Zen model, physical iOS device, external channel or production deployment was exercised.
+Validation on this branch: full Vitest **353 files / 2,939 passed / 23 skipped**; all **13 Chromium E2E passed (36.0 s)**; `make typecheck`, backend/Web/runner builds, runner self-test, Electron typecheck/bundles, Prettier/docs checks and changed-file credential-pattern scan passed. The initial browser attempt could not start 12 video-enabled cases because the Playwright FFmpeg download was blocked (HTTP 403); rerunning with system `/usr/bin/ffmpeg` in a temporary Playwright cache preserved video capture and all assertions. Reproduce locally with `PLAYWRIGHT_BROWSERS_PATH=/tmp/evobot-playwright-system PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm --prefix web run test:e2e` after linking the system FFmpeg executable at that cache's `ffmpeg-1011/ffmpeg-linux`. The cache is an environment setup artifact, not a repository dependency change. No live Zen model, physical iOS device, external channel or production deployment was exercised.
 
 ## Durable Session control backend follow-up
 
 The backend on `agent/durable-queue-controls` adds v74 immutable control intents, native receipt/Inbox commits, exact-task abort marks and canonical answer-message bindings. Recovered native controls without product intents, mismatched effective queue payloads and product abort acknowledgements ahead of an unmarked checkpoint block activation. Another administrator, wrong Workspace, forged fields, changed retry payloads and stale queue/task IDs are rejected. A cancelled queued input has an explicit cancelled disposition and no fabricated answer; shared native answers project once. Legacy Coding queue behavior is preserved.
 
-The actual product HTTP test uses normal creation/admission/control APIs, edits/reorders/promotes/cancels queued inputs before SIGKILL, then recovers their original identities and effective content. It additionally proves a repeated old abort cannot stop a later run. The native receipt-gap worker SIGKILLs a real Node process after the edit commit and before the MiniClaw acknowledgement; the next process reconciles the same intent without editing again. No model runs in that worker. The product HTTP provider is simulated.
+The actual product HTTP test uses normal creation/admission/control APIs, edits/reorders/promotes/cancels queued inputs before SIGKILL, then recovers their original identities and effective content. It additionally proves a repeated old abort cannot stop a later run. The native receipt-gap worker SIGKILLs a real Node process after the edit commit and before the EvoBot acknowledgement; the next process reconciles the same intent without editing again. No model runs in that worker. The product HTTP provider is simulated.
 
 Twenty-two focused cases across Goal/store, product HTTP and native queue recovery passed; v73 backup/preservation and earlier-version migration fixtures are included. The separate Pocket UI follow-up adds browser controls and a per-tab pending-operation journal; its combined full-suite results are recorded separately. PR #8 (`59dd095`) passed remote validate run `38923290213`. Live model/physical-device/external-channel/production acceptance remains pending. The proactive workflow stays gated on main-chain acceptance.
 
@@ -1011,7 +1011,7 @@ Real infrastructure passing: HTTP/auth/SQLite/files, real Node SIGKILL/restart, 
 
 This is a dedicated explicit live command, not a skipped test counted in the deterministic suite. `.live.ts` files are selected by its Playwright config; the normal browser suite remains unchanged. Network traces, screenshots and video are disabled for this credential-bearing run. All runner output files live under a private temporary report directory and are removed; only a safe result DTO is printed, never raw provider/client errors, credentials, cookie headers or model text. Actual model/browser execution is **unverified** until it runs with authorized environment bindings. Two preflight unit cases cover missing secure binding (exit 2 / Pending) and invalid endpoint failure without printing the fixture credential; these are configuration checks only.
 
-Observed command on this environment, with the requested URL and `cat-jam-free` supplied as nonsecret environment values: **exit 2**, `status: pending`, `reason: secure_environment_binding_missing`, `missing: [MINICLAW_ZEN_API_KEY]`. No external model call or live browser was started. The previously pasted token was not copied into commands, source, artifacts or logs. PR #9 (`3b17d2d`) passed actual GitHub validate run `38929337590` (9m11s); PR #10 (`7e77178`) passed run `38929466067` (9m47s). Those results cover the committed deterministic product implementation, not this unexecuted live scenario.
+Observed command on this environment, with the requested URL and `cat-jam-free` supplied as nonsecret environment values: **exit 2**, `status: pending`, `reason: secure_environment_binding_missing`, `missing: [EVOBOT_ZEN_API_KEY]`. No external model call or live browser was started. The previously pasted token was not copied into commands, source, artifacts or logs. PR #9 (`3b17d2d`) passed actual GitHub validate run `38929337590` (9m11s); PR #10 (`7e77178`) passed run `38929466067` (9m47s). Those results cover the committed deterministic product implementation, not this unexecuted live scenario.
 
 Live-entry follow-up local regression: **356 files / 2,950 passed / 23 skipped** (85.87 s), including the two preflight-only cases. Existing default product/browser behavior remains covered by the 13-case CI-passing Pocket suite above; the new `.live.ts` body has not executed. Complete typecheck includes the live page scenario, CLI and preflight tests. A separate discovery check selects exactly the dedicated live case. These checks do not establish live-model success.
 
@@ -1227,7 +1227,7 @@ complete.
 
 The existing Group grant/API/provisioner and Runtime Router now support explicit
 `cloudflare-durable` selection behind separate default-off
-`MINICLAW_CLOUD_BOT_HANDOFFS`. Groups/Handoffs/Cloud Runtime prerequisites,
+`EVOBOT_CLOUD_BOT_HANDOFFS`. Groups/Handoffs/Cloud Runtime prerequisites,
 Owner/Workspace/Host/Profile/Provider authorization and original grant quota/
 expiry still apply. The existing form offers runtime and appropriate reviewed
 tools. Cloud bindings replace global capability defaults with the exact grant;
@@ -1353,7 +1353,7 @@ pass its own rerun before readiness is claimed.
 
 ## Cloud Team → existing Device Node bridge (2026-10-19)
 
-The default-off `MINICLAW_CLOUD_DEVICES` slice adds an exact-request read tool to
+The default-off `EVOBOT_CLOUD_DEVICES` slice adds an exact-request read tool to
 Goal-owned Cloud Handoffs using the existing Device Node registry, grants,
 command/cache receipts and Lifecycle/Alarm. It does not add a second runtime,
 Scheduler, approval service or local execution protocol. Schema v84 preserves
@@ -1419,7 +1419,7 @@ without deploying it. Product PR remote CI is still Pending at this commit;
 its actual workflow result must be checked before removing Draft.
 No deployed Cloudflare lifecycle, real Zen inference, physical iPhone/Android,
 actual external IM exchange, Electron GUI or cloud cost is claimed. The live
-preflight returns Pending for the missing secure `MINICLAW_ZEN_API_KEY` binding;
+preflight returns Pending for the missing secure `EVOBOT_ZEN_API_KEY` binding;
 observed runtime secrets/variables/outbound identities are empty. See
 [product convergence](product-convergence.md) and
 [Cloudflare staging acceptance](cloudflare-real-acceptance.md). #34/#35/#30 remain

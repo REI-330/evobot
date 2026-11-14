@@ -51,7 +51,7 @@ export class DeviceWaits extends LifecycleCapability implements DeviceToolHost {
     private readonly resumeRuntime: () => Promise<void>,
     private readonly exclusive: <T>(work: () => Promise<T>) => Promise<T>,
   ) {
-    super('miniclaw-device-waits');
+    super('evobot-device-waits');
   }
   initialize() {
     this.ctx.storage.sql

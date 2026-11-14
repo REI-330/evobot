@@ -4,7 +4,7 @@ import { botHandoffHttpFixture } from './helpers/bot-handoff-http-fixture.js';
 for (const mode of ['disabled', 'invalid-model'] as const) {
   test(`Group execution ${mode} is a confirmed rejection that leaves the Group editable`, async () => {
     const f = await botHandoffHttpFixture(undefined, {
-      MINICLAW_DURABLE_RUNTIME: mode === 'disabled' ? 'false' : 'true',
+      EVOBOT_DURABLE_RUNTIME: mode === 'disabled' ? 'false' : 'true',
     });
     try {
       if (mode === 'invalid-model') {
@@ -14,7 +14,7 @@ for (const mode of ['disabled', 'invalid-model'] as const) {
         const id = providers.defaultProviderId ?? providers.providers[0].id;
         await f.json(
           await f.call(`/api/config/claude/providers/${id}`, 'PATCH', {
-            customEnv: { MINICLAW_MODEL_API: 'unsupported-fixture-api' },
+            customEnv: { EVOBOT_MODEL_API: 'unsupported-fixture-api' },
           }),
         );
       }

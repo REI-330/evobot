@@ -88,13 +88,13 @@ import {
   bindWorkspaceMemoryDatabase,
   createWorkspaceMemorySchema,
   deleteWorkspaceMemoryData,
-  enforceMiniclawOwnerAddressCanonicalInvariant,
+  enforceEvoBotOwnerAddressCanonicalInvariant,
   resetWorkspaceMemoryData,
 } from './memory-store.js';
 import {
   bindOwnerProfileDatabase,
   createOwnerProfileSchema,
-  MINICLAW_OWNER_INTRODUCTION_FLOW_KEY,
+  EVOBOT_OWNER_INTRODUCTION_FLOW_KEY,
   reconcileLegacyOwnerProfileMemory,
 } from './owner-profile-store.js';
 import { splitLegacyEmbeddedReferenceContent } from './message-prompt.js';
@@ -139,6 +139,7 @@ import {
   bindMessageFeedbackDatabase,
   createMessageFeedbackSchema,
 } from './personal-agent/message-feedback.js';
+import { bindRsiDatabase, createRsiSchema } from './rsi/schema.js';
 
 let db: InstanceType<typeof Database>;
 /**
@@ -146,7 +147,7 @@ let db: InstanceType<typeof Database>;
  * restating the number. Hardcoding it meant every schema bump edited a dozen
  * unrelated test files, which is churn that hides real assertion changes.
  */
-export const CURRENT_SCHEMA_VERSION = 107;
+export const CURRENT_SCHEMA_VERSION = 108;
 
 export function isDatabaseInitialized(): boolean {
   return Boolean(db?.open);
@@ -426,7 +427,7 @@ function sqliteStringLiteral(value: string): string {
  * or data-reconciliation write; a backup failure aborts startup.
  */
 function createPreMigrationBackup(dbPath: string, schemaVersion: number): void {
-  const configuredDir = process.env.MINICLAW_MIGRATION_BACKUP_DIR;
+  const configuredDir = process.env.EVOBOT_MIGRATION_BACKUP_DIR;
   const backupDir = configuredDir
     ? path.resolve(configuredDir)
     : path.join(path.dirname(dbPath), 'migration-backups');
@@ -912,7 +913,7 @@ export function initDatabase(): void {
     );
   `);
 
-  // v65 -> v66: Miniclaw Owner Profile remains a reserved Workspace Memory
+  // v65 -> v66: EvoBot Owner Profile remains a reserved Workspace Memory
   // item; this table tracks only its one-shot onboarding lifecycle. Duplicate
   // legacy items must be reconciled before the reserved-key unique index is
   // installed.
@@ -926,7 +927,7 @@ export function initDatabase(): void {
   } else {
     // Fresh and already-v66 databases need the structural invariant, but must
     // not re-run legacy sentinel inference on every normal restart.
-    enforceMiniclawOwnerAddressCanonicalInvariant();
+    enforceEvoBotOwnerAddressCanonicalInvariant();
   }
 
   // Sub-agents table for multi-agent parallel execution
@@ -1325,7 +1326,7 @@ export function initDatabase(): void {
   ensureColumn('scheduled_tasks', 'deleted_at', 'TEXT');
   // v62 -> v63: a task stored only the workspace-level `chat_jid`, so execution
   // had to re-derive its target and fell back to "any group in this folder,
-  // preferring web:". Capture the concrete delivery route instead — Miniclaw's
+  // preferring web:". Capture the concrete delivery route instead — EvoBot's
   // JID already encodes provider, external chat, channel account and Feishu
   // thread/root, so one column carries the whole binding. Existing rows are
   // backfilled from `chat_jid`, which is exactly the route they used before.
@@ -1382,7 +1383,7 @@ export function initDatabase(): void {
   ensureColumn('registered_groups', 'owner_im_id', 'TEXT');
   ensureColumn('registered_groups', 'owner_claim_source', 'TEXT');
   // Existing owner anchors predate provenance and may include credentials that
-  // were transferred between Miniclaw users. Keep them usable for legacy
+  // were transferred between EvoBot users. Keep them usable for legacy
   // owner-only commands, but never let an ordinary DM silently turn them into
   // Agent Builder trust; the user must re-pair or configure the owner in Web.
   db.prepare(
@@ -2003,13 +2004,13 @@ export function initDatabase(): void {
 
   // v39 → v40: Track the top-level AgentProfile identity used by each Claude
   // session. When a profile prompt changes, callers can detect the hash mismatch
-  // and start a fresh SDK session without losing Miniclaw message history.
+  // and start a fresh SDK session without losing EvoBot message history.
   ensureColumn('sessions', 'agent_profile_id', 'TEXT');
   ensureColumn('sessions', 'identity_hash', 'TEXT');
   ensureColumn('sessions', 'agent_profile_version', 'INTEGER');
 
   // v40 → v41: Allow each AgentProfile to opt out of the Claude Code
-  // built-in system prompt preset and use only Miniclaw/Agent prompts.
+  // built-in system prompt preset and use only EvoBot/Agent prompts.
   ensureColumn(
     'agent_profiles',
     'include_claude_preset',
@@ -2024,7 +2025,7 @@ export function initDatabase(): void {
     "TEXT NOT NULL DEFAULT '{}'",
   );
   // v46 → v47: profile-level avatar overrides. Null means inherit the
-  // globally configured main Miniclaw avatar.
+  // globally configured main EvoBot avatar.
   ensureColumn('agent_profiles', 'avatar_emoji', 'TEXT');
   ensureColumn('agent_profiles', 'avatar_color', 'TEXT');
   ensureColumn('agent_profiles', 'avatar_url', 'TEXT');
@@ -2356,7 +2357,7 @@ export function initDatabase(): void {
   // rows predate event IDs, so each row becomes one explicitly marked legacy
   // event; we do not guess which old model rows belonged to the same run.
   // v55 -> v56: Kaboo-compatible reasoning is a fifth, independently visible
-  // token class. Historical Miniclaw rows kept Claude thinking folded into
+  // token class. Historical EvoBot rows kept Claude thinking folded into
   // output, so they remain reasoning=0 rather than being guessed retroactively.
   ensureColumn(
     'usage_records',
@@ -2572,6 +2573,9 @@ export function initDatabase(): void {
   // v87 -> v88: deferred turns, versioned relay and owner-confirmed independent Group work.
   createGroupDiscussionSchema(db);
   bindGroupDiscussionDatabase(db);
+  // v107 -> v108: RSI failure-gate branches.
+  createRsiSchema(db);
+  bindRsiDatabase(db);
 
   db.prepare(
     'INSERT OR REPLACE INTO router_state (key, value) VALUES (?, ?)',
@@ -4207,7 +4211,7 @@ export function getUsageAnalytics(filters: UsageQueryFilters): {
         ? `COALESCE(
             (SELECT a.name FROM agents a WHERE a.id = r.agent_id LIMIT 1),
             (SELECT ap.name FROM agent_profiles ap WHERE ap.id = r.agent_id LIMIT 1),
-            CAST(r.agent_id AS TEXT), 'Miniclaw')`
+            CAST(r.agent_id AS TEXT), 'EvoBot')`
         : column === 'group_folder'
           ? `COALESCE(
               (SELECT rg.name FROM registered_groups rg
@@ -8899,8 +8903,13 @@ export function commitAgentBuilderDraft(
   })();
 }
 
-const DEFAULT_AGENT_PROFILE_NAME = 'Miniclaw';
-const LEGACY_DEFAULT_AGENT_PROFILE_NAMES = ['Default Agent'];
+const DEFAULT_AGENT_PROFILE_NAME = 'EvoBot';
+const LEGACY_DEFAULT_AGENT_PROFILE_NAMES = [
+  'Default Agent',
+  'Miniclaw',
+  'MiniClaw',
+  'OpenDot',
+];
 
 export function getOrCreateDefaultAgentProfile(userId: string): AgentProfile {
   const existing = db
@@ -9335,7 +9344,7 @@ export function assignWorkspaceAgentProfile(
       const defaultProfile = getOrCreateDefaultAgentProfile(home.created_by);
       if (profileId !== defaultProfile.id) {
         throw new Error(
-          'Home Workspace must remain bound to the built-in Miniclaw Agent',
+          'Home Workspace must remain bound to the built-in EvoBot Agent',
         );
       }
     }
@@ -11449,7 +11458,7 @@ export function resetWorkspaceKnowledgeForRebuild(workspaceJid: string): void {
     db.prepare(
       `DELETE FROM workspace_onboarding_states
        WHERE workspace_jid = ? AND flow_key = ?`,
-    ).run(workspaceJid, MINICLAW_OWNER_INTRODUCTION_FLOW_KEY);
+    ).run(workspaceJid, EVOBOT_OWNER_INTRODUCTION_FLOW_KEY);
 
     if (workspace.is_home === 1) {
       const at = new Date().toISOString();
@@ -11459,7 +11468,7 @@ export function resetWorkspaceKnowledgeForRebuild(workspaceJid: string): void {
           lease_expires_at, first_wake_at, completed_at, skipped_at,
           created_at, updated_at
         ) VALUES (?, ?, 'pending', 0, NULL, 0, NULL, NULL, NULL, NULL, ?, ?)`,
-      ).run(workspaceJid, MINICLAW_OWNER_INTRODUCTION_FLOW_KEY, at, at);
+      ).run(workspaceJid, EVOBOT_OWNER_INTRODUCTION_FLOW_KEY, at, at);
     }
   })();
 }
@@ -14827,6 +14836,7 @@ export function closeDatabase(): void {
   bindProductRuntimeDatabase(null);
   bindMessageFeedbackDatabase(null);
   bindApprovalDatabase(null);
+  bindRsiDatabase(null);
   if (db) {
     db.close();
   }

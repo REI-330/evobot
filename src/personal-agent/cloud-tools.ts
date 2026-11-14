@@ -116,12 +116,12 @@ export async function cloudTool(
       current.runtime.conversation_id !== 1 ||
       !granted ||
       (input.name === 'read_device_file'
-        ? process.env.MINICLAW_CLOUD_DEVICES !== 'true' &&
+        ? process.env.EVOBOT_CLOUD_DEVICES !== 'true' &&
           !findCloudDeviceRequest(scope.session_id, input.task_id)
         : process.env[
             input.name === 'read_personal_memory'
-              ? 'MINICLAW_CLOUD_MEMORY'
-              : 'MINICLAW_CLOUD_APPROVALS'
+              ? 'EVOBOT_CLOUD_MEMORY'
+              : 'EVOBOT_CLOUD_APPROVALS'
           ] !== 'true')
     )
       throw new CloudError(403, 'CLOUD_TOOL_NOT_GRANTED');

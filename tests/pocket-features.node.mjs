@@ -17,7 +17,7 @@ import {
 const require = createRequire(import.meta.url);
 const ts = require('typescript');
 const root = path.resolve(fileURLToPath(new URL('..', import.meta.url)));
-const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'miniclaw-pocket-'));
+const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'evobot-pocket-'));
 after(() => fs.rmSync(temporary, { recursive: true, force: true }));
 async function loadTS(relative, name) {
   const source = fs.readFileSync(path.join(root, relative), 'utf8');
@@ -573,7 +573,7 @@ async function notificationHarness(options = {}) {
   const values = new Map(
     options.saved === undefined
       ? []
-      : [['miniclaw:pocket:notifications', options.saved]],
+      : [['evobot:pocket:notifications', options.saved]],
   );
   const reg = {
     active: {},
@@ -681,7 +681,7 @@ test('mobile notifications use a child-scope worker and no lock-screen content',
   assert.equal(h.registrations[0].config.updateViaCache, 'none');
   assert.equal(h.shown[0].payload.data.url, 'https://host.test/app/chat');
   assert.equal(h.shown[0].payload.icon, '/app/icons/icon-192.png?v=robot');
-  assert.equal(h.shown[0].payload.body, '有新的会话结果，打开 Miniclaw 查看。');
+  assert.equal(h.shown[0].payload.body, '有新的会话结果，打开 EvoBot 查看。');
 });
 test('explicit opt-out overrides a previously granted browser permission', async () => {
   const h = await notificationHarness({ saved: 'disabled' });
@@ -714,7 +714,7 @@ test('notification permission is requested only through explicit enable', async 
 test('cross-tab opt-out prevents the other tab from continuing to notify', async () => {
   const h = await notificationHarness();
   h.events.get('storage')({
-    key: 'miniclaw:pocket:notifications',
+    key: 'evobot:pocket:notifications',
     newValue: 'disabled',
   });
   await h.api.notifyPocketIfHidden(true);

@@ -32,7 +32,7 @@ import { getErrorMessage } from './types';
 
 type ProviderType = 'official' | 'third_party';
 type OfficialAuthTab = 'oauth' | 'setup_token' | 'api_key';
-const VISION_INPUT_KEY = 'MINICLAW_MODEL_VISION_INPUT';
+const VISION_INPUT_KEY = 'EVOBOT_MODEL_VISION_INPUT';
 
 const RESERVED_ENV_KEYS = new Set([
   'ANTHROPIC_BASE_URL',
@@ -40,7 +40,7 @@ const RESERVED_ENV_KEYS = new Set([
   'ANTHROPIC_API_KEY',
   'CLAUDE_CODE_OAUTH_TOKEN',
   'ANTHROPIC_MODEL',
-  'MINICLAW_MODEL_MAX_OUTPUT_TOKENS',
+  'EVOBOT_MODEL_MAX_OUTPUT_TOKENS',
 ]);
 
 const DEFAULTED_THIRD_PARTY_ENV_KEYS = new Set(
@@ -200,7 +200,7 @@ export function ProviderEditor({
       setClearTokenOnSave(false);
       const providerCustomEnv = provider.customEnv || {};
       setMaxOutputTokens(
-        providerCustomEnv.MINICLAW_MODEL_MAX_OUTPUT_TOKENS ?? '',
+        providerCustomEnv.EVOBOT_MODEL_MAX_OUTPUT_TOKENS ?? '',
       );
       setVisionInput(providerCustomEnv[VISION_INPUT_KEY] === 'true');
       const defaultEnv = Object.fromEntries(
@@ -225,7 +225,7 @@ export function ProviderEditor({
       const envRows = Object.entries(providerCustomEnv)
         .filter(
           ([key]) =>
-            key !== 'MINICLAW_MODEL_MAX_OUTPUT_TOKENS' &&
+            key !== 'EVOBOT_MODEL_MAX_OUTPUT_TOKENS' &&
             key !== VISION_INPUT_KEY &&
             (provider.type !== 'third_party' ||
               !DEFAULTED_THIRD_PARTY_ENV_KEYS.has(key)),
@@ -363,7 +363,7 @@ export function ProviderEditor({
       ...envResult.customEnv,
       ...(providerType === 'third_party' ? providerEnvOverrides : {}),
       ...(outputLimit
-        ? { MINICLAW_MODEL_MAX_OUTPUT_TOKENS: String(Number(outputLimit)) }
+        ? { EVOBOT_MODEL_MAX_OUTPUT_TOKENS: String(Number(outputLimit)) }
         : {}),
       ...(visionInput ? { [VISION_INPUT_KEY]: 'true' } : {}),
     };

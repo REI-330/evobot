@@ -1,4 +1,4 @@
-# Miniclaw 权限矩阵
+# EvoBot 权限矩阵
 
 本文档描述当前授权边界。具体中间件和条件分支以代码为准：
 
@@ -25,7 +25,7 @@
 | Billing  | Billing Middleware           | `manage_billing`                       |
 | IM Owner | `owner_im_id` 比对           | 当前渠道原生 sender 是记录的主人       |
 
-`MINICLAW_DEMO_OPEN=true` 时，回环连接上的未登录请求会先得到管理员会话，再进入 Login 层。默认关闭，不作用于 `/api/cloud-runtime` 的 HMAC。详见 [DEMO.md](../DEMO.md)。
+`EVOBOT_DEMO_OPEN=true` 时，回环连接上的未登录请求会先得到管理员会话，再进入 Login 层。默认关闭，不作用于 `/api/cloud-runtime` 的 HMAC。详见 [DEMO.md](../DEMO.md)。
 
 核心原则：
 
@@ -55,9 +55,9 @@
 不以 Cookie 或知道订阅 ID 代替签名。接入前重新检查订阅 owner、Workspace
 归属、目录及当前 Host 执行权限；不提供 admin 跨用户旁路。
 管理接口使用现有 Cookie，仅 owner 能查看、暂停或取消；创建需要当前 Host
-权限。配置只允许引用部署方预置的 `MINICLAW_GITHUB_WEBHOOK_*` 本地签名密钥，
+权限。配置只允许引用部署方预置的 `EVOBOT_GITHUB_WEBHOOK_*` 本地签名密钥，
 不接收密钥值或任意环境变量引用。取消会撤销关联未完成审批并阻止待交付结果。
-部署方必须另在非秘密 `MINICLAW_GITHUB_WEBHOOK_GRANTS` 中明确声明
+部署方必须另在非秘密 `EVOBOT_GITHUB_WEBHOOK_GRANTS` 中明确声明
 `owner_user_id / workspace_jid / secret_variable` 授权，默认不授予任何引用。
 该授权在事件接入、已有 Goal 执行及结果交付前复核；撤销或无效声明会拒绝执行。
 
@@ -79,7 +79,7 @@
 | `/api/skills/*`                                     | Login，仅本人用户 Skills                      |
 | 用户级 `/api/mcp-servers/*`                         | Login，仅本人配置                             |
 | Workspace Memory v2                                 | Login + Workspace owner ACL，见 4.5           |
-| Miniclaw Owner Profile                              | Home actual owner + runtime exact-turn gate   |
+| EvoBot Owner Profile                              | Home actual owner + runtime exact-turn gate   |
 | `/api/usage/*`                                      | Login；普通用户只见本人，管理视图再按角色过滤 |
 | `/api/billing/my/*`                                 | Login，仅本人                                 |
 
@@ -106,7 +106,7 @@
 - 打开 Web 终端前的资源检查
 
 Home 的 AgentProfile 归属也是系统不变量：只能绑定同一 owner 的 `is_default`
-Miniclaw。路由在进入 Runtime quiesce 前拒绝迁移，数据库绑定函数再次校验；启动
+EvoBot。路由在进入 Runtime quiesce 前拒绝迁移，数据库绑定函数再次校验；启动
 backfill 会修复旧数据中的错误 Home 绑定。
 
 Host Workspace 在 Access 之外还要求 admin。
@@ -171,18 +171,18 @@ Agent Runtime 的 Workspace Memory MCP 还叠加执行上下文策略：
 定时任务和 Sub-Agent 即使继承 Workspace owner 身份，也不能写入 Workspace Memory；
 只读限制由 MCP 暴露面与主进程 IPC broker 共同执行，不能由模型参数扩大权限。
 
-### 4.6 Miniclaw Owner Profile
+### 4.6 EvoBot Owner Profile
 
 `GET|PATCH /api/workspaces/:jid/owner-profile` 只接受当前登录用户自己的 Home
-Workspace，且目标必须绑定内置默认 Miniclaw。admin 不具有跨 owner bypass。
+Workspace，且目标必须绑定内置默认 EvoBot。admin 不具有跨 owner bypass。
 
 Runtime 的权限更严格：
 
 | 上下文                                       | 投影                | 修改                  |
 | -------------------------------------------- | ------------------- | --------------------- |
-| Home 内置 Miniclaw + actual owner turn       | 允许                | 当前 active turn 允许 |
-| Home 内置 Miniclaw + 非 owner 群成员 turn    | 拒绝                | 拒绝                  |
-| Home 内置 Miniclaw 普通 Runtime Session      | actual owner 时允许 | 当前 active turn 允许 |
+| Home 内置 EvoBot + actual owner turn       | 允许                | 当前 active turn 允许 |
+| Home 内置 EvoBot + 非 owner 群成员 turn    | 拒绝                | 拒绝                  |
+| Home 内置 EvoBot 普通 Runtime Session      | actual owner 时允许 | 当前 active turn 允许 |
 | 自定义 AgentProfile / Scheduled / Task/Spawn | 拒绝                | 拒绝                  |
 | SDK Sub-Agent                                | 拒绝                | 拒绝                  |
 

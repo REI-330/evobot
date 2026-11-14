@@ -28,15 +28,15 @@ describe('Electron Desktop Shell contract', () => {
   });
 
   it('keeps packaging focused on the desktop shell', () => {
-    expect(builderConfig).toContain('productName: OpenDot');
-    expect(builderConfig).toContain('appId: cc.miniclaw.desktop');
+    expect(builderConfig).toContain('productName: EvoBot');
+    expect(builderConfig).toContain('appId: cc.evobot.desktop');
     expect(mainSource).toContain(
-      "path.join(app.getPath('appData'), 'Miniclaw')",
+      "path.join(app.getPath('appData'), 'EvoBot')",
     );
-    expect(mainSource).toContain('process.env.MINICLAW_SERVER_URL');
-    expect(mainSource).toContain('process.env.MINICLAW_RENDERER_URL');
-    expect(builderConfig).toContain('icon: assets/miniclaw-icon.png');
-    expect(builderConfig).toContain('icon: assets/miniclaw.icns');
+    expect(mainSource).toContain('process.env.EVOBOT_SERVER_URL');
+    expect(mainSource).toContain('process.env.EVOBOT_RENDERER_URL');
+    expect(builderConfig).toContain('icon: assets/evobot-icon.png');
+    expect(builderConfig).toContain('icon: assets/evobot.icns');
     expect(builderConfig).toContain('assets/**/*');
     expect(builderConfig).toContain('dist/**/*');
     expect(builderConfig).toContain('extraMetadata:');

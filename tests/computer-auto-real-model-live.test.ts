@@ -18,17 +18,17 @@ import {
 
 test.skipIf(
   process.platform !== 'darwin' ||
-    !process.env.OPENDOT_TEST_KIMICU_PID ||
-    !process.env.MINICLAW_GROUP_MODEL_CONFIG,
+    !process.env.EVOBOT_TEST_KIMICU_PID ||
+    !process.env.EVOBOT_GROUP_MODEL_CONFIG,
 )(
   'real model discovers and operates only the synthetic fixture after approvals',
   async () => {
-    const model = readLiveOpenAIModel(process.env.MINICLAW_GROUP_MODEL_CONFIG!);
+    const model = readLiveOpenAIModel(process.env.EVOBOT_GROUP_MODEL_CONFIG!);
     const f = await botHandoffHttpFixture(undefined, {
-      MINICLAW_PI_MCP: 'true',
-      MINICLAW_DEVICE_NODES: 'true',
+      EVOBOT_PI_MCP: 'true',
+      EVOBOT_DEVICE_NODES: 'true',
     });
-    const serverId = `opendot_computer_${randomUUID().replaceAll('-', '')}`;
+    const serverId = `evobot_computer_${randomUUID().replaceAll('-', '')}`;
     fs.symlinkSync(path.resolve('dist'), path.join(f.root, 'dist'));
     fs.symlinkSync(path.resolve('scripts'), path.join(f.root, 'scripts'));
     try {
@@ -55,7 +55,7 @@ test.skipIf(
           agentId: session,
           requestId: randomUUID(),
           content:
-            'Only operate the synthetic test app. List windows with application filter net.opendot.kimi-screenshot-fixture and title filter OpenDot Green Fixture. Observe that window using its exact label and handle. Click its Run synthetic action button using its exact window label, element line and index from the observation. Do not open or inspect any other application. Report the result.',
+            'Only operate the synthetic test app. List windows with application filter net.evobot.kimi-screenshot-fixture and title filter EvoBot Green Fixture. Observe that window using its exact label and handle. Click its Run synthetic action button using its exact window label, element line and index from the observation. Do not open or inspect any other application. Report the result.',
           followUpBehavior: 'queue',
         }),
       );
@@ -90,11 +90,11 @@ test.skipIf(
         called.add(tool);
         if (tool === 'list_windows')
           expect(args).toEqual({
-            application: 'net.opendot.kimi-screenshot-fixture',
-            title: 'OpenDot Green Fixture',
+            application: 'net.evobot.kimi-screenshot-fixture',
+            title: 'EvoBot Green Fixture',
           });
         if (tool === 'observe_window' || tool === 'act_on_window')
-          expect(args.label).toBe('Fixture — OpenDot Green Fixture');
+          expect(args.label).toBe('Fixture — EvoBot Green Fixture');
         if (tool === 'act_on_window') {
           expect(args.action).toBe('click');
           expect(++clicks).toBe(1);
@@ -151,9 +151,9 @@ test.skipIf(
       );
       try {
         const backend = new KimiCuBackend(client, {
-          appId: 'net.opendot.kimi-screenshot-fixture',
-          pid: Number(process.env.OPENDOT_TEST_KIMICU_PID),
-          windowId: Number(process.env.OPENDOT_TEST_KIMICU_WINDOW_ID),
+          appId: 'net.evobot.kimi-screenshot-fixture',
+          pid: Number(process.env.EVOBOT_TEST_KIMICU_PID),
+          windowId: Number(process.env.EVOBOT_TEST_KIMICU_WINDOW_ID),
         });
         expect((await backend.observe()).text).toContain(
           'Synthetic action complete',

@@ -3,7 +3,7 @@
 import { expect, test } from '@playwright/test';
 import { botHandoffHttpFixture } from '../../../tests/helpers/bot-handoff-http-fixture';
 
-test('OpenDot applies the canonical design and preserves a renamed default Dot across devices and login', async ({
+test('EvoBot applies the canonical design and preserves a renamed default Dot across devices and login', async ({
   browser,
 }) => {
   test.setTimeout(120000);
@@ -71,14 +71,14 @@ test('OpenDot applies the canonical design and preserves a renamed default Dot a
         for (const theme of ['light', 'dark']) {
           await page.goto(f.origin + '/bots');
           await page.evaluate(
-            (value) => localStorage.setItem('miniclaw-theme', value),
+            (value) => localStorage.setItem('evobot-theme', value),
             theme,
           );
           await page.reload();
           await expect(
             page.getByRole('heading', { name: '小点', exact: true }),
           ).toBeVisible();
-          await expect(page).toHaveTitle(/OpenDot/);
+          await expect(page).toHaveTitle(/EvoBot/);
           const style = await page.evaluate(() => {
             const css = getComputedStyle(document.documentElement);
             const value = (key: string) => css.getPropertyValue(key).trim();
@@ -105,7 +105,7 @@ test('OpenDot applies the canonical design and preserves a renamed default Dot a
             path: test
               .info()
               .outputPath(
-                `${mobile ? 'mobile' : 'desktop'}-${theme}-opendot.png`,
+                `${mobile ? 'mobile' : 'desktop'}-${theme}-evobot.png`,
               ),
             animations: 'disabled',
             scale: 'css',

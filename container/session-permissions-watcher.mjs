@@ -12,8 +12,8 @@ import {
   watchRescanKey,
 } from './session-permissions-mount.mjs';
 
-const READY_FILE = '/run/miniclaw-session-watcher.ready';
-const FAILED_FILE = '/run/miniclaw-session-watcher.failed';
+const READY_FILE = '/run/evobot-session-watcher.ready';
+const FAILED_FILE = '/run/evobot-session-watcher.failed';
 const RESCAN_INTERVAL_MS = 30_000;
 const RECOVERY_LOSS_WINDOW_MS = 10_000;
 const MAX_RECOVERY_LOSSES = 8;
@@ -127,7 +127,7 @@ const generatedRoots = new Map([
   [
     'chromium',
     {
-      path: '/tmp/miniclaw-chromium-profile',
+      path: '/tmp/evobot-chromium-profile',
       policy: 'managed',
       normalization: 'node-owned',
     },
@@ -151,7 +151,7 @@ if (generatedKey !== undefined) {
         : 'shared',
     rootOnly: directMountRoots,
     virtualizedOwnership:
-      process.env.MINICLAW_INTERNAL_IDENTITY_MODE === 'virtualized' &&
+      process.env.EVOBOT_INTERNAL_IDENTITY_MODE === 'virtualized' &&
       (nodeOwnedMounts || nodeOwnedWatch)
         ? new Map()
         : undefined,
@@ -285,7 +285,7 @@ function normalizeDescriptor(fd, root, required = false) {
     ) {
       throw new Error(`refusing ${description}`);
     }
-    process.stderr.write(`miniclaw: skipping ${description}\n`);
+    process.stderr.write(`evobot: skipping ${description}\n`);
     return { stat, outsideRootMount: false };
   }
   try {
@@ -616,7 +616,7 @@ async function stop() {
   } catch (error) {
     closeRoots();
     process.stderr.write(
-      `miniclaw permission watcher final scan failed: ${error}\n`,
+      `evobot permission watcher final scan failed: ${error}\n`,
     );
     process.exit(1);
   }

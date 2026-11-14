@@ -78,7 +78,7 @@ test('persists engine selection and provisioning across reopen; flag changes can
     state: 'provisioning',
     conversation_id: null,
   });
-  vi.stubEnv('MINICLAW_DURABLE_RUNTIME', 'false');
+  vi.stubEnv('EVOBOT_DURABLE_RUNTIME', 'false');
   db.closeDatabase();
   db.initDatabase();
   expect(runtime.requireProductRuntime(id, 'alice').runtime_kind).toBe(

@@ -41,6 +41,6 @@ Validation on the isolated latest-main branch:
 - Exact-head hosted CI is recorded in the PR. No real-provider/cloud/physical
   device acceptance or deployment is claimed.
 
-This is a separate runtime fix, not part of the OpenDot visual commit. Rollback
+This is a separate runtime fix, not part of the EvoBot visual commit. Rollback
 reverts this guard change without touching stored conversations/coordinators;
 it restores the known false-error race. Keep the ownership assertions intact.

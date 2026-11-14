@@ -6,7 +6,7 @@ import type { KimiCuToolSession } from '../src/personal-agent/kimi-cu-tool-sessi
 test('agent discovers and observes a target before acting; launch resets selection', async () => {
   const discovery = new KimiCuWindowDiscovery(async () => [
     {
-      appId: 'net.opendot.fixture',
+      appId: 'net.evobot.fixture',
       pid: 1,
       windowId: 2,
       appName: 'Fixture',
@@ -17,7 +17,7 @@ test('agent discovers and observes a target before acting; launch resets selecti
     .fn()
     .mockResolvedValue({
       token: 'fixture',
-      text: '- pid: 1\n- bundle_id: net.opendot.fixture\n- [1] AXButton Button',
+      text: '- pid: 1\n- bundle_id: net.evobot.fixture\n- [1] AXButton Button',
     });
   const makeSession = vi.fn(() => ({ call }) as unknown as KimiCuToolSession);
   const launch = vi.fn();

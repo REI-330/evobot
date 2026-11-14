@@ -37,7 +37,7 @@ Pending. No tool permissions are lowered to make the PoC run.
 ## Product Cloud Memory bridge — 2026-10-18
 
 New product Cloud Sessions can freeze `tool_capabilities: ["read_personal_memory"]`
-when both `MINICLAW_CLOUD_MEMORY=true` and `MINICLAW_PERSONAL_MEMORY=true` are set.
+when both `EVOBOT_CLOUD_MEMORY=true` and `EVOBOT_PERSONAL_MEMORY=true` are set.
 The bridge is off by default. Historical bindings omit this optional field;
 they keep their original digest and tools. A model cannot add tools through the
 Provider request: the proxy independently checks names against that binding.
@@ -69,8 +69,8 @@ separate integrations; the following section records the approval increment.
 ## Product Cloud approval/recovery increment
 
 New Sessions may additionally freeze `create_approved_artifact` when
-`MINICLAW_CLOUD_APPROVALS=true`. Historical tool sets do not change. This is the
-existing MiniClaw private-artifact Tool Service on the authorized business host,
+`EVOBOT_CLOUD_APPROVALS=true`. Historical tool sets do not change. This is the
+existing EvoBot private-artifact Tool Service on the authorized business host,
 not a Worker filesystem or a paired computer. It accepts exact UTF8 content up
 to 64 KiB, chooses its own private UUID path and cannot overwrite a file.
 

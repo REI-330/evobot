@@ -5,7 +5,7 @@ import path from 'node:path';
 import Database from 'better-sqlite3';
 import { expect, test, beforeAll, afterAll, afterEach, vi } from 'vitest';
 import type { PersonalGoal } from '../src/personal-agent/goal-store.js';
-const root = fs.mkdtempSync(path.join(os.tmpdir(), 'miniclaw-goal-team-'));
+const root = fs.mkdtempSync(path.join(os.tmpdir(), 'evobot-goal-team-'));
 vi.mock('../src/config.js', async (original) => ({
   ...(await original<Record<string, unknown>>()),
   DATA_DIR: root,
@@ -83,10 +83,10 @@ function agent(id: string, goalId?: string) {
 }
 function fixture() {
   for (const name of [
-    'MINICLAW_PERSONAL_GOALS',
-    'MINICLAW_GOAL_TEAMS',
-    'MINICLAW_BOT_GROUPS',
-    'MINICLAW_BOT_HANDOFFS',
+    'EVOBOT_PERSONAL_GOALS',
+    'EVOBOT_GOAL_TEAMS',
+    'EVOBOT_BOT_GROUPS',
+    'EVOBOT_BOT_HANDOFFS',
   ])
     vi.stubEnv(name, 'true');
   const receipt = groups.createBotGroup('alice', randomUUID(), {
@@ -366,11 +366,11 @@ test('cross-owner Group access, disabled admission and missing reviewed grant ne
       f.provision,
     ),
   ).toThrow();
-  vi.stubEnv('MINICLAW_GOAL_TEAMS', 'false');
+  vi.stubEnv('EVOBOT_GOAL_TEAMS', 'false');
   expect(() =>
     goals.createPersonalGoal('alice', randomUUID(), f.input, f.provision),
   ).toThrow(/ADMISSION_DISABLED/);
-  vi.stubEnv('MINICLAW_GOAL_TEAMS', 'true');
+  vi.stubEnv('EVOBOT_GOAL_TEAMS', 'true');
   const claim = start(f.task),
     raw = new Database(path.join(root, 'db/messages.db'));
   raw

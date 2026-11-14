@@ -11,7 +11,7 @@ let db: Database.Database;
 afterEach(() => {
   bindMem0ResourceDatabase(null);
   db?.close();
-  delete process.env.MINICLAW_MEM0_DAILY_BUDGET;
+  delete process.env.EVOBOT_MEM0_DAILY_BUDGET;
 });
 function fixture() {
   db = new Database(':memory:');
@@ -29,7 +29,7 @@ function fixture() {
 }
 it('limits search and capture together without resetting on key rotation', () => {
   const scope = fixture();
-  process.env.MINICLAW_MEM0_DAILY_BUDGET = '2';
+  process.env.EVOBOT_MEM0_DAILY_BUDGET = '2';
   expect(reserveMem0Operation(scope, 100000)).toBe('reserved');
   expect(reserveMem0Operation(scope, 100000)).toBe('reserved');
   expect(reserveMem0Operation({ ...scope, credentialVersion: 2 }, 100000)).toBe(

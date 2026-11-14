@@ -29,7 +29,7 @@ export const BindingSchema = z
     instructions: z.string().max(32768),
     max_model_steps: z.number().int().min(1).max(24),
     deadline_at: z.number().int().positive(),
-    execution_authority: z.literal('miniclaw-product').optional(),
+    execution_authority: z.literal('evobot-product').optional(),
     tool_capabilities: z
       .array(z.enum(CLOUD_TOOL_CAPABILITIES))
       .max(CLOUD_TOOL_CAPABILITIES.length)
@@ -66,7 +66,7 @@ export const ProvisionSchema = z
       binding.group_session &&
       (binding.goal_id ||
         binding.bot_handoff ||
-        binding.execution_authority !== 'miniclaw-product' ||
+        binding.execution_authority !== 'evobot-product' ||
         binding.tool_capabilities === undefined ||
         binding.tool_capabilities.some(
           (name) =>
@@ -77,7 +77,7 @@ export const ProvisionSchema = z
     if (
       binding.bot_handoff &&
       (binding.goal_id ||
-        binding.execution_authority !== 'miniclaw-product' ||
+        binding.execution_authority !== 'evobot-product' ||
         binding.tool_capabilities === undefined ||
         binding.tool_capabilities.some(
           (name) =>
@@ -88,7 +88,7 @@ export const ProvisionSchema = z
     )
       return false;
     return binding.goal_id
-      ? 'binding' in value && binding.execution_authority === 'miniclaw-product'
+      ? 'binding' in value && binding.execution_authority === 'evobot-product'
       : !('binding' in value);
   });
 export const InputSchema = z

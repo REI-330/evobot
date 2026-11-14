@@ -79,7 +79,7 @@ async function taskScenario(): Promise<void> {
     { phase: 'step'; step: number },
     number
   >({
-    name: 'miniclaw.fault-injection.work',
+    name: 'evobot.fault-injection.work',
     version: 1,
     initial: () => ({ phase: 'step', step: 1 }),
     phases: {
@@ -116,7 +116,7 @@ async function taskScenario(): Promise<void> {
   });
   const registry = createRegistry();
   registry.install(
-    defineExtension({ name: 'miniclaw-fault-test', tasks: [Work] }),
+    defineExtension({ name: 'evobot-fault-test', tasks: [Work] }),
   );
   const harness = await Harness.open(
     await openNodeSqliteStorage(databasePath),
@@ -167,8 +167,8 @@ async function taskScenario(): Promise<void> {
 
 async function modelScenario(): Promise<void> {
   const faux = fauxProvider({
-    provider: 'miniclaw-fault-model',
-    api: 'miniclaw-fault-api',
+    provider: 'evobot-fault-model',
+    api: 'evobot-fault-api',
   });
   const models = createModels();
   models.setProvider(faux.provider);

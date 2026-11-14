@@ -9,8 +9,8 @@ import {
 } from '../tests/helpers/bot-handoff-http-fixture.js';
 import { threeDotGroup } from '../tests/helpers/group-discussion-fixture.js';
 
-const configPath = process.env.MINICLAW_GROUP_MODEL_CONFIG;
-const outputPath = process.env.MINICLAW_GROUP_EVIDENCE_PATH;
+const configPath = process.env.EVOBOT_GROUP_MODEL_CONFIG;
+const outputPath = process.env.EVOBOT_GROUP_EVIDENCE_PATH;
 assert(
   configPath && outputPath,
   'Private model configuration and report path required',
@@ -58,8 +58,8 @@ try {
       anthropicBaseUrl: model.baseUrl,
       anthropicModel: model.model,
       customEnv: {
-        MINICLAW_MODEL_API: model.api,
-        MINICLAW_MODEL_MAX_OUTPUT_TOKENS: '8192',
+        EVOBOT_MODEL_API: model.api,
+        EVOBOT_MODEL_MAX_OUTPUT_TOKENS: '8192',
       },
     }),
   );

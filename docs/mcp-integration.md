@@ -34,7 +34,7 @@ credential inheritance is enabled.
   **not** approve process startup, grant a session tools or enable a Runtime.
 - Explicit original tool selection resolves into canonical registered names;
   collisions, missing names and schema/catalog changes are rejected. Session
-  grants are intersected with this catalog, and the miniclaw wildcard grants no
+  grants are intersected with this catalog, and the evobot wildcard grants no
   external tool.
 - The connection checks a startup authorization callback before opening a
   transport and requires an explicit cwd/minimal environment. HTTP redirects,

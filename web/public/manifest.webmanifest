@@ -1,6 +1,6 @@
 {
-  "name": "OpenDot",
-  "short_name": "OpenDot",
+  "name": "EvoBot",
+  "short_name": "EvoBot",
   "description": "Your personal AI team",
   "start_url": "./",
   "display": "standalone",

@@ -15,7 +15,7 @@ import {
   readLiveOpenAIModel,
 } from './helpers/live-openai-model.js';
 
-const modelFile = process.env.MINICLAW_GROUP_MODEL_CONFIG;
+const modelFile = process.env.EVOBOT_GROUP_MODEL_CONFIG;
 test.skipIf(!modelFile)(
   'real Magpie model receives synthetic private recall and keeps its generation trace',
   async () => {
@@ -25,7 +25,7 @@ test.skipIf(!modelFile)(
       'Expected authorized loopback model relay',
     );
     const root = fs.mkdtempSync(
-      path.join(os.tmpdir(), 'opendot-mem0-live-trace-'),
+      path.join(os.tmpdir(), 'evobot-mem0-live-trace-'),
     );
     const traces = path.join(root, 'traces');
     const ledger = path.join(root, 'mem0');

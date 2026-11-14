@@ -9,7 +9,7 @@ import {
 
 test('mobile keeps four product destinations while advanced and billing routes remain in the catalog', () => {
   expect(mobileNavItems(true).map((item) => item.label)).toEqual([
-    'OpenDot',
+    'EvoBot',
     '团队',
     '工作',
     '设置',

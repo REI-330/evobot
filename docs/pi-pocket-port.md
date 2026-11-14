@@ -1,6 +1,6 @@
 # Pi Pocket 特性移植：跨设备接续
 
-本批次在 MiniClaw 的既有 Web、Electron、Pi Coding Agent 和服务端队列上增加移动接续能力，不引入第二套 Backend、数据库或消息队列。
+本批次在 EvoBot 的既有 Web、Electron、Pi Coding Agent 和服务端队列上增加移动接续能力，不引入第二套 Backend、数据库或消息队列。
 
 ## 已实现与复用
 
@@ -19,7 +19,7 @@
 
 ## 使用
 
-在新分支上沿用项目已有的依赖安装与构建步骤，启动 MiniClaw Backend。每台设备都连接同一个 Backend，并使用各自的登录 Cookie。
+在新分支上沿用项目已有的依赖安装与构建步骤，启动 EvoBot Backend。每台设备都连接同一个 Backend，并使用各自的登录 Cookie。
 
 在 Backend 所在机器运行只读检查：
 
@@ -35,7 +35,7 @@ node scripts/pocket-access.mjs --serve
 node scripts/pocket-access.mjs --serve --port 3456
 ```
 
-脚本不会安装 Tailscale、替用户登录、启用 Funnel 或关闭 MiniClaw 登录。存在其他 HTTPS 443 目标、共享路径、TCP 转发或公开 Funnel 时，脚本拒绝改写配置。`TAILSCALE_BIN` 可指定已安装的 CLI 路径。
+脚本不会安装 Tailscale、替用户登录、启用 Funnel 或关闭 EvoBot 登录。存在其他 HTTPS 443 目标、共享路径、TCP 转发或公开 Funnel 时，脚本拒绝改写配置。`TAILSCALE_BIN` 可指定已安装的 CLI 路径。
 
 手机加入同一 Tailnet，打开输出的 HTTPS 地址并登录。然后在电脑上打开目标会话，点击“跨设备接续”。电脑通过 localhost 访问时，先在面板填写脚本输出的 HTTPS origin，再复制会话链接到已经登录的手机。
 
@@ -47,7 +47,7 @@ node scripts/pocket-access.mjs --serve --port 3456
 
 客户端不缓存待发送命令用于自动重放。面板用同步锁防止连续点击；提交失败或回执不确定时保留文本，并提示先检查会话和队列。这不是跨设备提交或外部工具操作的 exactly-once 保证。
 
-Queue / Steer 沿用 MiniClaw 已有服务端策略，本批次没有把现有中断/重排策略改成 Pi Durable 原生边界调度。
+Queue / Steer 沿用 EvoBot 已有服务端策略，本批次没有把现有中断/重排策略改成 Pi Durable 原生边界调度。
 
 ## PWA 与通知边界
 
@@ -92,6 +92,6 @@ node --experimental-vm-modules --test tests/pocket-features.node.mjs
 
 ## 参考
 
-特性与交互参考：TannerMidd/pi-pocket（https://github.com/TannerMidd/pi-pocket）。本批次在 MiniClaw 内重新实现适配代码，没有复制其应用、字体、图标、模型凭证或认证默认值。
+特性与交互参考：TannerMidd/pi-pocket（https://github.com/TannerMidd/pi-pocket）。本批次在 EvoBot 内重新实现适配代码，没有复制其应用、字体、图标、模型凭证或认证默认值。
 
-Tailscale CLI 参考：https://tailscale.com/docs/reference/tailscale-cli/serve 。MiniClaw 保留自己的登录与授权边界，不将 Tailscale 网络身份视为应用权限。
+Tailscale CLI 参考：https://tailscale.com/docs/reference/tailscale-cli/serve 。EvoBot 保留自己的登录与授权边界，不将 Tailscale 网络身份视为应用权限。

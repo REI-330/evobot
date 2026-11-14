@@ -6,7 +6,7 @@ import path from 'node:path';
  * or target-specific configuration, so another Dot cannot bypass the lock. */
 export function kimiCuDeviceLock() {
   return {
-    resourceId: 'opendot:kimicu:desktop-input',
-    lockDirectory: path.join(os.userInfo().homedir, '.opendot', 'device-locks'),
+    resourceId: 'evobot:kimicu:desktop-input',
+    lockDirectory: path.join(os.userInfo().homedir, '.evobot', 'device-locks'),
   };
 }

@@ -15,17 +15,17 @@ if (check.status !== 0 || check.stdout.trim() !== 'unlocked') {
   console.error('KimiCU fixture not started: unlock the Mac and retry (session state must be known).');
   process.exit(2);
 }
-const temp = fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'opendot-kimicu-scope-'));
+const temp = fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'evobot-kimicu-scope-'));
 const app = path.join(temp, 'Fixture.app', 'Contents');
 const binary = path.join(app, 'MacOS', 'Fixture');
 const output = path.join(temp, 'windows.json');
 let child;
 try {
   fs.mkdirSync(path.dirname(binary), { recursive: true, mode: 0o700 });
-  fs.writeFileSync(path.join(app, 'Info.plist'), `<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>CFBundleIdentifier</key><string>net.opendot.kimi-screenshot-fixture</string><key>CFBundleExecutable</key><string>Fixture</string><key>CFBundleName</key><string>OpenDot Scope Fixture</string><key>CFBundlePackageType</key><string>APPL</string></dict></plist>`);
+  fs.writeFileSync(path.join(app, 'Info.plist'), `<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>CFBundleIdentifier</key><string>net.evobot.kimi-screenshot-fixture</string><key>CFBundleExecutable</key><string>Fixture</string><key>CFBundleName</key><string>EvoBot Scope Fixture</string><key>CFBundlePackageType</key><string>APPL</string></dict></plist>`);
   const build = spawnSync('swiftc', [path.join(root, 'tests/fixtures/kimicu-screenshot-app/main.swift'), '-o', binary], { stdio: 'inherit', timeout: 60000 });
   if (build.status !== 0) throw new Error('Fixture compile failed');
-  child = spawn(binary, [], { env: { PATH: process.env.PATH ?? '/usr/bin:/bin', HOME: temp, OPENDOT_COLOR_FIXTURE_OUTPUT: output }, stdio: 'ignore' });
+  child = spawn(binary, [], { env: { PATH: process.env.PATH ?? '/usr/bin:/bin', HOME: temp, EVOBOT_COLOR_FIXTURE_OUTPUT: output }, stdio: 'ignore' });
   let payload;
   for (let i = 0; i < 100; i++) {
     if (child.exitCode !== null) throw new Error('Fixture exited before ready');
@@ -36,7 +36,7 @@ try {
     throw new Error('Fixture window identity unavailable');
   const run = spawnSync(process.execPath, [path.join(root, 'scripts/run-node-cli.mjs'), 'vitest', 'run', 'tests/kimi-cu-screenshot-scope-live.test.ts'], {
     cwd: root, stdio: 'inherit', timeout: 90000,
-    env: { ...process.env, OPENDOT_TEST_KIMICU_COLOR_PID: String(payload.pid), OPENDOT_TEST_KIMICU_GREEN_WINDOW: String(payload.green), OPENDOT_TEST_KIMICU_RED_WINDOW: String(payload.red) },
+    env: { ...process.env, EVOBOT_TEST_KIMICU_COLOR_PID: String(payload.pid), EVOBOT_TEST_KIMICU_GREEN_WINDOW: String(payload.green), EVOBOT_TEST_KIMICU_RED_WINDOW: String(payload.red) },
   });
   if (run.status !== 0) throw new Error('KimiCU window-scope test failed');
 } finally {

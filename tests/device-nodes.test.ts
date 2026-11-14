@@ -67,10 +67,10 @@ beforeAll(() => {
       ip_address: null,
       user_agent: null,
     });
-    cookies.set(id, `miniclaw_session=${auth.signSessionToken(token)}`);
+    cookies.set(id, `evobot_session=${auth.signSessionToken(token)}`);
   }
 });
-beforeEach(() => vi.stubEnv('MINICLAW_DEVICE_NODES', 'true'));
+beforeEach(() => vi.stubEnv('EVOBOT_DEVICE_NODES', 'true'));
 afterEach(() => vi.unstubAllEnvs());
 afterAll(() => {
   db.closeDatabase();
@@ -399,7 +399,7 @@ test('transport cannot dispatch a database-only intent without an active native 
 test('admission off preserves revocation; expiry and Host permission still fence reads', async () => {
   const p = approved(),
     b = binding(p);
-  vi.stubEnv('MINICLAW_DEVICE_NODES', 'false');
+  vi.stubEnv('EVOBOT_DEVICE_NODES', 'false');
   expect(
     (await request('/pair-tickets', 'POST', { name: 'Disabled' })).status,
   ).toBe(404);
@@ -412,7 +412,7 @@ test('admission off preserves revocation; expiry and Host permission still fence
     ).status,
   ).toBe(200);
   expect(() => nodes.validateDeviceBinding(b)).toThrow();
-  vi.stubEnv('MINICLAW_DEVICE_NODES', 'true');
+  vi.stubEnv('EVOBOT_DEVICE_NODES', 'true');
   const q = approved();
   const qb = binding(q);
   vi.useFakeTimers();

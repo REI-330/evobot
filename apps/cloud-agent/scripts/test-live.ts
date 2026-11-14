@@ -1,15 +1,15 @@
 import { setTimeout as delay } from 'node:timers/promises';
 import { signedRequest, digest, type SessionBinding } from '../src/protocol';
 const required = [
-  'MINICLAW_CLOUD_LIVE_URL',
-  'MINICLAW_CLOUD_SHARED_SECRET',
-  'MINICLAW_ZEN_MODEL',
-  'MINICLAW_CLOUD_LIVE_PROVIDER_ID',
+  'EVOBOT_CLOUD_LIVE_URL',
+  'EVOBOT_CLOUD_SHARED_SECRET',
+  'EVOBOT_ZEN_MODEL',
+  'EVOBOT_CLOUD_LIVE_PROVIDER_ID',
 ] as const;
 const missing = required.filter((name) => !process.env[name]?.trim());
 if (
   missing.length ||
-  process.env.MINICLAW_CLOUD_STAGING_AUTHORIZED !== 'true'
+  process.env.EVOBOT_CLOUD_STAGING_AUTHORIZED !== 'true'
 ) {
   console.log(
     JSON.stringify({
@@ -23,7 +23,7 @@ if (
   process.exitCode = 2;
 } else {
   try {
-    const url = new URL(process.env.MINICLAW_CLOUD_LIVE_URL!);
+    const url = new URL(process.env.EVOBOT_CLOUD_LIVE_URL!);
     if (
       url.protocol !== 'https:' ||
       url.username ||
@@ -33,23 +33,23 @@ if (
       url.pathname !== '/'
     )
       throw new Error('Invalid staging endpoint');
-    const secret = process.env.MINICLAW_CLOUD_SHARED_SECRET!;
+    const secret = process.env.EVOBOT_CLOUD_SHARED_SECRET!;
     const sessionId = crypto.randomUUID();
     const nonce = `CLOUD_LIVE_${crypto.randomUUID()}`;
     const binding: SessionBinding = {
       version: 1,
-      owner_user_id: 'miniclaw-authorized-cloud-check',
-      workspace_jid: 'web:miniclaw-cloud-check',
+      owner_user_id: 'evobot-authorized-cloud-check',
+      workspace_jid: 'web:evobot-cloud-check',
       session_id: sessionId,
       runtime_id: crypto.randomUUID(),
       config_fingerprint: await digest(
         JSON.stringify({
-          provider: process.env.MINICLAW_CLOUD_LIVE_PROVIDER_ID,
-          model: process.env.MINICLAW_ZEN_MODEL,
+          provider: process.env.EVOBOT_CLOUD_LIVE_PROVIDER_ID,
+          model: process.env.EVOBOT_ZEN_MODEL,
         }),
       ),
-      provider_id: process.env.MINICLAW_CLOUD_LIVE_PROVIDER_ID!,
-      model_id: process.env.MINICLAW_ZEN_MODEL!,
+      provider_id: process.env.EVOBOT_CLOUD_LIVE_PROVIDER_ID!,
+      model_id: process.env.EVOBOT_ZEN_MODEL!,
       instructions:
         'This is an explicitly authorized isolated staging check. Use only the declared read-only tool. Do not request other data or external effects.',
       max_model_steps: 6,

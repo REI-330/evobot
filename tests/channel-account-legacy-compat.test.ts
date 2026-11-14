@@ -5,7 +5,7 @@ import { afterAll, describe, expect, test, vi } from 'vitest';
 
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'channel-legacy-compat-'));
 vi.mock('../src/config.js', async () => ({
-  ASSISTANT_NAME: 'Miniclaw',
+  ASSISTANT_NAME: 'EvoBot',
   STORE_DIR: path.join(tmp, 'db'),
   GROUPS_DIR: path.join(tmp, 'groups'),
   DATA_DIR: tmp,

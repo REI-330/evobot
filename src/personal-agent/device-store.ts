@@ -652,7 +652,7 @@ export function grantPersonalDeviceMcp(
 export function validateDeviceMcpGrant(binding: DeviceMcpBinding) {
   binding = DeviceMcpBindingSchema.parse(binding);
   if (
-    binding.server_id.startsWith('opendot_computer_') &&
+    binding.server_id.startsWith('evobot_computer_') &&
     !deviceNodesEnabled()
   )
     throw new DeviceError('DEVICE_ADMISSION_DISABLED');
@@ -1131,7 +1131,7 @@ export function getDeviceCommand(id: string) {
 export function validateDeviceMcpStartup(raw: DeviceMcpStartupBinding) {
   const binding = DeviceMcpStartupBindingSchema.parse(raw);
   if (
-    binding.server_id.startsWith('opendot_computer_') &&
+    binding.server_id.startsWith('evobot_computer_') &&
     !deviceNodesEnabled()
   )
     throw new DeviceError('DEVICE_ADMISSION_DISABLED');

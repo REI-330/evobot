@@ -23,7 +23,7 @@ Read actual source/types/tests, not just diagrams:
 - Author example `earendil-works/pi-durable-cloudflare`
   `dcb56ce2d174babb3f00112ac5b8cd597e58ab45`: `src/{session,chat,schedule}.ts`,
   `test/{recovery,storage}.test.ts`, manifests/config. It pins Pi **1.2.0**;
-  its code is evidence, not a drop-in MiniClaw auth or runtime framework.
+  its code is evidence, not a drop-in EvoBot auth or runtime framework.
 - Installed Pi Durable 1.3.0 public Harness, Task, Inbox, event and portable
   SQLite/Cloudflare storage types and implementation.
 - Official Cloudflare docs source in `cloudflare/cloudflare-docs` production:
@@ -41,8 +41,8 @@ Read actual source/types/tests, not just diagrams:
    the underlying `Harness`. Native Tools, subagent conversations, checkpoints,
    replay-safe/unsafe execution and committed watches belong to Pi. Tests cover
    replay-safe/unsafe tools across object reset, events and subagent-created
-   sessions; this does not imply MiniClaw ACL/approval/delivery parity. PiHarness
-   does not implement MiniClaw's client protocol or complete-payload request
+   sessions; this does not imply EvoBot ACL/approval/delivery parity. PiHarness
+   does not implement EvoBot's client protocol or complete-payload request
    conflicts. Those checks remain mandatory in our adapter.
 2. **SQLite belongs to one object.** SDK store prefixes Pi tables under `pi_`,
    serializes async statements and transactions over `ctx.storage.sql`; Lifecycle
@@ -68,13 +68,13 @@ Read actual source/types/tests, not just diagrams:
    Workers AI, other APIs/OAuth and MCP need separate configured adapters and
    validation. Do not import the Node backend into the bundle.
 5. **Reuse business identity/model/Goal/Memory through a trusted boundary.** The
-   Worker is an execution gateway behind MiniClaw's existing Cookie/Workspace
+   Worker is an execution gateway behind EvoBot's existing Cookie/Workspace
    authority, not a second user database. Signed requests bind owner, Workspace,
    Session, runtime ID, configuration fingerprint, exact method/path/body and
    expiry; the DO checks the same identity again. PoC uses one deployment-bound
    model and signed administrative requests only. This is **not yet formal user
    integration** or current Workspace revocation parity. Formal rollout must use
-   live MiniClaw policy/provider authority before open/resume and every model/tool,
+   live EvoBot policy/provider authority before open/resume and every model/tool,
    retain immutable runtime choice and a recoverable provisioning state machine.
 
 ## Official versus manual host
@@ -85,7 +85,7 @@ Read actual source/types/tests, not just diagrams:
 | SQLite                                   | SDK prefixed portable adapter                                            | Official Cloudflare SQLite adapter                                 |
 | Wake/recovery                            | Lifecycle persisted jobs, heartbeat, backoff/circuit breaker             | Application task graph watches, alarm deadlines, explicit rearming |
 | Transport                                | Application chooses; example uses hibernatable sockets                   | Example owns WebSocket command protocol and watches                |
-| User authorization                       | Application responsibility                                               | Example's username is attribution, not MiniClaw identity           |
+| User authorization                       | Application responsibility                                               | Example's username is attribution, not EvoBot identity           |
 | Future business work                     | Must preserve existing Scheduler definitions                             | Example provides its own scheduling tool; do not transplant it     |
 | Main risk                                | Beta API, startup automatically resumes: validate before factory returns | Owning/maintaining all alarm/recovery edge cases ourselves         |
 
@@ -101,7 +101,7 @@ manual source and existing Node adapter as reference/tests, not competing owners
 | Pi Coding Agent + JSONL                  | Local Node                      | Preserve, no forced conversion                                              |
 | Node Pi Durable + exclusive SQLite guard | Node                            | Preserve all tests; never share ownership with DO                           |
 | Pi Durable portable Harness/SQLite       | DO                              | Supported SDK host; immutable root ID and native task receipts              |
-| User/Cookie/ACL/Workspace                | Existing MiniClaw control plane | Recheck through trusted product authority; never client-supplied owner      |
+| User/Cookie/ACL/Workspace                | Existing EvoBot control plane | Recheck through trusted product authority; never client-supplied owner      |
 | Goal Store/API/UI, Memory/provenance     | Existing business plane         | Reuse through authorized adapters; no global Workspace merge                |
 | Scheduler/task definitions               | Existing Scheduler              | Sole business schedule; occurrence-ID-bound runtime wake only               |
 | Pure read-only `inspect_text`            | Cloud                           | Bounded UTF8 byte count/SHA256, safe replay, no external side effect        |
@@ -155,7 +155,7 @@ the portable leaf removes that dependency and preserves native receipt bytes.
 The adapter verifies native control receipts before resume and delivers results
 to the product ledger.
 This pilot authorizes exactly Root 1; extra conversations/tasks are refused.
-Official SDK Subagent support does not grant MiniClaw product Subagent authority.
+Official SDK Subagent support does not grant EvoBot product Subagent authority.
 
 History opens portable Storage, not another Harness. A paused Harness also
 reconciles live tasks, which the real red/green test catches. Dedicated snapshot

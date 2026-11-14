@@ -11,7 +11,7 @@ import {
 } from './helpers/bot-handoff-http-fixture.js';
 
 test('a private Mem0 snapshot and its generation provenance survive a Host crash without another search', async () => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'opendot-mem0-crash-'));
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'evobot-mem0-crash-'));
   const traces = path.join(root, 'traces');
   const ledger = path.join(root, 'mem0');
   const collector = http.createServer((req, res) => {

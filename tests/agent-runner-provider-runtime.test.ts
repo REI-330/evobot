@@ -6,7 +6,7 @@ describe('agent-runner provider model contract', () => {
   test.each([
     {
       name: 'official without model uses the SDK default',
-      env: { MINICLAW_CLAUDE_ENDPOINT_KIND: 'official' },
+      env: { EVOBOT_CLAUDE_ENDPOINT_KIND: 'official' },
       missingRequiredModel: false,
       queryModelOptions: {},
       usageModelKey: 'default',
@@ -14,7 +14,7 @@ describe('agent-runner provider model contract', () => {
     {
       name: 'official with model passes the selected model',
       env: {
-        MINICLAW_CLAUDE_ENDPOINT_KIND: 'official',
+        EVOBOT_CLAUDE_ENDPOINT_KIND: 'official',
         ANTHROPIC_MODEL: 'sonnet',
       },
       missingRequiredModel: false,
@@ -23,7 +23,7 @@ describe('agent-runner provider model contract', () => {
     },
     {
       name: 'custom endpoint without model fails fast',
-      env: { MINICLAW_CLAUDE_ENDPOINT_KIND: 'custom' },
+      env: { EVOBOT_CLAUDE_ENDPOINT_KIND: 'custom' },
       missingRequiredModel: true,
       queryModelOptions: {},
       usageModelKey: 'default',
@@ -31,7 +31,7 @@ describe('agent-runner provider model contract', () => {
     {
       name: 'custom endpoint with model passes the selected model',
       env: {
-        MINICLAW_CLAUDE_ENDPOINT_KIND: 'custom',
+        EVOBOT_CLAUDE_ENDPOINT_KIND: 'custom',
         ANTHROPIC_MODEL: 'glm-5.2',
       },
       missingRequiredModel: false,
@@ -51,7 +51,7 @@ describe('agent-runner provider model contract', () => {
 
   test('authoritative official marker ignores an inherited stale base URL', () => {
     const runtime = resolveClaudeProviderRuntime({
-      MINICLAW_CLAUDE_ENDPOINT_KIND: 'official',
+      EVOBOT_CLAUDE_ENDPOINT_KIND: 'official',
       ANTHROPIC_BASE_URL: 'https://stale-proxy.test',
     });
 
@@ -71,12 +71,12 @@ describe('agent-runner provider model contract', () => {
 test('uses the configured OpenAI protocol and rejects unknown protocols', () => {
   expect(
     resolveClaudeProviderRuntime({
-      MINICLAW_MODEL_API: 'openai-completions',
+      EVOBOT_MODEL_API: 'openai-completions',
       ANTHROPIC_MODEL: 'fixture-model',
     }).modelApi,
   ).toBe('openai-completions');
   expect(resolveClaudeProviderRuntime({}).modelApi).toBe('anthropic-messages');
   expect(() =>
-    resolveClaudeProviderRuntime({ MINICLAW_MODEL_API: 'unknown' }),
-  ).toThrow('Unsupported MINICLAW_MODEL_API');
+    resolveClaudeProviderRuntime({ EVOBOT_MODEL_API: 'unknown' }),
+  ).toThrow('Unsupported EVOBOT_MODEL_API');
 });

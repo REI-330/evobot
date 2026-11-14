@@ -13,7 +13,7 @@ test('the selected app logo is served on desktop/mobile login, the shell and PWA
       await f.call('/api/config/system', 'PUT', { providerSetupSkipped: true }),
     );
     const robot = readFileSync(
-      new URL('../../../assets/miniclaw-icon.svg', import.meta.url),
+      new URL('../../../assets/evobot-icon.svg', import.meta.url),
     );
     const digest = (buffer: Buffer) =>
       createHash('sha256').update(buffer).digest('hex');
@@ -29,7 +29,7 @@ test('the selected app logo is served on desktop/mobile login, the shell and PWA
         const page = await context.newPage();
         await page.goto(f.origin + '/login');
         await expect(page.locator('img[src*="logo-text.svg"]')).toHaveCount(0);
-        const logo = page.locator('img[src*="/assets/miniclaw-icon-"]').first();
+        const logo = page.locator('img[src*="/assets/evobot-icon-"]').first();
         await expect(logo).toBeVisible();
         await expect
           .poll(() =>
@@ -45,8 +45,8 @@ test('the selected app logo is served on desktop/mobile login, the shell and PWA
           await page.request.get(f.origin + '/manifest.webmanifest')
         ).json();
         expect(manifest).toMatchObject({
-          name: 'OpenDot',
-          short_name: 'OpenDot',
+          name: 'EvoBot',
+          short_name: 'EvoBot',
           id: './',
           scope: './',
           start_url: './',
@@ -72,7 +72,7 @@ test('the selected app logo is served on desktop/mobile login, the shell and PWA
           await expect(
             page
               .getByRole('navigation', { name: '桌面导航' })
-              .locator('img[src*="/assets/miniclaw-icon-"]'),
+              .locator('img[src*="/assets/evobot-icon-"]'),
           ).toBeVisible();
         expect(f.requests).toHaveLength(0);
       } finally {

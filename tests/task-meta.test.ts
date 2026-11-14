@@ -15,7 +15,7 @@ vi.mock('../src/config.js', async () => {
   // Keep any other unused exports benign; db.ts only reads STORE_DIR + GROUPS_DIR.
   return {
     DATA_DIR: path.dirname(tmpStoreDir),
-    ASSISTANT_NAME: 'Miniclaw',
+    ASSISTANT_NAME: 'EvoBot',
     STORE_DIR: tmpStoreDir,
     GROUPS_DIR: tmpGroupsDir,
   };

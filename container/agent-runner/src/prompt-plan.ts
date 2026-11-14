@@ -34,7 +34,7 @@ export interface PromptPlan {
   errors: string[];
 }
 
-export interface MiniclawPromptSources {
+export interface EvoBotPromptSources {
   platformIdentity?: string;
   platformBootstrap?: string;
   agentIdentity?: string;
@@ -145,32 +145,32 @@ function wrap(tag: string, text: string): string {
 }
 
 /** Build the main-agent platform contract in its documented, stable order. */
-export function buildMiniclawPromptPlan(
-  sources: MiniclawPromptSources,
+export function buildEvoBotPromptPlan(
+  sources: EvoBotPromptSources,
 ): PromptPlan {
   const inputs: PromptBlockInput[] = [];
 
   if (sources.platformIdentity) {
     inputs.push({
-      id: 'identity.miniclaw',
+      id: 'identity.evobot',
       version: 1,
       scope: 'main',
       owner: 'platform',
       required: true,
-      condition: 'built-in default Miniclaw AgentProfile',
+      condition: 'built-in default EvoBot AgentProfile',
       text: wrap('platform-identity', sources.platformIdentity),
     });
   }
 
   if (sources.platformBootstrap) {
     inputs.push({
-      id: 'bootstrap.miniclaw',
+      id: 'bootstrap.evobot',
       version: 1,
       scope: 'main',
       owner: 'platform',
       required: false,
       condition:
-        'built-in Miniclaw Home runtime; each turn follows the host-authoritative owner-profile block',
+        'built-in EvoBot Home runtime; each turn follows the host-authoritative owner-profile block',
       text: wrap('platform-bootstrap', sources.platformBootstrap),
     });
   }

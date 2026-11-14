@@ -8,7 +8,7 @@ import {
 } from '../container/agent-runner/src/mcp-tools.js';
 
 test('private recall accepts a result delivered after a missed watch and the fallback scan', async () => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'opendot-ipc-fallback-'));
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'evobot-ipc-fallback-'));
   const tasks = path.join(root, 'tasks');
   const ctx = {
     chatJid: 'web:synthetic',

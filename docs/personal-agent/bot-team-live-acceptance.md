@@ -55,7 +55,7 @@ OpenCode Zen Go `cat-jam-free` model through Pi's `openai-completions` API.
 
 ## Reproduce
 
-Provide `MINICLAW_ZEN_API_KEY`, `MINICLAW_ZEN_BASE_URL` and `MINICLAW_ZEN_MODEL`
+Provide `EVOBOT_ZEN_API_KEY`, `EVOBOT_ZEN_BASE_URL` and `EVOBOT_ZEN_MODEL`
 through a secure process environment, then run:
 
 ```sh

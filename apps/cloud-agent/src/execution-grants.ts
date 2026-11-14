@@ -10,7 +10,7 @@ import {
 type Row = { value: string; digest: string; steps: number };
 type ManagedBinding = CloudBinding & {
   goal_id: string;
-  execution_authority: 'miniclaw-product';
+  execution_authority: 'evobot-product';
 };
 
 /** DO-side run ledger. It never creates Scheduler occurrences or native tasks.
@@ -31,7 +31,7 @@ export class ExecutionGrants {
     `);
   }
   private managed(binding: CloudBinding): asserts binding is ManagedBinding {
-    if (!binding.goal_id || binding.execution_authority !== 'miniclaw-product')
+    if (!binding.goal_id || binding.execution_authority !== 'evobot-product')
       throw new CloudError(409, 'CLOUD_GOAL_BINDING_REQUIRED');
   }
   private owner() {

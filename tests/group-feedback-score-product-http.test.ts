@@ -11,7 +11,7 @@ import { turnContext } from './helpers/group-discussion-fixture.js';
 
 test('a real Node Group turn exports only its own observed trace score to a synthetic collector', async () => {
   const root = fs.mkdtempSync(
-    path.join(os.tmpdir(), 'opendot-score-collector-'),
+    path.join(os.tmpdir(), 'evobot-score-collector-'),
   );
   const ledger = path.join(root, 'scores.jsonl');
   let f: Awaited<ReturnType<typeof botHandoffHttpFixture>> | undefined;

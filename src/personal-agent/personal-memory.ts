@@ -70,7 +70,7 @@ export function readPersonalMemoryForSession(
     !canExecuteOnHost(getUserById(runtime.owner_user_id))
   )
     throw new PersonalMemoryError('MEMORY_NOT_FOUND');
-  if (process.env.MINICLAW_PERSONAL_MEMORY?.trim().toLowerCase() !== 'true')
+  if (process.env.EVOBOT_PERSONAL_MEMORY?.trim().toLowerCase() !== 'true')
     return {
       scope: 'personal' as const,
       status: 'disabled' as const,

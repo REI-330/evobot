@@ -1,6 +1,6 @@
-export const CLAUDE_ENDPOINT_KIND_ENV = 'MINICLAW_CLAUDE_ENDPOINT_KIND';
-export const MINICLAW_CLAUDE_ENDPOINT_KIND_ENV =
-  'MINICLAW_CLAUDE_ENDPOINT_KIND';
+export const CLAUDE_ENDPOINT_KIND_ENV = 'EVOBOT_CLAUDE_ENDPOINT_KIND';
+export const EVOBOT_CLAUDE_ENDPOINT_KIND_ENV =
+  'EVOBOT_CLAUDE_ENDPOINT_KIND';
 
 export type ClaudeEndpointKind = 'official' | 'custom';
 
@@ -41,13 +41,13 @@ export function resolveClaudeQueryModelRuntime(
 export function resolveClaudeProviderRuntime(
   env: Readonly<Record<string, string | undefined>>,
 ): ClaudeProviderRuntime {
-  const modelApi = env.MINICLAW_MODEL_API?.trim() || 'anthropic-messages';
+  const modelApi = env.EVOBOT_MODEL_API?.trim() || 'anthropic-messages';
   if (modelApi !== 'anthropic-messages' && modelApi !== 'openai-completions') {
-    throw new Error('Unsupported MINICLAW_MODEL_API for Pi runner');
+    throw new Error('Unsupported EVOBOT_MODEL_API for Pi runner');
   }
   const model = env.ANTHROPIC_MODEL?.trim() ?? '';
   const marker = (
-    env[MINICLAW_CLAUDE_ENDPOINT_KIND_ENV] || env[CLAUDE_ENDPOINT_KIND_ENV]
+    env[EVOBOT_CLAUDE_ENDPOINT_KIND_ENV] || env[CLAUDE_ENDPOINT_KIND_ENV]
   )
     ?.trim()
     .toLowerCase();

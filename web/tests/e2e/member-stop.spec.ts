@@ -10,8 +10,8 @@ test('one Dot Stop survives a lost receipt and reload without stopping the other
 }, info) => {
   test.setTimeout(180000);
   const f = await botHandoffHttpFixture(undefined, {
-    MINICLAW_GROUP_MEMBER_INBOX: 'true',
-    MINICLAW_GROUP_MEMBER_CONCURRENCY: 'true',
+    EVOBOT_GROUP_MEMBER_INBOX: 'true',
+    EVOBOT_GROUP_MEMBER_CONCURRENCY: 'true',
   });
   const errors: string[] = [];
   let authenticated = false,
@@ -94,7 +94,7 @@ test('one Dot Stop survives a lost receipt and reload without stopping the other
     const form = panel.getByRole('form', { name: '新建群聊', exact: true });
     await form.getByLabel('群聊名称', { exact: true }).fill('单独停止验收');
     await form
-      .getByRole('checkbox', { name: 'Miniclaw', exact: true })
+      .getByRole('checkbox', { name: 'EvoBot', exact: true })
       .uncheck();
     for (const name of ['开发搭子', '审阅搭子'])
       await form.getByRole('checkbox', { name, exact: true }).check();

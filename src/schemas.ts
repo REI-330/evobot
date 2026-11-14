@@ -606,7 +606,7 @@ export const WorkspaceMemoryVersionsQuerySchema = z
   })
   .strict();
 
-export const MiniclawOwnerProfileMutationSchema = z.discriminatedUnion(
+export const EvoBotOwnerProfileMutationSchema = z.discriminatedUnion(
   'action',
   [
     z

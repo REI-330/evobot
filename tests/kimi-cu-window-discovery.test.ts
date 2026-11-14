@@ -5,7 +5,7 @@ test('window handles hide OS identifiers and reject stale or changed targets', a
   let now = 1000;
   let windows = [
     {
-      appId: 'net.opendot.fixture',
+      appId: 'net.evobot.fixture',
       pid: 234,
       windowId: 567,
       appName: 'Fixture',

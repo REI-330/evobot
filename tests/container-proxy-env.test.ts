@@ -1,9 +1,9 @@
 import { expect, test } from 'vitest';
 import { applyContainerProxyEnv } from '../src/container-proxy-env.js';
 test('does not add a proxy unless the administrator configured one', () => {
-  const lines = ['MINICLAW_MODEL_API=openai-completions'];
+  const lines = ['EVOBOT_MODEL_API=openai-completions'];
   applyContainerProxyEnv(lines, '');
-  expect(lines).toEqual(['MINICLAW_MODEL_API=openai-completions']);
+  expect(lines).toEqual(['EVOBOT_MODEL_API=openai-completions']);
 });
 test('writes protected env defaults and activates Node proxy support', () => {
   const lines: string[] = [];

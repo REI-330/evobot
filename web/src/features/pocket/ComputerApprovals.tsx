@@ -87,7 +87,7 @@ export function ComputerApprovals({
     coding ? codingRows : (control.snapshot?.mcp_approvals ?? [])
   ).filter(
     (row) =>
-      row.intent.server_id.startsWith('opendot_computer_') &&
+      row.intent.server_id.startsWith('evobot_computer_') &&
       row.state === 'pending',
   );
   useEffect(() => {

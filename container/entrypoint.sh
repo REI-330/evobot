@@ -8,13 +8,13 @@ umask 0077
 # This root-owned helper accepts no runtime-configurable path.
 # shellcheck source=session-permissions.sh
 source /app/session-permissions.sh
-miniclaw_configure_node_identity
+evobot_configure_node_identity
 
 # Prepare only explicit writable roots. Direct mode touches roots and performs
 # a separate one-time legacy migration below; rootless defers to its verified
 # bridge; host-root/Desktop preserve owner-only modes.
-miniclaw_prepare_mounted_paths
-miniclaw_migrate_direct_managed_paths
+evobot_prepare_mounted_paths
+evobot_migrate_direct_managed_paths
 
 # Mark mounted directories as safe for git (CVE-2022-24765 ownership check).
 # Host uid may differ from container node user, causing git to refuse operations.
@@ -24,7 +24,7 @@ runuser -u node -- env HOME=/home/node /usr/bin/git \
 
 # Source ordinary runtime variables while locally shadowing every root-control
 # variable, including stale values persisted before the host-side denylist.
-miniclaw_source_runtime_env
+evobot_source_runtime_env
 
 # Make the Pi runner's local tools (including agent-browser) available to the
 # selected runtime and to commands launched by capability tools.
@@ -42,7 +42,7 @@ export CLAUDE_CONFIG_DIR=/home/node/.claude
 # data/extra/{folder}/.npm-global/，per-user 隔离）即可让全局包持久化。
 NPM_GLOBAL_DIR=/workspace/extra/.npm-global
 /usr/local/bin/node /app/session-generated-paths.mjs --ensure-npm-global
-miniclaw_prepare_generated_path npm-global
+evobot_prepare_generated_path npm-global
 # 写到 node user 的 ~/.npmrc 让 npm 全局命令默认走该 prefix。
 # 镜像每次启动重置 /home/node，所以 entrypoint 每次都重写一遍是稳妥做法。
 cat > /home/node/.npmrc <<EOF
@@ -67,13 +67,13 @@ if [ -d /workspace/effective-skills ]; then
     fi
   done
 fi
-miniclaw_prepare_generated_path skills
+evobot_prepare_generated_path skills
 
 # Compile TypeScript (agent-runner source may be hot-mounted from host). The
 # image build leaves /app/dist/.tsbuildinfo behind; disable incremental mode so
 # changing only outDir cannot incorrectly reuse that cache and emit no files.
 cd /app && npx tsc --outDir /tmp/dist --incremental false 2>&1 >&2
-miniclaw_prepare_generated_path dist
+evobot_prepare_generated_path dist
 ln -s /app/node_modules /tmp/dist/node_modules
 /usr/local/bin/node /app/session-prompts-copy.mjs
 
@@ -95,7 +95,7 @@ cleanup() {
     wait "$WATCHDOG_PID" 2>/dev/null || true
     WATCHDOG_PID=
   fi
-  miniclaw_stop_session_permission_watcher || cleanup_status=$?
+  evobot_stop_session_permission_watcher || cleanup_status=$?
   if [ -n "$CHROMIUM_PID" ] && kill -0 "$CHROMIUM_PID" 2>/dev/null; then
     kill "$CHROMIUM_PID" 2>/dev/null || true
     for ((attempt = 0; attempt < 20; attempt++)); do
@@ -125,12 +125,12 @@ trap terminate_container TERM INT
 
 # Rootless, host-root and virtualized mounts require live permission monitoring;
 # direct mode instead relies on its startup and shutdown normalization.
-miniclaw_start_session_permission_watcher
+evobot_start_session_permission_watcher
 # A watcher can die without executing its JavaScript failure handler (for
 # example SIGKILL or a native identity-restoration failure). Watch it from a
 # separate root-owned process; an unexpected exit terminates the container.
-if [ -n "$MINICLAW_INTERNAL_WATCHER_PID" ]; then
-  watcher_pid=$MINICLAW_INTERNAL_WATCHER_PID
+if [ -n "$EVOBOT_INTERNAL_WATCHER_PID" ]; then
+  watcher_pid=$EVOBOT_INTERNAL_WATCHER_PID
   owner_pid=$$
   (
     while kill -0 "$watcher_pid" 2>/dev/null; do sleep 0.2; done
@@ -142,8 +142,8 @@ fi
 # success while a virtualized or host-mapped mount still denies node; failing
 # here attributes the exact path and identity mode instead of surfacing an
 # opaque EACCES from the SDK later in the run.
-miniclaw_verify_runtime_access
-if [ "$MINICLAW_INTERNAL_IDENTITY_MODE" = rootless ]; then
+evobot_verify_runtime_access
+if [ "$EVOBOT_INTERNAL_IDENTITY_MODE" = rootless ]; then
   umask 0007
 fi
 
@@ -151,16 +151,16 @@ fi
 # keeps the raw Chrome DevTools Protocol private to the container; a future Web
 # browser panel must proxy the authenticated agent-browser dashboard/stream,
 # never publish this port directly.
-MINICLAW_CHROMIUM_CDP_HOST="${MINICLAW_CHROMIUM_CDP_HOST:-127.0.0.1}"
-MINICLAW_CHROMIUM_CDP_PORT="${MINICLAW_CHROMIUM_CDP_PORT:-9222}"
-CHROMIUM_PROFILE_DIR=/tmp/miniclaw-chromium-profile
-CHROMIUM_LOG=/tmp/miniclaw-chromium.log
+EVOBOT_CHROMIUM_CDP_HOST="${EVOBOT_CHROMIUM_CDP_HOST:-127.0.0.1}"
+EVOBOT_CHROMIUM_CDP_PORT="${EVOBOT_CHROMIUM_CDP_PORT:-9222}"
+CHROMIUM_PROFILE_DIR=/tmp/evobot-chromium-profile
+CHROMIUM_LOG=/tmp/evobot-chromium.log
 mkdir -p "$CHROMIUM_PROFILE_DIR"
-miniclaw_prepare_generated_path chromium
+evobot_prepare_generated_path chromium
 
 # agent-browser reads this value when its daemon starts, so it attaches to the
 # managed browser instead of creating another Chromium with a random CDP port.
-export AGENT_BROWSER_CDP="$MINICLAW_CHROMIUM_CDP_PORT"
+export AGENT_BROWSER_CDP="$EVOBOT_CHROMIUM_CDP_PORT"
 
 HOME=/home/node setpriv --reuid=node --regid=node --init-groups -- \
   "${AGENT_BROWSER_EXECUTABLE_PATH:-/usr/bin/chromium}" \
@@ -169,8 +169,8 @@ HOME=/home/node setpriv --reuid=node --regid=node --init-groups -- \
   --disable-dev-shm-usage \
   --no-first-run \
   --no-default-browser-check \
-  --remote-debugging-address="$MINICLAW_CHROMIUM_CDP_HOST" \
-  --remote-debugging-port="$MINICLAW_CHROMIUM_CDP_PORT" \
+  --remote-debugging-address="$EVOBOT_CHROMIUM_CDP_HOST" \
+  --remote-debugging-port="$EVOBOT_CHROMIUM_CDP_PORT" \
   --user-data-dir="$CHROMIUM_PROFILE_DIR" \
   about:blank >"$CHROMIUM_LOG" 2>&1 &
 CHROMIUM_PID=$!
@@ -178,7 +178,7 @@ CHROMIUM_PID=$!
 CHROMIUM_READY=false
 for ((attempt = 0; attempt < 100; attempt++)); do
   if curl --noproxy '*' -fsS \
-    "http://127.0.0.1:${MINICLAW_CHROMIUM_CDP_PORT}/json/version" \
+    "http://127.0.0.1:${EVOBOT_CHROMIUM_CDP_PORT}/json/version" \
     >/dev/null 2>&1; then
     CHROMIUM_READY=true
     break
@@ -190,7 +190,7 @@ for ((attempt = 0; attempt < 100; attempt++)); do
 done
 
 if [ "$CHROMIUM_READY" != true ]; then
-  echo "Chromium failed to listen on container-local CDP port ${MINICLAW_CHROMIUM_CDP_PORT}" >&2
+  echo "Chromium failed to listen on container-local CDP port ${EVOBOT_CHROMIUM_CDP_PORT}" >&2
   cat "$CHROMIUM_LOG" >&2 2>/dev/null || true
   exit 1
 fi

@@ -66,7 +66,7 @@ export async function openCloudHarness(
   const selectedCapabilities =
     options.member?.tool_capabilities ?? binding.tool_capabilities;
   const tools = [
-    ...(binding.execution_authority === 'miniclaw-product' &&
+    ...(binding.execution_authority === 'evobot-product' &&
     binding.bot_handoff &&
     selectedCapabilities?.includes('read_device_file') &&
     options.deviceHost
@@ -84,7 +84,7 @@ export async function openCloudHarness(
     selectedCapabilities?.includes('inspect_text')
       ? [tool]
       : []),
-    ...(binding.execution_authority === 'miniclaw-product' &&
+    ...(binding.execution_authority === 'evobot-product' &&
     selectedCapabilities?.includes('read_personal_memory')
       ? [
           personalMemoryTool(
@@ -96,7 +96,7 @@ export async function openCloudHarness(
           ),
         ]
       : []),
-    ...(binding.execution_authority === 'miniclaw-product' &&
+    ...(binding.execution_authority === 'evobot-product' &&
     selectedCapabilities?.includes('create_approved_artifact') &&
     options.artifactHost
       ? [
@@ -113,13 +113,13 @@ export async function openCloudHarness(
       : []),
   ];
   const peerDefinitions =
-    binding.group_session && binding.execution_authority === 'miniclaw-product'
+    binding.group_session && binding.execution_authority === 'evobot-product'
       ? cloudMemberTools(env, binding, objectId, storage, authorize)
       : [];
   const memberFrames = new Map<string, CloudMemberModelProof>();
   const selectedTools = options.member ? [...tools, ...peerDefinitions] : tools;
   const extension = defineExtension({
-    name: 'miniclaw-cloud',
+    name: 'evobot-cloud',
     // Definition availability is not permission; existing Agent.tools below
     // still selects only the legacy binding until a member contract is installed.
     tools: [...tools, ...peerDefinitions],

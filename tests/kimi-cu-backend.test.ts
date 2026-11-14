@@ -1,9 +1,9 @@
 import { describe, expect, test, vi } from 'vitest';
 import { KimiCuBackend } from '../src/personal-agent/kimi-cu-backend.js';
 
-const scope = { appId: 'net.opendot.fixture', pid: 123, windowId: 456 };
+const scope = { appId: 'net.evobot.fixture', pid: 123, windowId: 456 };
 const snapshot = 'B0D74EEC-6B80-4259-94FB-9A686E6BD6ED';
-const state = `AX snapshot_id=${snapshot}. Pass this ID\n- bundle_id: net.opendot.fixture\n- pid: 123\n- windows: 2 (tree scoped to primary; others via window_id)\n  - [main] window_id=999 AXStandardWindow "OTHER_PRIVATE_WINDOW"\n  - [primary] window_id=456 AXStandardWindow "Fixture"\n\n- [3] AXButton (Fixture)`;
+const state = `AX snapshot_id=${snapshot}. Pass this ID\n- bundle_id: net.evobot.fixture\n- pid: 123\n- windows: 2 (tree scoped to primary; others via window_id)\n  - [main] window_id=999 AXStandardWindow "OTHER_PRIVATE_WINDOW"\n  - [primary] window_id=456 AXStandardWindow "Fixture"\n\n- [3] AXButton (Fixture)`;
 const response = (text: string) => ({ content: [{ type: 'text', text }] });
 
 describe('KimiCU native target adapter', () => {

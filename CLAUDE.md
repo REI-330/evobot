@@ -1,11 +1,11 @@
-# Miniclaw — 工程协作指南
+# EvoBot — 工程协作指南
 
 本文档描述当前代码的工程约束和导航入口，供人类与 AI 协作者共同使用。
 
 ## 1. 文档与代码真相源
 
 - 产品介绍、安装和常用操作：`README.md`
-- OpenDot 前端产品与视觉真相源：`DESIGN.md`。任何 Web/PWA/Electron UI 改动必须先阅读并遵守它；不要在页面内创造新的视觉语法。
+- EvoBot 前端产品与视觉真相源：`DESIGN.md`。任何 Web/PWA/Electron UI 改动必须先阅读并遵守它；不要在页面内创造新的视觉语法。
 - 路由族与主要 Web API：`docs/API.md`
 - 权限边界：`docs/ACL-MATRIX.md`
 - 运行时 Prompt：`container/agent-runner/prompts/`
@@ -20,7 +20,7 @@
 
 ## 2. 产品模型
 
-Miniclaw 是基于 Pi Agent Runtime 的自托管、多用户 Agent 工作台，支持 Web 与飞书、
+EvoBot 是基于 Pi Agent Runtime 的自托管、多用户 Agent 工作台，支持 Web 与飞书、
 Telegram、QQ、钉钉、微信、Discord、WhatsApp。
 
 当前产品层级：
@@ -104,7 +104,7 @@ Radix UI。路由以 `web/src/App.tsx` 为准：
 - stdout 使用 `OUTPUT_START_MARKER` / `OUTPUT_END_MARKER` 输出结构化结果。
 - 后续消息、工具请求和关闭控制通过独立 IPC 目录传递。
 - `container/agent-runner/prompts/` 中的 Prompt 在启动时加载。
-- Miniclaw MCP 工具由 `container/agent-runner/src/mcp-tools.ts` 注册。
+- EvoBot MCP 工具由 `container/agent-runner/src/mcp-tools.ts` 注册。
 - `shared/stream-event.ts` 同步到主服务、Web 和 Runner。
 
 不要在文档中维护固定的 MCP 工具数量或 StreamEvent 数量；它们会随能力演进变化，
@@ -285,7 +285,7 @@ Web 持久设置 > 环境变量 > 代码默认值
 | --------------------------- | ------------------------------- | --------------------------------- |
 | `WEB_PORT`                  | `3000`                          | HTTP、WebSocket 端口              |
 | `WEB_SESSION_SECRET`        | 自动生成并持久化                | Cookie 签名                       |
-| `CONTAINER_IMAGE`           | `helsome/miniclaw-agent:latest` | GitHub Actions 发布的 Runner 镜像 |
+| `CONTAINER_IMAGE`           | `rei330/evobot-agent:latest` | GitHub Actions 发布的 Runner 镜像 |
 | `CONTAINER_TIMEOUT`         | `1800000`                       | 默认运行超时                      |
 | `IDLE_TIMEOUT`              | `1800000`                       | 暖 Runner 空闲时间                |
 | `MAX_CONCURRENT_CONTAINERS` | `20`                            | Docker 并发                       |
@@ -293,7 +293,7 @@ Web 持久设置 > 环境变量 > 代码默认值
 | `CORS_ALLOWED_ORIGINS`      | 仅 localhost                    | WebSocket Origin 白名单           |
 | `TRUST_PROXY`               | `false`                         | 是否信任反向代理来源头            |
 | `TZ`                        | 系统时区                        | 调度时区                          |
-| `MINICLAW_DEMO_OPEN`        | 关闭                            | 仅回环地址免登录，见 `DEMO.md`    |
+| `EVOBOT_DEMO_OPEN`        | 关闭                            | 仅回环地址免登录，见 `DEMO.md`    |
 | `PROVIDER_SETUP_SKIPPED`    | `false`                         | 无设置文件时跳过 Provider 引导    |
 
 Provider 和渠道账号应优先通过 Web 配置。Legacy `/api/config/user-im/*` 只用于兼容，

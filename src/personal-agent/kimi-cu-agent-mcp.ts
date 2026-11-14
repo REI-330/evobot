@@ -16,7 +16,7 @@ import { classifyComputerError } from './computer-approval-policy.js';
 if (process.platform !== 'darwin') throw new Error('macOS required');
 const exec = promisify(execFile);
 const client = new McpClient({
-  name: 'opendot-kimicu-agent',
+  name: 'evobot-kimicu-agent',
   version: '1',
   capabilities: {},
   requestTimeoutMs: 10000,
@@ -142,7 +142,7 @@ try {
         result = {
           protocolVersion: request.params.protocolVersion,
           capabilities: { tools: {} },
-          serverInfo: { name: 'opendot-computer', version: '1' },
+          serverInfo: { name: 'evobot-computer', version: '1' },
         };
       else if (request.method === 'tools/list') result = { tools };
       else if (request.method === 'tools/call')

@@ -15,7 +15,7 @@ describe('settings information architecture', () => {
     expect(nav).toContain("label: '账户设置'");
     expect(nav).toContain("label: '高级设置'");
     expect(nav).toContain("label: '管理与访问'");
-    expect(nav).toContain("label: '关于 OpenDot'");
+    expect(nav).toContain("label: '关于 EvoBot'");
     expect(nav).toContain("key: 'my-channels'");
     expect(nav).toContain("key: 'security'");
     expect(nav).toContain("key: 'main-agent'");
@@ -173,7 +173,7 @@ describe('settings information architecture', () => {
     );
 
     expect(settings).toContain('<MainAgentCapabilitiesSection />');
-    expect(mainCapabilities).toMatch(/OpenDot 用户 Skills|OpenDot MCP/);
+    expect(mainCapabilities).toMatch(/EvoBot 用户 Skills|EvoBot MCP/);
     expect(mainCapabilities).not.toContain('工具与扩展能力边界');
     expect(mainCapabilities).toContain('/api/agent-profiles/');
     expect(workspaceEnv).toMatch(/Provider\s+地址和凭据由系统管理员统一管理/);

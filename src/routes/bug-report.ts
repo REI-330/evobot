@@ -395,7 +395,7 @@ bugReportRoutes.post('/generate', authMiddleware, async (c) => {
   const queueStatus = deps?.queue.getStatus();
 
   const systemInfo: Record<string, string> = {
-    Miniclaw版本: getVersion(),
+    EvoBot版本: getVersion(),
     'Node.js': process.version,
     操作系统: `${os.platform()} ${os.release()}`,
     架构: os.arch(),
@@ -492,7 +492,7 @@ bugReportRoutes.post('/submit', authMiddleware, async (c) => {
   const { title, body } = parseResult.data;
 
   // Append submitter info
-  const fullBody = `${body}\n\n---\n> Submitted via OpenDot by ${user.display_name || user.username}`;
+  const fullBody = `${body}\n\n---\n> Submitted via EvoBot by ${user.display_name || user.username}`;
 
   // Try gh CLI first
   const caps = await checkCapabilities();
@@ -509,7 +509,7 @@ bugReportRoutes.post('/submit', authMiddleware, async (c) => {
             'issue',
             'create',
             '--repo',
-            'helsome/OpenDot',
+            'REI-330/evobot',
             '--title',
             title,
             '--body-file',
@@ -558,7 +558,7 @@ bugReportRoutes.post('/submit', authMiddleware, async (c) => {
         '\n\n...(内容过长已截断，请补充完整信息)'
       : fullBody;
 
-  const url = `https://github.com/helsome/OpenDot/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(truncatedBody)}`;
+  const url = `https://github.com/REI-330/evobot/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(truncatedBody)}`;
 
   logger.info({ userId: user.id }, 'bug-report: returning pre-filled URL');
   cooldowns.set(user.id, Date.now());

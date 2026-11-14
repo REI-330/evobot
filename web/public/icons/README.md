@@ -1,10 +1,10 @@
-# OpenDot robot icons
+# EvoBot robot icons
 
 ## 统一图标源
 
-OpenDot 的机器人图标只维护一份：
+EvoBot 的机器人图标只维护一份：
 
-`/assets/miniclaw-icon.svg`
+`/assets/evobot-icon.svg`
 
 页面 Logo 直接导入该 SVG，由 Vite 输出带内容哈希的资源地址，避免继续命中旧 Logo 的长期缓存。Web/PWA 的 PNG、Apple Touch Icon、favicon 和 Electron 图标通过 `npm run generate-icons` 从同一源文件生成。
 
@@ -28,14 +28,14 @@ npm run generate-icons
 - `apple-touch-icon-180.png`
 - `logo-1024.png`
 - `../favicon.ico`：使用同一 48px PNG 的 ICO 封装，覆盖浏览器默认图标请求
-- `../opendot-robot.svg` 与 `../favicon.svg`：机器人 SVG；页面 favicon 使用前者的版本化地址
+- `../evobot-robot.svg` 与 `../favicon.svg`：机器人 SVG；页面 favicon 使用前者的版本化地址
 
-不要单独编辑这些生成文件；品牌图形调整只修改 `/assets/miniclaw-icon.svg`。
+不要单独编辑这些生成文件；品牌图形调整只修改 `/assets/evobot-icon.svg`。
 
 ## Electron exports and verification
 
-The same generator writes `electron/assets/miniclaw-icon.png` (1024px) and
-`electron/assets/miniclaw.icns` (16–1024px PNG representations). Keep the existing
+The same generator writes `electron/assets/evobot-icon.png` (1024px) and
+`electron/assets/evobot.icns` (16–1024px PNG representations). Keep the existing
 Electron packaging paths; SVG is the design source, not the native icon input.
 Commit regenerated PNG/ICNS files with changes to the canonical SVG. The
 `brand-assets.test.ts` suite compares decoded pixels with that source and checks

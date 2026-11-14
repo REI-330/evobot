@@ -8,7 +8,7 @@ test('product shell preserves real Bot, Group, Goal and approval views on deskto
 }) => {
   test.setTimeout(120000);
   const f = await botHandoffHttpFixture(undefined, {
-    MINICLAW_PERSONAL_GOALS: 'true',
+    EVOBOT_PERSONAL_GOALS: 'true',
   });
   try {
     await f.json(
@@ -124,7 +124,7 @@ test('product shell preserves real Bot, Group, Goal and approval views on deskto
         for (const theme of ['light', 'dark']) {
           await page.goto(f.origin + '/bots');
           await page.evaluate((value) => {
-            localStorage.setItem('miniclaw-theme', value);
+            localStorage.setItem('evobot-theme', value);
           }, theme);
           await page.reload();
           const prefix = `${mobile ? 'mobile' : 'desktop'}-${theme}`;
@@ -185,11 +185,11 @@ test('product shell preserves real Bot, Group, Goal and approval views on deskto
           });
           await page.goto(f.origin + '/bots?view=team');
           await page
-            .getByRole('button', { name: 'Miniclaw', exact: true })
+            .getByRole('button', { name: 'EvoBot', exact: true })
             .click();
           const botDetail = page.getByRole(
             mobile ? 'dialog' : 'complementary',
-            { name: 'Miniclaw', exact: true },
+            { name: 'EvoBot', exact: true },
           );
           await expect(botDetail).toBeVisible();
           await botDetail
@@ -246,10 +246,10 @@ test('product shell preserves real Bot, Group, Goal and approval views on deskto
           });
           await composer.press('Enter');
           await expect(
-            page.getByRole('button', { name: '移除 @Miniclaw ×', exact: true }),
+            page.getByRole('button', { name: '移除 @EvoBot ×', exact: true }),
           ).toBeVisible();
           await page
-            .getByRole('button', { name: '移除 @Miniclaw ×', exact: true })
+            .getByRole('button', { name: '移除 @EvoBot ×', exact: true })
             .click();
           await composer.fill('');
           if (mobile) {

@@ -6,7 +6,7 @@ import { expect, test } from 'vitest';
 import { botHandoffHttpFixture, waitFor } from './helpers/bot-handoff-http-fixture.js';
 
 test('paired node negotiates and reports KimiCU diagnosis without granting control', async () => {
-  const f = await botHandoffHttpFixture(undefined, { MINICLAW_DEVICE_NODES: 'true' });
+  const f = await botHandoffHttpFixture(undefined, { EVOBOT_DEVICE_NODES: 'true' });
   let node: ChildProcess | undefined;
   let legacyHost = false, rejectedExtended = 0, recoveredLegacy = 0;
   const gateway = http.createServer(async (request, response) => {

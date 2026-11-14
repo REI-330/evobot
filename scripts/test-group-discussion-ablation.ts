@@ -7,12 +7,12 @@ import path from 'node:path';
 import { discussionAblationArms } from './lib/discussion-ablation.js';
 
 assert(
-  process.env.MINICLAW_GROUP_MODEL_CONFIG,
+  process.env.EVOBOT_GROUP_MODEL_CONFIG,
   'Set the private model configuration path',
 );
-const output = process.env.MINICLAW_GROUP_ABLATION_EVIDENCE_PATH;
+const output = process.env.EVOBOT_GROUP_ABLATION_EVIDENCE_PATH;
 assert(output, 'Set a private ablation evidence path');
-const limit = Number(process.env.MINICLAW_GROUP_ABLATION_MAX_REQUESTS ?? 96);
+const limit = Number(process.env.EVOBOT_GROUP_ABLATION_MAX_REQUESTS ?? 96);
 assert(Number.isInteger(limit) && limit > 0 && limit <= 300);
 const report: any = {
   startedAt: new Date().toISOString(),
@@ -77,15 +77,15 @@ try {
             cwd: process.cwd(),
             env: {
               ...process.env,
-              MINICLAW_GROUP_EVIDENCE_PATH: file,
-              MINICLAW_GROUP_ABLATION_ARM: arm,
-              MINICLAW_GROUP_POLICIES: setting.policy,
-              MINICLAW_GROUP_CASES: 'natural,closed-pass',
-              MINICLAW_GROUP_REPEATS: '1',
-              MINICLAW_GROUP_MAX_REQUESTS: String(Math.min(18, remaining)),
-              MINICLAW_GROUP_BROWSER: '0',
-              MINICLAW_GROUP_RESTART: '0',
-              MINICLAW_GROUP_POLICY_TRANSITION: '0',
+              EVOBOT_GROUP_EVIDENCE_PATH: file,
+              EVOBOT_GROUP_ABLATION_ARM: arm,
+              EVOBOT_GROUP_POLICIES: setting.policy,
+              EVOBOT_GROUP_CASES: 'natural,closed-pass',
+              EVOBOT_GROUP_REPEATS: '1',
+              EVOBOT_GROUP_MAX_REQUESTS: String(Math.min(18, remaining)),
+              EVOBOT_GROUP_BROWSER: '0',
+              EVOBOT_GROUP_RESTART: '0',
+              EVOBOT_GROUP_POLICY_TRANSITION: '0',
             },
             stdio: ['ignore', 'ignore', 'ignore'],
           },

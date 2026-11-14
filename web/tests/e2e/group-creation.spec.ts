@@ -12,7 +12,7 @@ test('member cooperation has a reachable settings exit, native final replies and
 }) => {
   test.setTimeout(180000);
   const f = await botHandoffHttpFixture(undefined, {
-    MINICLAW_GROUP_MEMBER_INBOX: 'true',
+    EVOBOT_GROUP_MEMBER_INBOX: 'true',
   });
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
@@ -80,7 +80,7 @@ test('member cooperation has a reachable settings exit, native final replies and
       .getByLabel('群聊名称', { exact: true })
       .fill('边界协作与可达设置');
     await create
-      .getByRole('checkbox', { name: 'Miniclaw', exact: true })
+      .getByRole('checkbox', { name: 'EvoBot', exact: true })
       .uncheck();
     for (const p of people)
       await create.getByRole('checkbox', { name: p.name, exact: true }).check();
@@ -317,10 +317,10 @@ test('multi-Dot creation restores the exact pending name/roster after a lost ACK
     const form = panel.getByRole('form', { name: '新建群聊', exact: true });
     await form.getByLabel('群聊名称', { exact: true }).fill('原始协作群');
     await expect(
-      form.getByRole('checkbox', { name: 'Miniclaw', exact: true }),
+      form.getByRole('checkbox', { name: 'EvoBot', exact: true }),
     ).toBeChecked();
     await form
-      .getByRole('checkbox', { name: 'Miniclaw', exact: true })
+      .getByRole('checkbox', { name: 'EvoBot', exact: true })
       .uncheck();
     for (const dot of invited)
       await form
@@ -352,7 +352,7 @@ test('multi-Dot creation restores the exact pending name/roster after a lost ACK
       '原始协作群',
     );
     await expect(
-      form.getByRole('checkbox', { name: 'Miniclaw', exact: true }),
+      form.getByRole('checkbox', { name: 'EvoBot', exact: true }),
     ).not.toBeChecked();
     for (const dot of invited)
       await expect(
@@ -475,7 +475,7 @@ for (const width of [390, 1440]) {
       const form = panel.getByRole('form', { name: '新建群聊', exact: true });
       await form.getByLabel('群聊名称', { exact: true }).fill('直接开始讨论');
       await form
-        .getByRole('checkbox', { name: 'Miniclaw', exact: true })
+        .getByRole('checkbox', { name: 'EvoBot', exact: true })
         .uncheck();
       for (const dot of invited)
         await form

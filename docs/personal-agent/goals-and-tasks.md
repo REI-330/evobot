@@ -2,13 +2,13 @@
 
 ## Current execution paths
 
-`MINICLAW_PERSONAL_GOALS=true` enables owned Goal APIs and the existing `/goals` page. With `MINICLAW_DURABLE_RUNTIME=true`, a new Goal without an existing Session in an authorized Host workspace atomically creates its conversation Session, immutable **Node Durable** binding and one managed task definition. Creation commits before the existing Scheduler admits the initial TaskRun. Retries use the same Goal creation receipt and initial run key. Startup repairs an interrupted creation-to-start gap using the managed-task marker, including when rollout flags later change.
+`EVOBOT_PERSONAL_GOALS=true` enables owned Goal APIs and the existing `/goals` page. With `EVOBOT_DURABLE_RUNTIME=true`, a new Goal without an existing Session in an authorized Host workspace atomically creates its conversation Session, immutable **Node Durable** binding and one managed task definition. Creation commits before the existing Scheduler admits the initial TaskRun. Retries use the same Goal creation receipt and initial run key. Startup repairs an interrupted creation-to-start gap using the managed-task marker, including when rollout flags later change.
 
 Other workspaces and existing manually linked tasks retain the prior Coding Agent path. The two flags default off. Main, Docker execution and existing JSONL Session identities are preserved. This is an experimental Host rollout; live external-model acceptance is still pending.
 
-Explicit Cloud creation is now available behind `MINICLAW_CLOUD_GOALS=true`,
-`MINICLAW_CLOUD_RUNTIME=true` and `MINICLAW_CLOUD_APPROVALS=true`, in addition to
-`MINICLAW_PERSONAL_GOALS=true`. It requires the current Workspace owner, Host
+Explicit Cloud creation is now available behind `EVOBOT_CLOUD_GOALS=true`,
+`EVOBOT_CLOUD_RUNTIME=true` and `EVOBOT_CLOUD_APPROVALS=true`, in addition to
+`EVOBOT_PERSONAL_GOALS=true`. It requires the current Workspace owner, Host
 execution permission and a compatible configured `openai-completions` model.
 `POST /api/goals` accepts optional `runtime: "cloudflare-durable"`; the same
 existing Goal page exposes the choice after an authenticated Workspace-scoped
@@ -123,7 +123,7 @@ The existing page links directly to the execution Session and approvals. It refr
 
 ## Reproduction and limits
 
-Configure an existing API-key provider, then start `MINICLAW_PERSONAL_GOALS=true MINICLAW_DURABLE_RUNTIME=true npm run dev:all`. Create a Goal in the Host workspace, open its execution Session, review the proposed artifact and approve it. Review the evidence and confirm natural-language completion when requested. Provider API selection and migration/rollback requirements are in [durable-runtime.md](durable-runtime.md) and [migration.md](migration.md).
+Configure an existing API-key provider, then start `EVOBOT_PERSONAL_GOALS=true EVOBOT_DURABLE_RUNTIME=true npm run dev:all`. Create a Goal in the Host workspace, open its execution Session, review the proposed artifact and approve it. Review the evidence and confirm natural-language completion when requested. Provider API selection and migration/rollback requirements are in [durable-runtime.md](durable-runtime.md) and [migration.md](migration.md).
 
 `tests/product-runtime-http.test.ts` starts the real backend, creates Goals through signed HTTP, kills/restarts the actual executor and exercises original-run recovery, pause/continue, approval, literal criterion evaluation, human confirmation, model-step limits and outbox receipts. Its local HTTP provider is simulated. `product-session-continuity.spec.ts` creates a Goal through the actual desktop page and approves/reads its artifact from an independent mobile browser login. Neither proves a live model or physical device.
 
@@ -180,7 +180,7 @@ reservation and model-step guards remain unchanged.
 ## Goal Teams
 
 New Goals may explicitly associate an existing Group and reviewed Bot membership
-IDs under `MINICLAW_GOAL_TEAMS`. The existing Scheduler now coordinates one
+IDs under `EVOBOT_GOAL_TEAMS`. The existing Scheduler now coordinates one
 Handoff per occurrence; native-verified results and actual approved artifact
 receipts drive bounded progress. The coordinator Session cannot execute a model.
 See [controlled Goal Teams](goal-teams.md) for exact admission, current serial

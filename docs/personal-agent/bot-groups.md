@@ -1,6 +1,6 @@
 # Server-owned Bot Groups (Issue #32)
 
-Implemented behind `MINICLAW_BOT_GROUPS=true`. `/bots` links to `/bot-groups`;
+Implemented behind `EVOBOT_BOT_GROUPS=true`. `/bots` links to `/bot-groups`;
 `/bot-groups/:groupId` is the shared chat view. The existing `/groups` compatibility
 redirect and all private Workspace conversations remain unchanged. The new view
 uses the same Web/PWA/Electron app, authentication, components and WebSocket.
@@ -56,8 +56,8 @@ Bot unavailable; it cannot borrow a different Workspace. Disabling/removing a
 Bot does not require its stale scope to remain usable. User and Bot membership,
 Workspace configuration and execution capabilities are separate authorities.
 
-With only `MINICLAW_BOT_GROUPS=true`, Bots cannot execute. Optional
-`MINICLAW_BOT_HANDOFFS=true` enables the explicit, expiring execution-grant and
+With only `EVOBOT_BOT_GROUPS=true`, Bots cannot execute. Optional
+`EVOBOT_BOT_HANDOFFS=true` enables the explicit, expiring execution-grant and
 [native Handoff](bot-handoffs.md) flow for Owner requests. A mention or Workspace
 scope alone never grants model/tool authority. Native replies use actual
 Submission/producer-Task/answer receipts; no synthetic Bot identity is admitted.
@@ -127,7 +127,7 @@ The existing Workspace deletion confirmation now includes this Group impact.
 Back up consistent database and filesystem state before destructive operations;
 a running service's WAL/database files must not be copied independently.
 
-To roll back admission, set `MINICLAW_BOT_GROUPS=false` and retain schema-80-aware
+To roll back admission, set `EVOBOT_BOT_GROUPS=false` and retain schema-80-aware
 code for history, snapshots and revocation. Existing native runtimes are unaffected.
 A schema-79 binary cannot open schema 80. Full code downgrade requires quiescing
 writers and restoring an explicitly selected consistent pre-upgrade backup to

@@ -7,7 +7,7 @@ export default defineConfig({
   retries: 0,
   timeout: 240000,
   reporter: 'line',
-  outputDir: '../.claude/skills/verify-miniclaw/artifacts/group-create/browser',
+  outputDir: '../.claude/skills/verify-evobot/artifacts/group-create/browser',
   use: {
     browserName: 'chromium',
     trace: 'retain-on-failure',

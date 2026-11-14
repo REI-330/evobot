@@ -17,7 +17,7 @@ test('two independent logins reconcile a Durable product Session and observe det
   test.setTimeout(90_000);
   const repository = fileURLToPath(new URL('../../../', import.meta.url));
   const root = fs.mkdtempSync(
-    path.join(os.tmpdir(), 'miniclaw-pocket-product-'),
+    path.join(os.tmpdir(), 'evobot-pocket-product-'),
   );
   const reservation = net.createServer();
   reservation.listen(0, '127.0.0.1');
@@ -128,17 +128,17 @@ test('two independent logins reconcile a Durable product Session and observe det
         HOME: path.join(root, 'home'),
         WEB_PORT: String(port),
         CORS_ALLOWED_ORIGINS: origin,
-        MINICLAW_PERSONAL_GOALS: 'true',
-        MINICLAW_PERSONAL_MEMORY: 'true',
-        MINICLAW_DURABLE_RUNTIME: String(enabled),
-        MINICLAW_GITHUB_GOALS: 'true',
-        MINICLAW_GITHUB_WEBHOOK_BROWSER:
+        EVOBOT_PERSONAL_GOALS: 'true',
+        EVOBOT_PERSONAL_MEMORY: 'true',
+        EVOBOT_DURABLE_RUNTIME: String(enabled),
+        EVOBOT_GITHUB_GOALS: 'true',
+        EVOBOT_GITHUB_WEBHOOK_BROWSER:
           'synthetic-browser-webhook-signing-secret',
-        MINICLAW_GITHUB_WEBHOOK_GRANTS: JSON.stringify([
+        EVOBOT_GITHUB_WEBHOOK_GRANTS: JSON.stringify([
           {
             owner_user_id: webhookOwnerId,
             workspace_jid: webhookWorkspace,
-            secret_variable: 'MINICLAW_GITHUB_WEBHOOK_BROWSER',
+            secret_variable: 'EVOBOT_GITHUB_WEBHOOK_BROWSER',
           },
         ]),
         TZ: 'Asia/Taipei',
@@ -186,7 +186,7 @@ test('two independent logins reconcile a Durable product Session and observe det
             anthropicBaseUrl: `http://127.0.0.1:${providerPort}/v1`,
             anthropicApiKey: 'fixture-test-token',
             anthropicModel: 'fixture-model',
-            customEnv: { MINICLAW_MODEL_API: 'openai-completions' },
+            customEnv: { EVOBOT_MODEL_API: 'openai-completions' },
           },
         })
       ).status(),
@@ -634,7 +634,7 @@ test('two independent logins reconcile a Durable product Session and observe det
     });
     await routineForm
       .getByLabel('GitHub 仓库', { exact: true })
-      .fill('helsome/miniclaw');
+      .fill('REI-330/evobot');
     await routineForm
       .getByLabel('跟踪目标', { exact: true })
       .fill('检查重要 CI 事件并交付有证据的结果');
@@ -661,7 +661,7 @@ test('two independent logins reconcile a Durable product Session and observe det
     ).toBeVisible();
     const eventBody = JSON.stringify({
       action: 'completed',
-      repository: { full_name: 'helsome/miniclaw' },
+      repository: { full_name: 'REI-330/evobot' },
       workflow_run: {
         id: 42,
         head_sha: 'a'.repeat(40),

@@ -60,7 +60,7 @@ async function binding(): Promise<CloudBinding> {
   return {
     ...b,
     goal_id: crypto.randomUUID(),
-    execution_authority: 'miniclaw-product',
+    execution_authority: 'evobot-product',
   };
 }
 function grant(b: CloudBinding): CloudExecutionGrant {
@@ -280,7 +280,7 @@ async function request(b: CloudBinding, suffix: string, body: unknown) {
 }
 async function activeRun(b: CloudBinding, execution: CloudExecutionGrant) {
   await (
-    await cloud.MINICLAW_AUTHORITY_SERVICE!.fetch(
+    await cloud.EVOBOT_AUTHORITY_SERVICE!.fetch(
       'https://authority.fixture/fixture/execution',
       {
         method: 'POST',
@@ -601,7 +601,7 @@ test('a managed Session keeps Root and input identities across two granted nativ
     })
   ).json();
   await (
-    await cloud.MINICLAW_AUTHORITY_SERVICE!.fetch(
+    await cloud.EVOBOT_AUTHORITY_SERVICE!.fetch(
       'https://authority.fixture/fixture/reset',
       { method: 'POST' },
     )
@@ -609,7 +609,7 @@ test('a managed Session keeps Root and input identities across two granted nativ
   const b: CloudBinding = {
     ...baseBinding(),
     goal_id: crypto.randomUUID(),
-    execution_authority: 'miniclaw-product',
+    execution_authority: 'evobot-product',
     model_id: 'product-configured-model',
   };
   const first = grant(b),
@@ -730,7 +730,7 @@ test('a managed Session keeps Root and input identities across two granted nativ
   expect(after.inputs).toEqual(before.inputs);
   expect(after.execution).toEqual(before.execution);
   const observations = (await (
-    await cloud.MINICLAW_AUTHORITY_SERVICE!.fetch(
+    await cloud.EVOBOT_AUTHORITY_SERVICE!.fetch(
       'https://authority.fixture/fixture/counts',
     )
   ).json()) as { modelExecutions: { session_id: string; run_id: string }[] };
@@ -755,7 +755,7 @@ test('an interrupted managed model stream parks the original native request, sur
     })
   ).json();
   await (
-    await cloud.MINICLAW_AUTHORITY_SERVICE!.fetch(
+    await cloud.EVOBOT_AUTHORITY_SERVICE!.fetch(
       'https://authority.fixture/fixture/reset',
       { method: 'POST' },
     )
@@ -763,7 +763,7 @@ test('an interrupted managed model stream parks the original native request, sur
   const b: CloudBinding = {
     ...baseBinding(),
     goal_id: crypto.randomUUID(),
-    execution_authority: 'miniclaw-product',
+    execution_authority: 'evobot-product',
     model_id: 'product-configured-model',
   };
   const execution = grant(b);
@@ -955,7 +955,7 @@ async function managedRecoveryFixture(
     })
   ).json();
   await (
-    await cloud.MINICLAW_AUTHORITY_SERVICE!.fetch(
+    await cloud.EVOBOT_AUTHORITY_SERVICE!.fetch(
       'https://authority.fixture/fixture/reset',
       { method: 'POST' },
     )
@@ -963,7 +963,7 @@ async function managedRecoveryFixture(
   const b: CloudBinding = {
     ...baseBinding(),
     goal_id: crypto.randomUUID(),
-    execution_authority: 'miniclaw-product',
+    execution_authority: 'evobot-product',
     model_id: 'product-configured-model',
   };
   const execution = grant(b);
@@ -1073,7 +1073,7 @@ test('a paused owner stays stopped across Alarm/eviction, a stale lease cannot s
   expect(await fixture.models()).toBe(1);
   async function replaceFence(mode = 'suspended') {
     await (
-      await cloud.MINICLAW_AUTHORITY_SERVICE!.fetch(
+      await cloud.EVOBOT_AUTHORITY_SERVICE!.fetch(
         'https://authority.fixture/fixture/execution',
         {
           method: 'POST',
@@ -1190,7 +1190,7 @@ test('stopping cancels a native tool authorization whose HTTP headers arrived bu
       async () =>
         (
           (await (
-            await cloud.MINICLAW_AUTHORITY_SERVICE!.fetch(
+            await cloud.EVOBOT_AUTHORITY_SERVICE!.fetch(
               'https://authority.fixture/fixture/counts',
             )
           ).json()) as { heldPolicies: number }
@@ -1258,7 +1258,7 @@ test('Authority denial during Lifecycle startup parks the original native reques
   for (const [service, url] of [
     [cloud.MODEL_SERVICE!, 'https://provider.fixture/reset'],
     [
-      cloud.MINICLAW_AUTHORITY_SERVICE!,
+      cloud.EVOBOT_AUTHORITY_SERVICE!,
       'https://authority.fixture/fixture/reset',
     ],
   ] as const)
@@ -1266,7 +1266,7 @@ test('Authority denial during Lifecycle startup parks the original native reques
   const b: CloudBinding = {
     ...baseBinding(),
     goal_id: crypto.randomUUID(),
-    execution_authority: 'miniclaw-product',
+    execution_authority: 'evobot-product',
     model_id: 'product-configured-model',
   };
   const execution = grant(b);
@@ -1346,7 +1346,7 @@ test('Authority denial during Lifecycle startup parks the original native reques
   expect(closed.submission?.status).toBe('placed');
   expect(await calls()).toBe(1);
   await (
-    await cloud.MINICLAW_AUTHORITY_SERVICE!.fetch(
+    await cloud.EVOBOT_AUTHORITY_SERVICE!.fetch(
       'https://authority.fixture/fixture/revoke-execution',
       { method: 'POST' },
     )
@@ -1397,7 +1397,7 @@ test('Authority denial during Lifecycle startup parks the original native reques
     await evictDurableObject(stub);
     expect((await inspect()).recovery).toEqual(retry.recovery);
     await (
-      await cloud.MINICLAW_AUTHORITY_SERVICE!.fetch(
+      await cloud.EVOBOT_AUTHORITY_SERVICE!.fetch(
         'https://authority.fixture/fixture/allow-execution',
         { method: 'POST' },
       )
@@ -1447,7 +1447,7 @@ test('Authority denial during Lifecycle startup parks the original native reques
     );
   } finally {
     await (
-      await cloud.MINICLAW_AUTHORITY_SERVICE!.fetch(
+      await cloud.EVOBOT_AUTHORITY_SERVICE!.fetch(
         'https://authority.fixture/fixture/allow-execution',
         { method: 'POST' },
       )

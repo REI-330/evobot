@@ -51,7 +51,7 @@ beforeAll(() => {
       last_active_at: now,
       expires_at: new Date(Date.now() + 3600000).toISOString(),
     });
-    cookies.set(id, `miniclaw_session=${auth.signSessionToken(token)}`);
+    cookies.set(id, `evobot_session=${auth.signSessionToken(token)}`);
   }
 });
 afterAll(() => {

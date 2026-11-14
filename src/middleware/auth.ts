@@ -112,8 +112,8 @@ export const demoOpenSessionMiddleware = async (c: any, next: any) => {
   if (!issued) return;
   const existing = c.res.headers.get('set-cookie') ?? '';
   if (
-    existing.includes('miniclaw_session=') ||
-    existing.includes('__Host-miniclaw_session=')
+    existing.includes('evobot_session=') ||
+    existing.includes('__Host-evobot_session=')
   ) {
     return;
   }

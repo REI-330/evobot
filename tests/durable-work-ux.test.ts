@@ -229,7 +229,7 @@ test('read-only computer calls skip a click; mutating calls need an allowance', 
   expect(
     shouldAutoApproveComputerCall({
       toolName: 'list_windows',
-      serverId: 'opendot_computer_abc',
+      serverId: 'evobot_computer_abc',
       args: {},
       allowances: [],
       now,
@@ -238,7 +238,7 @@ test('read-only computer calls skip a click; mutating calls need an allowance', 
   expect(
     shouldAutoApproveComputerCall({
       toolName: 'observe_window',
-      serverId: 'opendot_computer_abc',
+      serverId: 'evobot_computer_abc',
       args: {},
       allowances: [],
       now,
@@ -248,7 +248,7 @@ test('read-only computer calls skip a click; mutating calls need an allowance', 
   expect(
     shouldAutoApproveComputerCall({
       toolName: 'act_on_window',
-      serverId: 'opendot_computer_abc',
+      serverId: 'evobot_computer_abc',
       args: { label: 'Safari — Inbox' },
       allowances: [],
       now,
@@ -257,10 +257,10 @@ test('read-only computer calls skip a click; mutating calls need an allowance', 
   expect(
     shouldAutoApproveComputerCall({
       toolName: 'act_on_window',
-      serverId: 'opendot_computer_abc',
+      serverId: 'evobot_computer_abc',
       args: { label: 'Safari — Inbox' },
       allowances: [
-        { serverId: 'opendot_computer_abc', appKey: '*', expiresAt: now + 10 },
+        { serverId: 'evobot_computer_abc', appKey: '*', expiresAt: now + 10 },
       ],
       now,
     }),
@@ -269,12 +269,12 @@ test('read-only computer calls skip a click; mutating calls need an allowance', 
     computerAllowanceMatches(
       [
         {
-          serverId: 'opendot_computer_abc',
+          serverId: 'evobot_computer_abc',
           appKey: 'Safari',
           expiresAt: now + 10,
         },
       ],
-      { serverId: 'opendot_computer_abc', appKey: 'Mail', now },
+      { serverId: 'evobot_computer_abc', appKey: 'Mail', now },
     ),
   ).toBe(false);
 });
@@ -371,7 +371,7 @@ test('work rail items do not light up together when goals are off', () => {
       dotName: 'Mini',
       executionState: 'active',
       busy: true,
-      currentTool: 'mcp__opendot_computer__list_windows',
+      currentTool: 'mcp__evobot_computer__list_windows',
     }),
   ).toBe('Mini · 正在查看窗口');
   expect(

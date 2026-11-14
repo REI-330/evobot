@@ -1,8 +1,8 @@
 {
-  "name": "miniclaw-agent-runner",
+  "name": "evobot-agent-runner",
   "version": "1.0.0",
   "type": "module",
-  "description": "Pi agent runner for OpenDot (host and container).",
+  "description": "Pi agent runner for EvoBot (host and container).",
   "main": "dist/pi-index.js",
   "scripts": {
     "build": "tsc",
@@ -14,7 +14,7 @@
     "@tintinweb/pi-subagents": "0.16.1",
     "agent-browser": "0.33.1",
     "cron-parser": "^5.0.0",
-    "miniclaw": "file:../..",
+    "evobot": "file:../..",
     "typebox": "1.3.7",
     "zod": "^4.0.0"
   },
@@ -28,17 +28,17 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/helsome/OpenDot.git",
+    "url": "git+https://github.com/REI-330/evobot.git",
     "directory": "container/agent-runner"
   },
-  "homepage": "https://github.com/helsome/OpenDot#readme",
+  "homepage": "https://github.com/REI-330/evobot#readme",
   "bugs": {
-    "url": "https://github.com/helsome/OpenDot/issues"
+    "url": "https://github.com/REI-330/evobot/issues"
   },
   "author": "helson",
   "keywords": [
     "agent-runner",
     "mcp",
-    "miniclaw"
+    "evobot"
   ]
 }

@@ -13,8 +13,8 @@ import {
 
 test('actual Group member needs explicit lease-bound MCP consent; a later lease has no inherited tools and can receive a fresh exact grant', async () => {
   const f = await botHandoffHttpFixture(undefined, {
-    MINICLAW_PI_MCP: 'true',
-    MINICLAW_GROUP_MEMBER_INBOX: 'true',
+    EVOBOT_PI_MCP: 'true',
+    EVOBOT_GROUP_MEMBER_INBOX: 'true',
   });
   const ledger = path.join(f.root, 'group-mcp-effects.jsonl');
   const calls = () =>

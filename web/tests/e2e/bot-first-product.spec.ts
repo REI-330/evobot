@@ -17,7 +17,7 @@ for (const base of ['', '/mini']) {
     test.setTimeout(150000);
     const repository = fileURLToPath(new URL('../../../', import.meta.url));
     const root = fs.mkdtempSync(
-      path.join(os.tmpdir(), 'miniclaw-bot-product-'),
+      path.join(os.tmpdir(), 'evobot-bot-product-'),
     );
     const desktop = await browser.newContext({
       viewport: { width: 1440, height: 900 },
@@ -218,7 +218,7 @@ for (const base of ['', '/mini']) {
             WEB_PORT: String(port),
             CORS_ALLOWED_ORIGINS: new URL(origin).origin,
             ADMIN_HOST_ONLY_MODE: 'true',
-            MINICLAW_DURABLE_RUNTIME: 'false',
+            EVOBOT_DURABLE_RUNTIME: 'false',
             PLUGIN_AUTO_SCAN: 'false',
             TZ: 'UTC',
           },
@@ -289,12 +289,12 @@ for (const base of ['', '/mini']) {
       expect(models).toBe(0);
       await computer.goto(`${origin}/bots?view=team`);
       const chiefDetails = computer.getByRole('button', {
-        name: 'Miniclaw',
+        name: 'EvoBot',
         exact: true,
       });
       await chiefDetails.click();
       const contextPanel = computer.getByRole('complementary', {
-        name: 'Miniclaw',
+        name: 'EvoBot',
         exact: true,
       });
       await expect(contextPanel).toBeVisible();
@@ -510,7 +510,7 @@ for (const base of ['', '/mini']) {
       await mobile.goto(`${origin}/`);
       await expect(mobile).toHaveURL(new RegExp(`#${base}/chat/[^?]+\\?bot=`));
       await expect(
-        mobile.getByRole('heading', { name: 'Miniclaw', exact: true }),
+        mobile.getByRole('heading', { name: 'EvoBot', exact: true }),
       ).toBeVisible();
       expect(models).toBe(beforeLaunch);
       await mobile.goto(`${origin}/#${base}/bots?view=team`);

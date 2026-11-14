@@ -64,7 +64,7 @@ beforeAll(() => {
       last_active_at: new Date().toISOString(),
       expires_at: new Date(Date.now() + 3_600_000).toISOString(),
     });
-    cookies.set(id, `miniclaw_session=${auth.signSessionToken(token)}`);
+    cookies.set(id, `evobot_session=${auth.signSessionToken(token)}`);
     db.setRegisteredGroup(`web:${id}`, {
       name: id,
       folder: id,
@@ -80,7 +80,7 @@ beforeAll(() => {
   } as unknown as Parameters<typeof webContext.setWebDeps>[0]);
 });
 beforeEach(() => {
-  vi.stubEnv('MINICLAW_PERSONAL_GOALS', 'true');
+  vi.stubEnv('EVOBOT_PERSONAL_GOALS', 'true');
   trigger.mockImplementation((id, key) => {
     const reason = goals.personalGoalTaskBlockReason(id);
     if (reason) return { success: false, error: reason };
@@ -168,7 +168,7 @@ async function linkTask(goal: PersonalGoal) {
 describe('Personal Goal API with real signed-session authentication', () => {
   test('requires authentication and the explicit rollout flag', async () => {
     expect((await routes.request('/')).status).toBe(401);
-    vi.stubEnv('MINICLAW_PERSONAL_GOALS', 'false');
+    vi.stubEnv('EVOBOT_PERSONAL_GOALS', 'false');
     expect((await request('/')).status).toBe(404);
     const availability = await request('/availability');
     expect(availability.status).toBe(200);
@@ -189,7 +189,7 @@ describe('Personal Goal API with real signed-session authentication', () => {
       (
         await routes.request('/', {
           headers: {
-            cookie: `miniclaw_session=${auth.signSessionToken(token)}`,
+            cookie: `evobot_session=${auth.signSessionToken(token)}`,
           },
         })
       ).status,

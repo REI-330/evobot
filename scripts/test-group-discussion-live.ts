@@ -10,10 +10,10 @@ import {
   waitFor,
 } from '../tests/helpers/bot-handoff-http-fixture.js';
 import { threeDotGroup } from '../tests/helpers/group-discussion-fixture.js';
-const credentialPath = process.env.MINICLAW_GROUP_MODEL_CONFIG;
+const credentialPath = process.env.EVOBOT_GROUP_MODEL_CONFIG;
 if (!credentialPath)
   throw new Error(
-    'Set MINICLAW_GROUP_MODEL_CONFIG to a private JSON model configuration',
+    'Set EVOBOT_GROUP_MODEL_CONFIG to a private JSON model configuration',
   );
 const credentials = JSON.parse(fs.readFileSync(credentialPath, 'utf8')) as {
   baseUrl: string;
@@ -28,8 +28,8 @@ assert(
     credentials.api === 'openai-completions',
 );
 const output =
-  process.env.MINICLAW_GROUP_EVIDENCE_PATH ??
-  path.join(os.tmpdir(), 'miniclaw-group-discussion-live.json');
+  process.env.EVOBOT_GROUP_EVIDENCE_PATH ??
+  path.join(os.tmpdir(), 'evobot-group-discussion-live.json');
 const proxy = process.env.HTTPS_PROXY;
 const f = await botHandoffHttpFixture(undefined, {
   ...(proxy
@@ -54,7 +54,7 @@ try {
       name: 'Private discussion verification provider',
       anthropicBaseUrl: credentials.baseUrl,
       anthropicModel: credentials.model,
-      customEnv: { MINICLAW_MODEL_API: credentials.api },
+      customEnv: { EVOBOT_MODEL_API: credentials.api },
     }),
   );
   await f.json(
@@ -68,7 +68,7 @@ try {
   const { groupId, people } = await threeDotGroup(f);
   const accepted = await f.call(`/api/bot-groups/${groupId}/messages`, 'POST', {
     content:
-      '评审 OpenDot 群聊多 Agent 的设计：每个群每个 Dot 保留独立会话；发言先写入群消息再由下一位读取；每次只允许一个 Dot 发言；停止和撤权要阻止晚到回复。请协调 Dot 严格按 Researcher、Developer、Reviewer 的顺序，让每位各发言一次，然后选择 finish 汇总。Researcher 给方案，Developer 针对 Researcher 的公开发言提出工程补充或异议，Reviewer 审查前两位的公开发言。每位公开发言控制在 150 字以内，按当前 JSON 契约返回。',
+      '评审 EvoBot 群聊多 Agent 的设计：每个群每个 Dot 保留独立会话；发言先写入群消息再由下一位读取；每次只允许一个 Dot 发言；停止和撤权要阻止晚到回复。请协调 Dot 严格按 Researcher、Developer、Reviewer 的顺序，让每位各发言一次，然后选择 finish 汇总。Researcher 给方案，Developer 针对 Researcher 的公开发言提出工程补充或异议，Reviewer 审查前两位的公开发言。每位公开发言控制在 150 字以内，按当前 JSON 契约返回。',
     mentions: [],
   });
   assert.equal(accepted.status, 202);

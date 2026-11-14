@@ -97,7 +97,7 @@ export async function cloudStopPolicy(
     binding.workspace_jid !== runtime.workspace_jid ||
     binding.config_fingerprint !== runtime.config_fingerprint ||
     binding.runtime_id !== placement.runtime_id ||
-    binding.execution_authority !== 'miniclaw-product'
+    binding.execution_authority !== 'evobot-product'
   )
     throw new CloudError(404, 'CLOUD_SESSION_NOT_FOUND');
   for (const field of [

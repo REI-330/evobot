@@ -14,8 +14,8 @@ export function LogoLoading({ full, size = 64, label }: LogoLoadingProps) {
   if (full) {
     return (
       <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center">
-        <img src={appIconUrl} alt="OpenDot" className="h-20 w-20 rounded-2xl" />
-        <span className="mt-3 text-xl font-semibold">OpenDot</span>
+        <img src={appIconUrl} alt="EvoBot" className="h-20 w-20 rounded-2xl" />
+        <span className="mt-3 text-xl font-semibold">EvoBot</span>
         {label && <p className="mt-6 text-sm text-muted-foreground">{label}</p>}
       </div>
     );
@@ -25,7 +25,7 @@ export function LogoLoading({ full, size = 64, label }: LogoLoadingProps) {
     <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4">
       <img
         src={appIconUrl}
-        alt="OpenDot"
+        alt="EvoBot"
         className="rounded-2xl"
         style={{ width: size, height: size }}
       />

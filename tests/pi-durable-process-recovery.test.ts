@@ -80,7 +80,7 @@ async function crashAndResume(
   position?: string,
 ): Promise<Message> {
   const root = fs.mkdtempSync(
-    path.join(os.tmpdir(), 'miniclaw-process-recovery-'),
+    path.join(os.tmpdir(), 'evobot-process-recovery-'),
   );
   roots.push(root);
   const first = start('start', root, scenario, position);

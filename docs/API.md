@@ -1,4 +1,4 @@
-# Miniclaw Web API
+# EvoBot Web API
 
 本文档记录当前公开路由族和主要端点。请求/响应 Schema 以对应的
 `src/routes/*.ts`、`src/schemas.ts` 和前端 API 调用为准。
@@ -6,7 +6,7 @@
 ## 约定
 
 - API 默认前缀为 `/api`，WebSocket 为 `/ws`。
-- 普通用户接口需要有效的 Miniclaw Cookie Session。明确标记 Public、专用设备传输和下述私有云端回调使用各自的认证机制。
+- 普通用户接口需要有效的 EvoBot Cookie Session。明确标记 Public、专用设备传输和下述私有云端回调使用各自的认证机制。
 - 资源接口还会执行 owner、角色、Permission、Host 执行权限等检查，见
   [ACL 权限矩阵](ACL-MATRIX.md)。
 - 其他用户的资源通常以 `404` 返回，避免泄漏资源是否存在。
@@ -64,7 +64,7 @@ With both Goal and Durable rollout flags enabled, `POST /api/goals` in an author
 
 ### Durable 产品 Session（可选 Host rollout）
 
-`MINICLAW_DURABLE_RUNTIME=true` 仅影响新建的已授权 Host conversation Session。现有、主会话及 Docker 会话继续原执行路径，已创建 Session 的引擎不随开关或重启改变。创建 `/api/groups/:jid/sessions`（兼容 `/agents`）可携带 `requestId` 或 `Idempotency-Key`；同一标识和参数返回同一会话，不同参数返回冲突。
+`EVOBOT_DURABLE_RUNTIME=true` 仅影响新建的已授权 Host conversation Session。现有、主会话及 Docker 会话继续原执行路径，已创建 Session 的引擎不随开关或重启改变。创建 `/api/groups/:jid/sessions`（兼容 `/agents`）可携带 `requestId` 或 `Idempotency-Key`；同一标识和参数返回同一会话，不同参数返回冲突。
 
 正式 `POST /api/messages` 对 Durable Session 要求稳定 `requestId`（或请求头），绑定完整执行参数，返回 `messageId`、`submissionId`、`runtime: pi-durable` 等回执。结果不确定时只用原标识查询或重试。附件、旧 WebSocket 直接发送和 `/clear` 暂不支持，不会降级到 Coding Agent 执行。
 
@@ -74,12 +74,12 @@ With both Goal and Durable rollout flags enabled, `POST /api/goals` in an author
 - `controls` 的 abort 只标记该 taskId，旧请求不会中止后来的运行；兼容 `/abort` 与 virtual-JID `/interrupt` 仍按 Conversation 范围中止并撤回排队输入。内部 write 不能编辑或移动。
 - 旧 follow-up 编辑/排序控制在 Durable Session 上继续返回冲突；应使用上述实际 Durable Inbox 控制。敏感操作目前仅支持确切内容的私有产物审批，不包含邮件、远程修改等通用外部写入。
 
-这些接口使用现有登录和 Workspace/Host 权限。模型读取现有 Provider 配置；OpenAI Completions 可在 Provider advanced `customEnv` 配置 `MINICLAW_MODEL_API=openai-completions`，默认是 `anthropic-messages`。仅支持 API-key，OAuth/完整 Skills/MCP/Docker 适配仍待实现。当前 Durable 费用未计价、未纳入费用统计，不能视为免费。
+这些接口使用现有登录和 Workspace/Host 权限。模型读取现有 Provider 配置；OpenAI Completions 可在 Provider advanced `customEnv` 配置 `EVOBOT_MODEL_API=openai-completions`，默认是 `anthropic-messages`。仅支持 API-key，OAuth/完整 Skills/MCP/Docker 适配仍待实现。当前 Durable 费用未计价、未纳入费用统计，不能视为免费。
 
 ### Personal Goals（可选）
 
 `GET /api/goals/availability` 需要登录，返回是否启用。其余接口要求服务设置
-`MINICLAW_PERSONAL_GOALS=true`；未启用时返回 `404`。
+`EVOBOT_PERSONAL_GOALS=true`；未启用时返回 `404`。
 
 - `GET /api/goals`：仅列出本人且仍有 Workspace 权限的目标。
 - `POST /api/goals`：创建目标，必须携带 `Idempotency-Key`，同键不同内容返回 `409`。
@@ -114,7 +114,7 @@ Public：
 - `DELETE /api/auth/sessions/:id`
 - `POST /api/auth/avatar`
 
-`MINICLAW_DEMO_OPEN=true` 时，回环地址上的未登录请求由服务端会话中间件签入管理员，浏览器不必先访问 `/login`。默认关闭。`/api/cloud-runtime` 仍只接受 HMAC，不接受这个 Cookie。说明见 [DEMO.md](../DEMO.md)。
+`EVOBOT_DEMO_OPEN=true` 时，回环地址上的未登录请求由服务端会话中间件签入管理员，浏览器不必先访问 `/login`。默认关闭。`/api/cloud-runtime` 仍只接受 HMAC，不接受这个 Cookie。说明见 [DEMO.md](../DEMO.md)。
 
 ## 工作区、消息和运行控制
 
@@ -147,12 +147,12 @@ Workspace↔AgentProfile 绑定行上，因此：仅 `web:` 前缀工作区可�
 它与 `execution_mode` 共享同一道 quiesce 边界，暖 Runner 只能观察到旧契约或新
 契约；停机失败返回 503 并带 `persisted` 标记。
 
-Home Workspace 固定归属当前用户的内置 Miniclaw。尝试通过
+Home Workspace 固定归属当前用户的内置 EvoBot。尝试通过
 `PATCH /api/groups/:jid/agent-profile` 将 Home 迁移到自定义 Agent 时返回：
 
 ```json
 {
-  "error": "Home Workspace 始终属于内置 Miniclaw，不能迁移到自定义智能体",
+  "error": "Home Workspace 始终属于内置 EvoBot，不能迁移到自定义智能体",
   "code": "HOME_WORKSPACE_AGENT_IMMUTABLE"
 }
 ```
@@ -176,7 +176,7 @@ HTTP 状态为 409；请求不会停止现有 Runner，也不会修改绑定。
 }
 ```
 
-`host_path` 是 Miniclaw/Docker 守护进程所在服务器上的绝对目录，不是浏览器
+`host_path` 是 EvoBot/Docker 守护进程所在服务器上的绝对目录，不是浏览器
 所在设备的目录；`container_path` 是 `/workspace/extra/` 下的相对路径。来源目录
 必须通过 `config/mount-allowlist.json`，目标不能重复、嵌套、穿越或覆盖运行时
 保留目录。普通用户、停用管理员和 host 模式请求都会被拒绝。权限、allowlist、
@@ -245,7 +245,7 @@ HTTP 状态为 409；请求不会停止现有 Runner，也不会修改绑定。
 
 `POST /api/agent-profiles` 只创建隔离的 AgentProfile。它不会隐式创建 Workspace、
 Session 或 Memory，也不会绑定/复制 Home Workspace。用户必须在创建 Workspace 时
-显式选择它，或通过上面的非 Home Workspace 迁移接口建立归属。内置 Miniclaw 的
+显式选择它，或通过上面的非 Home Workspace 迁移接口建立归属。内置 EvoBot 的
 代码级平台身份不存放在这些可编辑的 Prompt 字段中，自定义 Agent 不会继承。
 
 ## Agent-first 工作区投影
@@ -258,12 +258,12 @@ Session 或 Memory，也不会绑定/复制 Home Workspace。用户必须在创�
 
 这些接口是 `registered_groups` 兼容存储之上的只读产品投影。
 
-### Miniclaw Owner Profile
+### EvoBot Owner Profile
 
 - `GET /api/workspaces/:jid/owner-profile`
 - `PATCH /api/workspaces/:jid/owner-profile`
 
-只允许该用户不可删除的 Home Workspace、内置默认 Miniclaw AgentProfile 和实际
+只允许该用户不可删除的 Home Workspace、内置默认 EvoBot AgentProfile 和实际
 owner。无权访问、自定义 Agent 或非 Home 目标统一返回 404。
 
 PATCH 使用 action 联合类型：
@@ -293,7 +293,7 @@ owner 明确拒绝首次设置时可提交
 返回 409 `revision_conflict`；重复 idempotency key 对应不同请求返回 409。
 
 称呼底层复用保留的 Workspace Memory revision/provenance/audit/outbox，但不属于
-通用 Memory API：`miniclaw.owner.preferred_address` 不能通过通用接口创建、更新或
+通用 Memory API：`evobot.owner.preferred_address` 不能通过通用接口创建、更新或
 忘记，也不会出现在通用读取、搜索、versions 或 Runtime snapshot 中。
 
 ## 工作区项目能力
@@ -366,7 +366,7 @@ Legacy 渠道 facade 位于 `/api/config/user-im/*`，涵盖飞书、Telegram、
 - `GET|POST /api/tasks`
 - `GET /api/tasks/attention`：当前用户被阻断或等待确认的持久工作，不依赖 Personal Goals
 
-`MINICLAW_DURABLE_MAIN=true`（同时需要 `MINICLAW_DURABLE_RUNTIME=true` 和 Host 工作区）让还没有助手回复的主会话改走 Pi Durable，并在界面上打开那条对话。已经有编码助手回复的主会话保持原路径。`MINICLAW_CLOUD_MAX_MODEL_STEPS` 可把新的 Cloud 会话步数上限从 24 调到 1–64。自动批准的只读电脑调用不计入每会话 100 条 MCP 审批上限。
+`EVOBOT_DURABLE_MAIN=true`（同时需要 `EVOBOT_DURABLE_RUNTIME=true` 和 Host 工作区）让还没有助手回复的主会话改走 Pi Durable，并在界面上打开那条对话。已经有编码助手回复的主会话保持原路径。`EVOBOT_CLOUD_MAX_MODEL_STEPS` 可把新的 Cloud 会话步数上限从 24 调到 1–64。自动批准的只读电脑调用不计入每会话 100 条 MCP 审批上限。
 
 - `PATCH|DELETE /api/tasks/:id`
 - `POST /api/tasks/:id/restore`
@@ -644,7 +644,7 @@ Agent 镜像只由 `main` 分支的 GitHub Actions 构建并发布。该接口�
 
 ### Personal Device Nodes（可选）
 
-`MINICLAW_DEVICE_NODES=true` 允许新配对、身份审批、工作区文件授权和新工具操作。
+`EVOBOT_DEVICE_NODES=true` 允许新配对、身份审批、工作区文件授权和新工具操作。
 已提交操作恢复与撤销不依赖开关。见 [设备协议与本地节点](personal-agent/device-nodes.md)。
 
 - Cookie 主人：`GET /api/device-nodes[/availability|/audit]`，`POST /pair-tickets`、`/:id/approve`、`/:id/grants`、`/:id/revoke`、`/grants/:id/revoke`（均在此前缀下）。写操作要求 `Idempotency-Key`；审批/撤销设备要求当前 `expected_revision`；授权/审批/撤销要求 `confirmed:true`。声明不自动授予权限。
@@ -668,7 +668,7 @@ Agent 镜像只由 `main` 分支的 GitHub Actions 构建并发布。该接口�
   持久化尝试预算有界。重复 attempt 拒绝再次调用供应商，不返回密钥或原始上游错误。
 
 内部 Cloud placement 与 Session 在同一产品事务创建，已运行 Node 会话不可被接管。
-Node Harness 拒绝 Cloud placement。`MINICLAW_CLOUD_RUNTIME=true` 时，现有 Session
+Node Harness 拒绝 Cloud placement。`EVOBOT_CLOUD_RUNTIME=true` 时，现有 Session
 创建接口可显式传 `runtime: "cloudflare-durable"`，并复用消息、快照与控制接口；
 `runtime_kind` 保持兼容，`runtime_router` 标识执行所有者。新开关不改写历史 Session。
 `GET /api/groups/:jid/session-runtimes` 仅向 Workspace 所有者列出可用选项。
@@ -694,7 +694,7 @@ v79 增加后端 Goal 执行授权账本，尚不开放 Goal 的 Cloud 创建入
 
 ### Bot Groups（可选）
 
-`MINICLAW_BOT_GROUPS=true` 启用新建、发送与授权配置；关闭后保留已有群读取、归档与撤销。
+`EVOBOT_BOT_GROUPS=true` 启用新建、发送与授权配置；关闭后保留已有群读取、归档与撤销。
 `GET /api/bot-groups` 列出当前成员可访问的群；`/availability` 返回准入开关，
 `/options` 只返回本人当前可用的 Profile/Workspace 配置选项。
 `POST /api/bot-groups` 使用 `{name,bot_profile_ids?,workspace_jid?,description?}` 创建独立内部 UUID 群。
@@ -709,13 +709,13 @@ v79 增加后端 Goal 执行授权账本，尚不开放 Goal 的 Cloud 创建入
 所有写入要求 `Idempotency-Key`，同用户同键绑定完整操作、群与参数；重复提交返回原始回执与当前快照。
 WebSocket `bot_group_update` 只传 ID/版本作为刷新提示；成员移除有最小化 `bot_group_access_revoked` 提示。
 成员身份不授予 Workspace 或工具权限；单独开启群聊时不执行模型。
-可选 `MINICLAW_BOT_HANDOFFS=true` 开启群主原生任务：`messages` 增加可选 `dispatch`（false 为普通消息），未选目标时交给 Chief，显式 @ 或 `mentions` 最多两个目标。
+可选 `EVOBOT_BOT_HANDOFFS=true` 开启群主原生任务：`messages` 增加可选 `dispatch`（false 为普通消息），未选目标时交给 Chief，显式 @ 或 `mentions` 最多两个目标。
 `POST .../:id/members/:memberId/runtime-grants` 以群/成员版本、`runtime_kind: node-durable`、工具白名单、模型请求上限和有效分钟建立独立授权。
 `POST .../:id/handoffs/:handoffId/control` 以任务版本执行 start/pause/resume/cancel。
 `POST .../:id/handoffs/:handoffId/abort` 以任务版本、`task_id`、`queue_digest` 提交现有原生精确终止协议。
 `GET .../:id/handoffs/:handoffId/approvals` 仅群主且当前 Native Workspace 权限有效时读取审批；同路径 `/:approvalId` POST 指定 `parameters_digest` 和 approve/deny。
 `POST .../:id/handoffs/:handoffId/delegations` 接受完成的 Chief 任务、`target_bot_ids`、指令和任务版本；这是群主明确确认的受控委派。
-以上写入复用同一幂等回执。独立默认关闭的 `MINICLAW_CLOUD_BOT_HANDOFFS=true`（同时需要 Groups/Handoffs/Cloud Runtime 准入及有效网关配置）允许显式 `runtime_kind: cloudflare-durable`，不回退执行器。Cloud 默认无工具，仅可审查授权 `inspect_text` 和另行开启的 `create_approved_artifact`；拒绝本机文件工具。`availability` 的 `cloud_handoffs_enabled`、`cloud_approvals_enabled` 是准入开关状态，不是云端健康探测。关闭新准入保留既有云端会话、审批与回执。详见 [Cloud Bot teams](personal-agent/cloud-bot-teams.md) 与 [Handoff](personal-agent/bot-handoffs.md)。
+以上写入复用同一幂等回执。独立默认关闭的 `EVOBOT_CLOUD_BOT_HANDOFFS=true`（同时需要 Groups/Handoffs/Cloud Runtime 准入及有效网关配置）允许显式 `runtime_kind: cloudflare-durable`，不回退执行器。Cloud 默认无工具，仅可审查授权 `inspect_text` 和另行开启的 `create_approved_artifact`；拒绝本机文件工具。`availability` 的 `cloud_handoffs_enabled`、`cloud_approvals_enabled` 是准入开关状态，不是云端健康探测。关闭新准入保留既有云端会话、审批与回执。详见 [Cloud Bot teams](personal-agent/cloud-bot-teams.md) 与 [Handoff](personal-agent/bot-handoffs.md)。
 删除所属 Workspace 会级联删除群及历史，操作前必须完成一致备份。详见
 [Bot Groups](personal-agent/bot-groups.md)。
 
@@ -834,7 +834,7 @@ broadcast that wakes idle members. Reconnect itself creates no command.
 Discussion settings additionally accept optional
 `execution_contract: "serial-v1" | "member-inbox-v1"`. The default remains
 `serial-v1`; existing frozen policies and queue-only turns are unchanged.
-`MINICLAW_GROUP_MEMBER_INBOX=true` advertises the read-only
+`EVOBOT_GROUP_MEMBER_INBOX=true` advertises the read-only
 `discussion.member_inbox_available` flag and permits explicit member-mode
 admission for exactly two Node participants. Disabling the flag stops new
 admission while preserving reconciliation and Stop for existing runs.

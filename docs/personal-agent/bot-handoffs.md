@@ -3,8 +3,8 @@
 This optional slice uses the existing Product Runtime Router, Pi Durable 1.3.0
 Harness, native SQLite Inbox/Tasks/checkpoints and authorization. It introduces
 no second executor, queue, Scheduler, model Provider or socket protocol.
-`MINICLAW_BOT_GROUPS=true`, `MINICLAW_BOT_HANDOFFS=true` and
-`MINICLAW_DURABLE_RUNTIME=true` enable new Host-backed Group work. Default
+`EVOBOT_BOT_GROUPS=true`, `EVOBOT_BOT_HANDOFFS=true` and
+`EVOBOT_DURABLE_RUNTIME=true` enable new Host-backed Group work. Default
 admission remains off. The separate default-off Cloud path is documented in
 [Cloud Bot teams](cloud-bot-teams.md); there is no fallback to Node for a Cloud request.
 

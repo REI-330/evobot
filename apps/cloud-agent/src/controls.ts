@@ -118,7 +118,7 @@ const Prepared = z
 async function receipt(storage: SqliteStorage, id: string) {
   const record = await storage.findDocument(
     {
-      kind: 'miniclaw.queue-control',
+      kind: 'evobot.queue-control',
       scope: { kind: 'session' },
       key: `${ROOT_CONVERSATION_ID}:${id}`,
     },
@@ -153,7 +153,7 @@ export async function validateCloudControls(
     const page = await storage.scanDocuments(
       {
         scope: { kind: 'session' },
-        kind: 'miniclaw.queue-control',
+        kind: 'evobot.queue-control',
         at: 'current',
       },
       100,

@@ -207,7 +207,7 @@ routes.post('/webbridge-tab', async (c) => {
       target.password
     )
       return c.json({ error: 'Invalid browser target' }, 400);
-    const session = `opendot-${randomUUID()}`;
+    const session = `evobot-${randomUUID()}`;
     const response = await fetch(
       `http://127.0.0.1:${parsed.data.port}/command`,
       {
@@ -217,7 +217,7 @@ routes.post('/webbridge-tab', async (c) => {
         body: JSON.stringify({
           action: 'navigate',
           session,
-          args: { url: target.href, newTab: true, group_title: 'OpenDot' },
+          args: { url: target.href, newTab: true, group_title: 'EvoBot' },
         }),
         signal: AbortSignal.timeout(15000),
       },
@@ -255,7 +255,7 @@ routes.post('/webbridge-tab', async (c) => {
 const Start = z.strictObject({
   serverId: z
     .string()
-    .regex(/^opendot_(?:kimicu|computer|webbridge)_[a-f0-9]{32}$/),
+    .regex(/^evobot_(?:kimicu|computer|webbridge)_[a-f0-9]{32}$/),
   pairCode: z
     .string()
     .min(1)
@@ -302,7 +302,7 @@ routes.post('/computer', async (c) => {
     return c.json({ error: 'Device nodes disabled' }, 409);
   const input = z
     .strictObject({
-      serverId: z.string().regex(/^opendot_computer_[a-f0-9]{32}$/),
+      serverId: z.string().regex(/^evobot_computer_[a-f0-9]{32}$/),
       nodeId: z.uuid(),
     })
     .safeParse(await c.req.json().catch(() => null));
@@ -390,8 +390,8 @@ routes.post('/start', async (c) => {
     const { definitions, secrets } = readStoredUserMcpServers(ownerId);
     const definition = definitions.servers[parsed.data.serverId];
     const secret = secrets.servers[parsed.data.serverId];
-    const desktop = parsed.data.serverId.startsWith('opendot_kimicu_');
-    const computer = parsed.data.serverId.startsWith('opendot_computer_');
+    const desktop = parsed.data.serverId.startsWith('evobot_kimicu_');
+    const computer = parsed.data.serverId.startsWith('evobot_computer_');
     if ((desktop || computer) && !fs.existsSync('/Applications/KimiCU.app/Contents/MacOS/kimi-cu'))
       return c.json({ error: 'KimiCU is not installed' }, 409);
     const tools = desktop
@@ -412,17 +412,17 @@ routes.post('/start', async (c) => {
     const env = secret?.env ?? {};
     const keys = desktop
       ? [
-          'OPENDOT_KIMICU_APP_ID',
-          'OPENDOT_KIMICU_PID',
-          'OPENDOT_KIMICU_WINDOW_ID',
+          'EVOBOT_KIMICU_APP_ID',
+          'EVOBOT_KIMICU_PID',
+          'EVOBOT_KIMICU_WINDOW_ID',
         ]
       : computer
         ? []
         : [
-            'OPENDOT_WEBBRIDGE_SESSION',
-            'OPENDOT_WEBBRIDGE_TAB_ID',
-            'OPENDOT_WEBBRIDGE_ORIGIN',
-            'OPENDOT_WEBBRIDGE_PORT',
+            'EVOBOT_WEBBRIDGE_SESSION',
+            'EVOBOT_WEBBRIDGE_TAB_ID',
+            'EVOBOT_WEBBRIDGE_ORIGIN',
+            'EVOBOT_WEBBRIDGE_PORT',
           ];
     if (
       !definition ||

@@ -80,7 +80,7 @@ test('missing, duplicate, normalized and cross-server alias collisions are rejec
 
 test('profile catalog is intersected with each run grant; internal wildcard grants no MCP', () => {
   const entries = catalog([tool('read'), tool('write')], ['read', 'write']);
-  expect(selectGrantedMcpTools(entries, ['mcp__miniclaw__*'])).toEqual([]);
+  expect(selectGrantedMcpTools(entries, ['mcp__evobot__*'])).toEqual([]);
   expect(selectGrantedMcpTools(entries, ['mcp__fixture__read'])).toEqual([
     entries[0],
   ]);

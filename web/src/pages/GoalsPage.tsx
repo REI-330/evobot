@@ -40,6 +40,20 @@ import { GithubRoutines } from '@/components/goals/GithubRoutines';
 import { DeviceNodes } from '@/components/goals/DeviceNodes';
 import { PersonalMemory } from '@/components/goals/PersonalMemory';
 
+type RsiBranch = {
+  id: string;
+  goal_id: string;
+  owner_user_id: string;
+  ordinal: number;
+  approach: string;
+  trigger: 'manual' | 'auto';
+  status: 'running' | 'succeeded' | 'failed' | 'stopped';
+  fail_kind: string | null;
+  retryable: boolean | null;
+  run_id: string | null;
+  started_at: string;
+  finished_at: string | null;
+};
 type Detail = {
   goal: PersonalGoal;
   tasks: ScheduledTask[];
@@ -48,6 +62,22 @@ type Detail = {
   managed_execution?: boolean;
   runtime_kind?: string | null;
   evidence?: Array<{ evidence: Array<{ artifact_id: string }> }>;
+  rsi?: {
+    decision: { action: 'allow' | 'stop'; reason: string | null } | null;
+    branches: RsiBranch[];
+  };
+};
+const rsiStopLabels: Record<string, string> = {
+  not_retryable: '再试也不会成功',
+  same_failure: '连续两次同一类失败，已停止',
+  budget: '执行次数已用完',
+  limit: '已达到 3 次上限',
+};
+const rsiBranchStatusLabels: Record<RsiBranch['status'], string> = {
+  running: '执行中',
+  succeeded: '成功',
+  failed: '失败',
+  stopped: '已停止',
 };
 const executionLabels: Record<string, string> = {
   queued: '排队中',
@@ -102,6 +132,7 @@ export function GoalsPage() {
   );
   const [cloudAvailable, setCloudAvailable] = useState(false);
   const [cloudMaxRuns, setCloudMaxRuns] = useState(100);
+  const [autoRetry, setAutoRetry] = useState(false);
   const [confirm, setConfirm] = useState<'cancelled' | 'completed' | null>(
     null,
   );
@@ -307,6 +338,44 @@ export function GoalsPage() {
     ),
   ];
   const terminal = goal && ['completed', 'cancelled'].includes(goal.status);
+  const detailWorkspaceJid = detail?.goal.workspace_jid;
+  useEffect(() => {
+    let active = true;
+    if (!detailWorkspaceJid) {
+      setAutoRetry(false);
+      return;
+    }
+    void api
+      .get<{ workspace_jid: string; auto_retry: boolean }>(
+        `/api/goals/rsi-settings?workspace_jid=${encodeURIComponent(detailWorkspaceJid)}`,
+      )
+      .then((res) => {
+        if (active) setAutoRetry(Boolean(res.auto_retry));
+      })
+      .catch(() => {
+        if (active) setAutoRetry(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [detailWorkspaceJid]);
+  async function retryGoal() {
+    if (!goal) return;
+    await mutate(() => api.post(`/api/goals/${goal.id}/retry`));
+  }
+  async function toggleAutoRetry(next: boolean) {
+    if (!goal) return;
+    await mutate(async () => {
+      const res = await api.put<{
+        workspace_jid: string;
+        auto_retry: boolean;
+      }>('/api/goals/rsi-settings', {
+        workspace_jid: goal.workspace_jid,
+        auto_retry: next,
+      });
+      setAutoRetry(Boolean(res.auto_retry));
+    });
+  }
   async function changeStatus(status: GoalStatus) {
     if (!goal) return;
     await mutate(() =>
@@ -661,6 +730,26 @@ export function GoalsPage() {
                         {goalStatusLabels[goal.status]} · 执行预算{' '}
                         {goal.budget_used_runs}/{goal.budget_max_runs}
                       </p>
+                      {goal.status === 'failed' && detail.rsi?.decision && (
+                        <div className="space-y-2 rounded-lg border p-3 text-sm">
+                          <p>
+                            {detail.rsi.decision.action === 'allow'
+                              ? '这次失败可以换种方法再试'
+                              : (rsiStopLabels[
+                                  detail.rsi.decision.reason ?? ''
+                                ] ?? '已停止重试')}
+                          </p>
+                          {detail.rsi.decision.action === 'allow' && (
+                            <Button
+                              size="sm"
+                              disabled={busy}
+                              onClick={() => void retryGoal()}
+                            >
+                              换种方法再试
+                            </Button>
+                          )}
+                        </div>
+                      )}
                       {!goal.team &&
                         detail?.runtime_kind === 'cloudflare-durable' && (
                           <p className="text-sm text-muted-foreground">
@@ -944,6 +1033,46 @@ export function GoalsPage() {
                           </div>
                         ))
                       )}
+                      {!!detail.rsi?.branches?.length && (
+                        <section aria-label="尝试记录" className="space-y-2">
+                          <h3 className="font-medium">尝试记录</h3>
+                          {detail.rsi.branches.map((branch) => (
+                            <div
+                              key={branch.id}
+                              className="rounded-lg bg-muted/40 p-3 text-sm"
+                            >
+                              <p>
+                                第 {branch.ordinal} 次 · {branch.approach}
+                              </p>
+                              <p className="mt-1 text-xs text-muted-foreground">
+                                {rsiBranchStatusLabels[branch.status] ??
+                                  branch.status}{' '}
+                                ·{' '}
+                                {branch.started_at
+                                  ? new Date(
+                                      branch.started_at,
+                                    ).toLocaleString()
+                                  : ''}
+                              </p>
+                            </div>
+                          ))}
+                        </section>
+                      )}
+                      <div className="border-t pt-3">
+                        <label className="flex cursor-pointer items-center gap-2 text-sm">
+                          <input
+                            type="checkbox"
+                            checked={autoRetry}
+                            disabled={busy}
+                            onChange={(event) =>
+                              void toggleAutoRetry(event.target.checked)
+                            }
+                          />
+                          <span>
+                            失败后自动再试（每次消耗 1 次执行预算，最多 3 次）
+                          </span>
+                        </label>
+                      </div>
                     </section>
                   </WorkDetailSurface>
                 )}

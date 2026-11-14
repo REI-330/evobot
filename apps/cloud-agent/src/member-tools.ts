@@ -19,7 +19,7 @@ export function cloudMemberTools(
   const allow = async (signal?: AbortSignal) => {
     if (
       !binding.group_session ||
-      binding.execution_authority !== 'miniclaw-product'
+      binding.execution_authority !== 'evobot-product'
     )
       throw new CloudError(403, 'CLOUD_MEMBER_NOT_AVAILABLE');
     await authorize(signal);
@@ -79,12 +79,12 @@ export function cloudMemberTools(
           .strict()
           .parse(value).output;
       };
-      let saved = await api.memo('miniclaw.member.send.v1', context);
+      let saved = await api.memo('evobot.member.send.v1', context);
       if (saved === undefined) {
         const candidate = MemberSendBindingSchema.parse(
           await receipt('prepare'),
         );
-        saved = await api.memo('miniclaw.member.send.v1', candidate, context);
+        saved = await api.memo('evobot.member.send.v1', candidate, context);
       }
       const committed = MemberSendBindingSchema.parse(saved);
       if (

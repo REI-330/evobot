@@ -7,7 +7,7 @@ Server.prototype.listen = function (...args) {
     const address = this.address();
     if (address && typeof address === 'object')
       process.send?.({
-        type: 'miniclaw_fixture_listening_v1',
+        type: 'evobot_fixture_listening_v1',
         pid: process.pid,
         root: process.cwd(),
         port: address.port,

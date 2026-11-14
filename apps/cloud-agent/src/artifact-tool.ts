@@ -17,8 +17,8 @@ import type {
   CloudArtifactIntent,
   CloudExecutionRef,
 } from '../../../src/personal-agent/cloud-wire.js';
-export const ARTIFACT_MEMO = 'miniclaw.cloud.artifact.intent.v1';
-export const ARTIFACT_RECEIPT_MEMO = 'miniclaw.cloud.artifact.receipt.v1';
+export const ARTIFACT_MEMO = 'evobot.cloud.artifact.intent.v1';
+export const ARTIFACT_RECEIPT_MEMO = 'evobot.cloud.artifact.receipt.v1';
 export const ArtifactIdentitySchema = z
   .object({
     approval_id: z.uuid(),
@@ -162,7 +162,7 @@ export function approvedArtifactTool(
         !(
           member?.execution.tool_capabilities ?? binding.tool_capabilities
         )?.includes('create_approved_artifact') ||
-        binding.execution_authority !== 'miniclaw-product'
+        binding.execution_authority !== 'evobot-product'
       )
         throw new CloudError(403, 'CLOUD_TOOL_NOT_GRANTED');
       const memberProof =

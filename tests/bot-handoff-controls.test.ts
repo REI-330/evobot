@@ -253,7 +253,7 @@ registerHooks({load(url,context,next){const result=next(url,context);if(!url.end
 
 test('Group exact-run abort commits the existing native control receipt and survives duplicate ACK and restart', async () => {
   const fixture = await botHandoffHttpFixture(
-    process.env.MINICLAW_TEST_HANDOFF_PRELOAD,
+    process.env.EVOBOT_TEST_HANDOFF_PRELOAD,
   );
   try {
     fixture.setModel(() => ({ hold: true }));

@@ -18,11 +18,11 @@ import {
 
 // Production Node Pi runtime with synthetic provider and synthetic trace data.
 test('member final feedback resolves its actual committed native task', async () => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'opendot-member-score-'));
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'evobot-member-score-'));
   const f = await botHandoffHttpFixture(
     path.resolve('tests/fixtures/group-score-observability-preload.mjs'),
     {
-      MINICLAW_GROUP_MEMBER_INBOX: 'true',
+      EVOBOT_GROUP_MEMBER_INBOX: 'true',
       TEST_GROUP_SCORE_FILE: path.join(root, 'scores.jsonl'),
     },
   );
@@ -86,11 +86,11 @@ test('member final feedback resolves its actual committed native task', async ()
 }, 120000);
 
 test('real peer question and reply use their own source generation traces', async () => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'opendot-member-score-'));
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'evobot-member-score-'));
   const f = await botHandoffHttpFixture(
     path.resolve('tests/fixtures/group-score-observability-preload.mjs'),
     {
-      MINICLAW_GROUP_MEMBER_INBOX: 'true',
+      EVOBOT_GROUP_MEMBER_INBOX: 'true',
       TEST_GROUP_SCORE_FILE: path.join(root, 'scores.jsonl'),
     },
   );

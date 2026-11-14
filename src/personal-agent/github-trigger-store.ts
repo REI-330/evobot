@@ -33,8 +33,8 @@ export const GithubTriggerCreateSchema = z
       .transform((s) => s.toLowerCase()),
     secret_variable: z
       .string()
-      .regex(/^MINICLAW_GITHUB_WEBHOOK_[A-Z0-9_]{1,80}$/)
-      .refine((name) => name !== 'MINICLAW_GITHUB_WEBHOOK_GRANTS'),
+      .regex(/^EVOBOT_GITHUB_WEBHOOK_[A-Z0-9_]{1,80}$/)
+      .refine((name) => name !== 'EVOBOT_GITHUB_WEBHOOK_GRANTS'),
     objective: z.string().trim().min(1).max(8000),
     completion_criteria: z
       .array(z.string().trim().min(1).max(2000))
@@ -63,7 +63,7 @@ const signingGrantSchema = z
   )
   .max(100);
 function signingGrants() {
-  const raw = process.env.MINICLAW_GITHUB_WEBHOOK_GRANTS;
+  const raw = process.env.EVOBOT_GITHUB_WEBHOOK_GRANTS;
   if (!raw || Buffer.byteLength(raw) > 65536) return [];
   try {
     const parsed = signingGrantSchema.safeParse(JSON.parse(raw));

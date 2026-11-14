@@ -10,8 +10,8 @@ import type { ModelEnvironment } from './models';
 export { CloudSession } from './session-object';
 export interface Env extends ModelEnvironment {
   SESSIONS: DurableObjectNamespace<CloudSession>;
-  MINICLAW_CLOUD_SHARED_SECRET?: string;
-  MINICLAW_CLOUD_ADMISSION?: string;
+  EVOBOT_CLOUD_SHARED_SECRET?: string;
+  EVOBOT_CLOUD_ADMISSION?: string;
 }
 export default {
   async fetch(request: Request, env: Env) {
@@ -22,7 +22,7 @@ export default {
       const raw = await boundedBody(request);
       const scope = await authenticate(
         request,
-        env.MINICLAW_CLOUD_SHARED_SECRET ?? '',
+        env.EVOBOT_CLOUD_SHARED_SECRET ?? '',
         raw,
       );
       const stub = env.SESSIONS.getByName(`v1:${scope.session_id}`);

@@ -89,7 +89,7 @@ function seedCatalogSnapshot(opts: {
 }
 
 beforeEach(() => {
-  tmpDataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'miniclaw-mat-'));
+  tmpDataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'evobot-mat-'));
 });
 
 afterEach(() => {
@@ -184,13 +184,13 @@ describe('materializeUserRuntime', () => {
     expect([dStat.dev, dStat.ino]).not.toEqual([sStat.dev, sStat.ino]);
 
     // Marker is at sibling path (snapshot root), NOT inside plugin root.
-    expect(fs.existsSync(path.join(rtDir, '@miniclaw-runtime-markers'))).toBe(
+    expect(fs.existsSync(path.join(rtDir, '@evobot-runtime-markers'))).toBe(
       false,
     );
     const markerPath = path.join(
       getUserSnapshotsDir(USER),
       'sha256-aaa',
-      '@miniclaw-runtime-markers',
+      '@evobot-runtime-markers',
       'mp1',
       'p1.json',
     );
@@ -317,7 +317,7 @@ describe('materializeUserRuntime', () => {
     const markerPath = path.join(
       getUserSnapshotsDir(USER),
       'sha256-aaa',
-      '@miniclaw-runtime-markers',
+      '@evobot-runtime-markers',
       'mp1',
       'p1.json',
     );
@@ -434,7 +434,7 @@ describe('materializeUserRuntime', () => {
     const markerPath = path.join(
       getUserSnapshotsDir(USER),
       'sha256-aaa',
-      '@miniclaw-runtime-markers',
+      '@evobot-runtime-markers',
       'mp1',
       'p1.json',
     );

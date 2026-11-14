@@ -55,7 +55,7 @@ const now = () => new Date().toISOString();
 const digest = (value: unknown) =>
   createHash('sha256').update(JSON.stringify(value)).digest('hex');
 export const memberInboxAdmissionEnabled = () =>
-  process.env.MINICLAW_GROUP_MEMBER_INBOX === 'true';
+  process.env.EVOBOT_GROUP_MEMBER_INBOX === 'true';
 export const isMemberDiscussion = (run?: DiscussionRun | null) =>
   run?.execution_contract === 'member-inbox-v1';
 export const MEMBER_MAIL_TTL_MS = 120000;
@@ -189,7 +189,7 @@ export function validateMemberSettings(
           'cloudflare-durable' &&
         (newAdmission
           ? memberConcurrencyEnabled() &&
-            process.env.MINICLAW_GROUP_MEMBER_CLOUD === 'true'
+            process.env.EVOBOT_GROUP_MEMBER_CLOUD === 'true'
           : !!run.id && memberCloudRunEnabled(run.id))
       )
     )

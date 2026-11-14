@@ -60,7 +60,7 @@ test('model discovery/auth/recovery do not spend inference budget; dispatch char
     anthropicBaseUrl: 'http://127.0.0.1:1/v1',
     anthropicApiKey: 'test-key',
     anthropicModel: 'meter-model',
-    customEnv: { MINICLAW_MODEL_API: 'openai-completions' },
+    customEnv: { EVOBOT_MODEL_API: 'openai-completions' },
   });
   const selected = productModelConfiguration('web:meter', provider.id);
   const runtime = {
@@ -316,7 +316,7 @@ test('the actual SDK and HTTP transport cancel a held request promptly', async (
       anthropicBaseUrl: `http://127.0.0.1:${(server.address() as { port: number }).port}/v1`,
       anthropicApiKey: 'synthetic-cancel-key',
       anthropicModel: 'cancel-model',
-      customEnv: { MINICLAW_MODEL_API: 'openai-completions' },
+      customEnv: { EVOBOT_MODEL_API: 'openai-completions' },
     });
     config.setDefaultProvider(provider.id);
     const selected = productModelConfiguration('web:meter', provider.id);
@@ -375,14 +375,14 @@ test('explicit output limit is bounded and frozen in Durable model identity', ()
     anthropicBaseUrl: 'http://127.0.0.1:1/v1',
     anthropicApiKey: 'fixture-key',
     anthropicModel: 'fixture-model',
-    customEnv: { MINICLAW_MODEL_API: 'openai-completions' },
+    customEnv: { EVOBOT_MODEL_API: 'openai-completions' },
   });
   const original = productModelConfiguration('web:meter', provider.id);
   expect(original.maxOutputTokens).toBe(4096);
   config.updateProvider(provider.id, {
     customEnv: {
-      MINICLAW_MODEL_API: 'openai-completions',
-      MINICLAW_MODEL_MAX_OUTPUT_TOKENS: '8192',
+      EVOBOT_MODEL_API: 'openai-completions',
+      EVOBOT_MODEL_MAX_OUTPUT_TOKENS: '8192',
     },
   });
   const raised = productModelConfiguration('web:meter', provider.id);
@@ -401,7 +401,7 @@ test('explicit output limit is bounded and frozen in Durable model identity', ()
     models.getModel(selection.provider, selection.modelId)?.maxTokens,
   ).toBe(8192);
   config.updateProvider(provider.id, {
-    customEnv: { MINICLAW_MODEL_MAX_OUTPUT_TOKENS: '999999' },
+    customEnv: { EVOBOT_MODEL_MAX_OUTPUT_TOKENS: '999999' },
   });
   expect(() => productModelConfiguration('web:meter', provider.id)).toThrow(
     'output limit',
@@ -424,7 +424,7 @@ test('a completed observed answer carries trusted trace identity while provider 
   const previous = {
     ...fixture.message,
     stopReason: 'stop' as const,
-    __opendot_trace_id: 'a'.repeat(32),
+    __evobot_trace_id: 'a'.repeat(32),
   };
   const output = api.stream(
     fixture.model,
@@ -434,8 +434,8 @@ test('a completed observed answer carries trusted trace identity while provider 
     },
   );
   const sent = fixture.dispatch.mock.calls[0]![1];
-  expect(JSON.stringify(sent)).not.toContain('__opendot_trace_id');
-  expect(previous.__opendot_trace_id).toBe('a'.repeat(32));
+  expect(JSON.stringify(sent)).not.toContain('__evobot_trace_id');
+  expect(previous.__evobot_trace_id).toBe('a'.repeat(32));
   await fixture.dispatch.mock.calls[0]![2]!.fetch!('http://synthetic.test');
   fixture.source.push({
     type: 'done',
@@ -443,12 +443,12 @@ test('a completed observed answer carries trusted trace identity while provider 
     message: {
       ...fixture.message,
       stopReason: 'stop',
-      __opendot_trace_id: 'c'.repeat(32),
+      __evobot_trace_id: 'c'.repeat(32),
     } as AssistantMessage,
   });
   fixture.source.end();
   const answer = (await output.result()) as AssistantMessage & {
-    __opendot_trace_id?: string;
+    __evobot_trace_id?: string;
   };
-  expect(answer.__opendot_trace_id).toBe(expectedTrace);
+  expect(answer.__evobot_trace_id).toBe(expectedTrace);
 });

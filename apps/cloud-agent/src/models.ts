@@ -17,7 +17,7 @@ export type ModelEnvironment = AuthorityEnvironment & {
   MODEL_SERVICE?: Fetcher;
 };
 // Administrative PoC uses one deployment-bound model. Product mode instead
-// proxies through live MiniClaw authority; no vendor credential enters the DO.
+// proxies through live EvoBot authority; no vendor credential enters the DO.
 export function createCloudModels(
   env: ModelEnvironment,
   binding: SessionBinding,
@@ -27,7 +27,7 @@ export function createCloudModels(
   interrupted?: (signal: AbortSignal) => Promise<never>,
   memberProof?: (context: TranscriptContext) => Promise<CloudMemberModelProof>,
 ) {
-  const product = binding.execution_authority === 'miniclaw-product';
+  const product = binding.execution_authority === 'evobot-product';
   const recoverable =
     !!interrupted && !!(execution || binding.bot_handoff || memberProof);
   const productFetch = async (
@@ -131,7 +131,7 @@ export function createCloudModels(
   };
   const url = new URL(
     product
-      ? 'https://miniclaw-product-model.invalid/v1'
+      ? 'https://evobot-product-model.invalid/v1'
       : (env.MODEL_BASE_URL ?? 'https://unconfigured.invalid'),
   );
   if (
@@ -143,7 +143,7 @@ export function createCloudModels(
     (!product && binding.model_id !== env.MODEL_ID)
   )
     throw new CloudError(409, 'CLOUD_MODEL_BINDING_CHANGED');
-  const id = 'miniclaw-cloud-configured';
+  const id = 'evobot-cloud-configured';
   const model = {
     id: binding.model_id,
     name: binding.model_id,
@@ -160,7 +160,7 @@ export function createCloudModels(
   models.setProvider(
     createProvider({
       id,
-      name: 'MiniClaw Cloud configured model',
+      name: 'EvoBot Cloud configured model',
       models: [model],
       baseUrl: model.baseUrl,
       api: {
@@ -195,14 +195,14 @@ export function createCloudModels(
       },
       auth: {
         apiKey: {
-          name: 'MiniClaw Cloud configured credential',
+          name: 'EvoBot Cloud configured credential',
           resolve: async () => {
             // Managed requests admit at the custom fetch boundary, where the
             // native invocation's abort signal is available for checkpoint-safe
             // suspension. Credential resolution has no invocation context.
             if (!recoverable && !memberProof) await authorize();
             if (product)
-              return { auth: { apiKey: 'miniclaw-product-transport' } };
+              return { auth: { apiKey: 'evobot-product-transport' } };
             if (!env.MODEL_API_KEY)
               throw new CloudError(503, 'CLOUD_MODEL_CREDENTIAL_UNAVAILABLE');
             return { auth: { apiKey: env.MODEL_API_KEY } };

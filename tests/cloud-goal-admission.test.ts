@@ -70,7 +70,7 @@ beforeAll(() => {
     anthropicBaseUrl: 'https://model.fixture/v1',
     anthropicApiKey: 'synthetic-admission-provider-key',
     anthropicModel: 'admission-model',
-    customEnv: { MINICLAW_MODEL_API: 'openai-completions' },
+    customEnv: { EVOBOT_MODEL_API: 'openai-completions' },
   }).id;
   config.setDefaultProvider(providerId);
   const token = auth.generateSessionToken();
@@ -83,17 +83,17 @@ beforeAll(() => {
     last_active_at: now,
     expires_at: new Date(Date.now() + 3600000).toISOString(),
   });
-  cookie = `miniclaw_session=${auth.signSessionToken(token)}`;
+  cookie = `evobot_session=${auth.signSessionToken(token)}`;
 });
 beforeEach(() => {
   for (const [key, value] of Object.entries({
-    MINICLAW_PERSONAL_GOALS: 'true',
-    MINICLAW_CLOUD_GOALS: 'true',
-    MINICLAW_CLOUD_RUNTIME: 'true',
-    MINICLAW_CLOUD_APPROVALS: 'true',
-    MINICLAW_CLOUD_ORIGIN: 'https://gateway.fixture',
-    MINICLAW_CLOUD_SHARED_SECRET: 'synthetic-cloud-goal-admission-hmac-key',
-    MINICLAW_DURABLE_RUNTIME: 'false',
+    EVOBOT_PERSONAL_GOALS: 'true',
+    EVOBOT_CLOUD_GOALS: 'true',
+    EVOBOT_CLOUD_RUNTIME: 'true',
+    EVOBOT_CLOUD_APPROVALS: 'true',
+    EVOBOT_CLOUD_ORIGIN: 'https://gateway.fixture',
+    EVOBOT_CLOUD_SHARED_SECRET: 'synthetic-cloud-goal-admission-hmac-key',
+    EVOBOT_DURABLE_RUNTIME: 'false',
   }))
     vi.stubEnv(key, value);
 });
@@ -189,9 +189,9 @@ test('explicit Cloud admission freezes its owned Session and one existing Schedu
 test('flag/capability/Host/container denial rolls back the entire Goal transaction and cannot fall back to Node', () => {
   const before = counts();
   for (const flag of [
-    'MINICLAW_CLOUD_GOALS',
-    'MINICLAW_CLOUD_RUNTIME',
-    'MINICLAW_CLOUD_APPROVALS',
+    'EVOBOT_CLOUD_GOALS',
+    'EVOBOT_CLOUD_RUNTIME',
+    'EVOBOT_CLOUD_APPROVALS',
   ]) {
     vi.stubEnv(flag, 'false');
     expect(() => make()).toThrow('Cloud Goal requires');
@@ -216,8 +216,8 @@ test('lost creation receipts retry the original Cloud binding after new-admissio
     goal = make(raw, key),
     before = counts(),
     binding = product.getCloudPlacement(goal.session_id!)!.binding_json;
-  vi.stubEnv('MINICLAW_CLOUD_GOALS', 'false');
-  vi.stubEnv('MINICLAW_CLOUD_RUNTIME', 'false');
+  vi.stubEnv('EVOBOT_CLOUD_GOALS', 'false');
+  vi.stubEnv('EVOBOT_CLOUD_RUNTIME', 'false');
   expect(make(raw, key)).toEqual(goal);
   expect(counts()).toEqual(before);
   expect(product.getCloudPlacement(goal.session_id!)?.binding_json).toBe(
@@ -229,7 +229,7 @@ test('lost creation receipts retry the original Cloud binding after new-admissio
 });
 
 test('missing runtime preserves the legacy request hash/default path; explicit selection cannot adopt a Session or mutate by patch', () => {
-  vi.stubEnv('MINICLAW_DURABLE_RUNTIME', 'true');
+  vi.stubEnv('EVOBOT_DURABLE_RUNTIME', 'true');
   const key = randomUUID(),
     raw = {
       workspace_jid: 'web:alice',
@@ -299,7 +299,7 @@ test('Cloud creation and content/budget edits reject oversized definitions atomi
     }),
   ).toThrow('Session input limit');
   expect(goals.getPersonalGoal('alice', goal.id)).toEqual(goal);
-  vi.stubEnv('MINICLAW_DURABLE_RUNTIME', 'true');
+  vi.stubEnv('EVOBOT_DURABLE_RUNTIME', 'true');
   const node = make({
     ...input(),
     ...large,
@@ -328,7 +328,7 @@ test('availability uses real Cookie identity and current owned workspace/model/c
   expect(await (await call('web:alice-container')).json()).toMatchObject({
     cloud_enabled: false,
   });
-  vi.stubEnv('MINICLAW_CLOUD_APPROVALS', 'false');
+  vi.stubEnv('EVOBOT_CLOUD_APPROVALS', 'false');
   expect(await (await call('web:alice')).json()).toMatchObject({
     cloud_enabled: false,
   });

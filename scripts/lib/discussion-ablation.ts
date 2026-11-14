@@ -21,7 +21,7 @@ export async function discussionAblation(arm: string, repository: string) {
   const settings =
     discussionAblationArms[arm as keyof typeof discussionAblationArms];
   const directory = fs.mkdtempSync(
-    path.join(os.tmpdir(), 'miniclaw-group-ablation-'),
+    path.join(os.tmpdir(), 'evobot-group-ablation-'),
   );
   fs.chmodSync(directory, 0o700);
   try {

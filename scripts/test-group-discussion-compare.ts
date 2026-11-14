@@ -27,18 +27,18 @@ import {
   readDiscussionModelCredentials,
 } from './lib/discussion-real-provider.js';
 
-const configFile = process.env.MINICLAW_GROUP_MODEL_CONFIG;
-assert(configFile, 'Set MINICLAW_GROUP_MODEL_CONFIG to a private JSON file');
+const configFile = process.env.EVOBOT_GROUP_MODEL_CONFIG;
+assert(configFile, 'Set EVOBOT_GROUP_MODEL_CONFIG to a private JSON file');
 const credentials = readDiscussionModelCredentials(configFile);
 const output =
-  process.env.MINICLAW_GROUP_EVIDENCE_PATH ??
-  path.join(os.tmpdir(), 'miniclaw-group-comparison.json');
-const repeats = Number(process.env.MINICLAW_GROUP_REPEATS ?? 2);
-const totalLimit = Number(process.env.MINICLAW_GROUP_MAX_REQUESTS ?? 300);
-const restartOnReply = process.env.MINICLAW_GROUP_RESTART === '1';
-const browserEnabled = process.env.MINICLAW_GROUP_BROWSER === '1';
-const transitionEnabled = process.env.MINICLAW_GROUP_POLICY_TRANSITION === '1';
-const policies = (process.env.MINICLAW_GROUP_POLICIES?.split(',') ?? [
+  process.env.EVOBOT_GROUP_EVIDENCE_PATH ??
+  path.join(os.tmpdir(), 'evobot-group-comparison.json');
+const repeats = Number(process.env.EVOBOT_GROUP_REPEATS ?? 2);
+const totalLimit = Number(process.env.EVOBOT_GROUP_MAX_REQUESTS ?? 300);
+const restartOnReply = process.env.EVOBOT_GROUP_RESTART === '1';
+const browserEnabled = process.env.EVOBOT_GROUP_BROWSER === '1';
+const transitionEnabled = process.env.EVOBOT_GROUP_POLICY_TRANSITION === '1';
+const policies = (process.env.EVOBOT_GROUP_POLICIES?.split(',') ?? [
   'coordinator-v1',
   'relay-v1',
 ]) as ('coordinator-v1' | 'relay-v1')[];
@@ -51,7 +51,7 @@ assert(
 const browsers: Awaited<ReturnType<typeof discussionRealBrowser>>[] = [];
 assert(Number.isInteger(repeats) && repeats > 0 && repeats <= 5);
 assert(Number.isInteger(totalLimit) && totalLimit > 0 && totalLimit <= 1000);
-const selected = process.env.MINICLAW_GROUP_CASES?.split(',');
+const selected = process.env.EVOBOT_GROUP_CASES?.split(',');
 const cases = selected
   ? [...discussionCases, ...supplementalDiscussionCases].filter((c) =>
       selected.includes(c.id),
@@ -69,7 +69,7 @@ assert(
   !transitionEnabled ||
     (!browserEnabled &&
       !restartOnReply &&
-      !process.env.MINICLAW_GROUP_ABLATION_ARM &&
+      !process.env.EVOBOT_GROUP_ABLATION_ARM &&
       repeats === 1 &&
       policies.length === 1 &&
       policies[0] === 'coordinator-v1' &&
@@ -336,7 +336,7 @@ async function run(groupId: string, prompt: string, scenario: any) {
         groupId,
         credentials: f!.credentials,
         directory:
-          process.env.MINICLAW_GROUP_BROWSER_ARTIFACT_DIR ??
+          process.env.EVOBOT_GROUP_BROWSER_ARTIFACT_DIR ??
           output + '.browser',
         privateValues: [
           credentials.apiKey,
@@ -650,9 +650,9 @@ async function run(groupId: string, prompt: string, scenario: any) {
   };
 }
 try {
-  if (process.env.MINICLAW_GROUP_ABLATION_ARM) {
+  if (process.env.EVOBOT_GROUP_ABLATION_ARM) {
     ablation = await discussionAblation(
-      process.env.MINICLAW_GROUP_ABLATION_ARM,
+      process.env.EVOBOT_GROUP_ABLATION_ARM,
       process.cwd(),
     );
     assert(
@@ -743,7 +743,7 @@ try {
       name: 'Private comparison observer',
       anthropicBaseUrl: observer.baseUrl,
       anthropicModel: credentials.model,
-      customEnv: { MINICLAW_MODEL_API: credentials.api },
+      customEnv: { EVOBOT_MODEL_API: credentials.api },
     }),
   );
   await f.json(

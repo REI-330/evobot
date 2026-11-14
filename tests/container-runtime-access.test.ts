@@ -5,8 +5,8 @@ import { describe, expect, test } from 'vitest';
 
 const repoRoot = path.resolve(import.meta.dirname, '..');
 const integrationImage =
-  process.env.MINICLAW_CONTAINER_PERMISSION_TEST_IMAGE ??
-  'helsome/miniclaw-agent:latest';
+  process.env.EVOBOT_CONTAINER_PERMISSION_TEST_IMAGE ??
+  'rei330/evobot-agent:latest';
 let integrationImageAvailable = false;
 try {
   execFileSync('docker', ['image', 'inspect', integrationImage], {
@@ -29,13 +29,13 @@ describe('runtime access verification contract', () => {
   test('ships in the fixed image and runs before the agent', () => {
     expect(dockerfile).toContain('session-runtime-access.mjs');
     expect(helper).toContain('/app/session-runtime-access.mjs');
-    expect(entrypoint).toContain('miniclaw_verify_runtime_access');
+    expect(entrypoint).toContain('evobot_verify_runtime_access');
     expect(
-      entrypoint.indexOf('miniclaw_verify_runtime_access'),
+      entrypoint.indexOf('evobot_verify_runtime_access'),
     ).toBeGreaterThan(
-      entrypoint.indexOf('miniclaw_start_session_permission_watcher'),
+      entrypoint.indexOf('evobot_start_session_permission_watcher'),
     );
-    expect(entrypoint.indexOf('miniclaw_verify_runtime_access')).toBeLessThan(
+    expect(entrypoint.indexOf('evobot_verify_runtime_access')).toBeLessThan(
       entrypoint.indexOf('runuser -u node -- node /tmp/dist/pi-index.js'),
     );
   });
@@ -91,8 +91,8 @@ describe.skipIf(!integrationImageAvailable)(
           printf '{}' > /home/node/.claude/.credentials.json
           chown 0:0 /home/node/.claude/.credentials.json
           chmod 600 /home/node/.claude/.credentials.json
-          export MINICLAW_INTERNAL_IDENTITY_MODE=virtualized
-          miniclaw_verify_runtime_access 2>&1 || true
+          export EVOBOT_INTERNAL_IDENTITY_MODE=virtualized
+          evobot_verify_runtime_access 2>&1 || true
         `),
       ).toContain('/home/node/.claude/.credentials.json');
     });
@@ -106,8 +106,8 @@ describe.skipIf(!integrationImageAvailable)(
           printf '{}' > /home/node/.claude/.credentials.json
           chown node:node /home/node/.claude/.credentials.json
           chmod 600 /home/node/.claude/.credentials.json
-          export MINICLAW_INTERNAL_IDENTITY_MODE=virtualized
-          if miniclaw_verify_runtime_access; then printf verified; else printf failed; fi
+          export EVOBOT_INTERNAL_IDENTITY_MODE=virtualized
+          if evobot_verify_runtime_access; then printf verified; else printf failed; fi
         `),
       ).toBe('verified');
     });

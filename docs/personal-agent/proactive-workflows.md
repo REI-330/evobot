@@ -36,14 +36,14 @@ and a five-minute subscription cooldown. API callers may explicitly configure
 
 ## Deployment and use
 
-Enable `MINICLAW_PERSONAL_GOALS=true`, `MINICLAW_DURABLE_RUNTIME=true` and
-`MINICLAW_GITHUB_GOALS=true` in a configured self-hosted instance. All flags remain
+Enable `EVOBOT_PERSONAL_GOALS=true`, `EVOBOT_DURABLE_RUNTIME=true` and
+`EVOBOT_GITHUB_GOALS=true` in a configured self-hosted instance. All flags remain
 off by default. Configure an existing supported model Provider and an owned Host
 workspace. Only a currently active administrator can create or receive execution
 for that workspace; another administrator cannot use it.
 
 Provision a random, private **local** signing secret of at least 32 bytes in a
-deployment environment variable named `MINICLAW_GITHUB_WEBHOOK_<NAME>`. It must be
+deployment environment variable named `EVOBOT_GITHUB_WEBHOOK_<NAME>`. It must be
 the actual HMAC key available to the server, not an outbound proxy credential
 placeholder. Configure the same secret in GitHub's repository Webhook settings.
 Never place it in a URL, source file, API creation payload or log. The registry
@@ -51,14 +51,14 @@ stores only the variable name; administrators see configured names, never values
 Changing the key invalidates old signatures without replaying acknowledged events.
 
 The deployment must also explicitly grant that reference to its account and
-workspace in the non-secret `MINICLAW_GITHUB_WEBHOOK_GRANTS` JSON array:
+workspace in the non-secret `EVOBOT_GITHUB_WEBHOOK_GRANTS` JSON array:
 
 ```json
 [
   {
     "owner_user_id": "<actual account ID>",
     "workspace_jid": "web:<actual workspace ID>",
-    "secret_variable": "MINICLAW_GITHUB_WEBHOOK_PROJECT"
+    "secret_variable": "EVOBOT_GITHUB_WEBHOOK_PROJECT"
   }
 ]
 ```

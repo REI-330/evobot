@@ -68,7 +68,7 @@ test('a registered product Cloud owner uses live Node policy/encrypted Provider,
     'Build the Cloud dry-run bundle before this integration suite',
   ).toBe(true);
   const secret = 'local-cross-runtime-control-fixture-key';
-  vi.stubEnv('MINICLAW_CLOUD_SHARED_SECRET', secret);
+  vi.stubEnv('EVOBOT_CLOUD_SHARED_SECRET', secret);
   db.initDatabase();
   runtime.startProductRuntimeService();
   const now = new Date().toISOString();
@@ -150,7 +150,7 @@ test('a registered product Cloud owner uses live Node policy/encrypted Provider,
     anthropicBaseUrl: `http://127.0.0.1:${providerPort}/v1`,
     anthropicApiKey: 'synthetic-gateway-only-provider-key',
     anthropicModel: 'product-configured-model',
-    customEnv: { MINICLAW_MODEL_API: 'openai-completions' },
+    customEnv: { EVOBOT_MODEL_API: 'openai-completions' },
   });
   const authority = serve({
     fetch: (request) => routes.fetch(request),
@@ -213,7 +213,7 @@ test('a registered product Cloud owner uses live Node policy/encrypted Provider,
     // and retain signed method/path/body; production requires trusted HTTPS.
     return new Miniflare(
       convertV4MiniflareOptions({
-        name: 'miniclaw-cloud-agent',
+        name: 'evobot-cloud-agent',
         telemetry: { enabled: false },
         modules: true,
         scriptPath: bundle,
@@ -224,13 +224,13 @@ test('a registered product Cloud owner uses live Node policy/encrypted Provider,
         },
         resourcePersistencePath: path.join(root, 'workerd'),
         bindings: {
-          MINICLAW_CLOUD_ADMISSION: String(admission),
-          MINICLAW_CLOUD_SHARED_SECRET: secret,
-          MINICLAW_CLOUD_ORIGIN: 'https://cloud.fixture',
-          MINICLAW_AUTHORITY_ORIGIN: 'https://authority.fixture',
+          EVOBOT_CLOUD_ADMISSION: String(admission),
+          EVOBOT_CLOUD_SHARED_SECRET: secret,
+          EVOBOT_CLOUD_ORIGIN: 'https://cloud.fixture',
+          EVOBOT_AUTHORITY_ORIGIN: 'https://authority.fixture',
         },
         serviceBindings: {
-          MINICLAW_AUTHORITY_SERVICE: async (request: Request) => {
+          EVOBOT_AUTHORITY_SERVICE: async (request: Request) => {
             const requestBody = await request.text();
             const resultRequest = new URL(request.url).pathname.endsWith(
               '/results',
@@ -426,8 +426,8 @@ test('a registered product Cloud owner uses live Node policy/encrypted Provider,
   await worker.dispose();
   worker = start(true);
   config.setDefaultProvider(p.id);
-  vi.stubEnv('MINICLAW_CLOUD_RUNTIME', 'true');
-  vi.stubEnv('MINICLAW_CLOUD_ORIGIN', 'https://cloud.fixture');
+  vi.stubEnv('EVOBOT_CLOUD_RUNTIME', 'true');
+  vi.stubEnv('EVOBOT_CLOUD_ORIGIN', 'https://cloud.fixture');
   const app = web.createAppForTest(
     {} as Parameters<typeof web.createAppForTest>[0],
   );
@@ -442,7 +442,7 @@ test('a registered product Cloud owner uses live Node policy/encrypted Provider,
       last_active_at: now,
       expires_at: new Date(Date.now() + 3600000).toISOString(),
     });
-    return `miniclaw_session=${auth.signSessionToken(token)}`;
+    return `evobot_session=${auth.signSessionToken(token)}`;
   }
   const desktopCookie = clientCookie(),
     mobileCookie = clientCookie();
@@ -508,7 +508,7 @@ test('a registered product Cloud owner uses live Node policy/encrypted Provider,
   const formalId = formal.session.id;
   const placement = store.getCloudPlacement(formalId)!;
   expect(placement).toBeDefined();
-  vi.stubEnv('MINICLAW_CLOUD_RUNTIME', 'false');
+  vi.stubEnv('EVOBOT_CLOUD_RUNTIME', 'false');
   const retryCreation = await product(
     '/api/groups/web:alice/sessions',
     'POST',

@@ -135,9 +135,9 @@ export function buildMcpCatalog(input: {
   const entries = selected.map((toolName): McpCatalogEntry => {
     const definition = byName.get(toolName);
     if (!definition) throw new Error('Selected MCP tool absent from catalog');
-    if (registeredName(input.serverId, toolName).startsWith('mcp__miniclaw__'))
+    if (registeredName(input.serverId, toolName).startsWith('mcp__evobot__'))
       throw new Error(
-        'External MCP cannot use the reserved Miniclaw namespace',
+        'External MCP cannot use the reserved EvoBot namespace',
       );
     return {
       definition,
@@ -180,7 +180,7 @@ export function indexMcpCatalog(
   return index;
 }
 
-/** Profile catalog ∩ immutable session grant. miniclaw wildcard grants no external tools. */
+/** Profile catalog ∩ immutable session grant. evobot wildcard grants no external tools. */
 export function selectGrantedMcpTools(
   entries: readonly McpCatalogEntry[],
   granted: readonly string[],
@@ -188,7 +188,7 @@ export function selectGrantedMcpTools(
   const index = indexMcpCatalog(entries);
   const result = new Set<McpCatalogEntry>();
   for (const tool of granted) {
-    if (tool === 'mcp__miniclaw__*') continue;
+    if (tool === 'mcp__evobot__*') continue;
     const entry = index.get(tool);
     if (entry) result.add(entry);
     else if (tool.startsWith('mcp__')) throw new Error('Unknown MCP grant');
@@ -264,8 +264,8 @@ export const McpCallIntentSchema = z
   .strict();
 export type McpCallIntent = z.infer<typeof McpCallIntentSchema>;
 
-export const MCP_CALL_MEMO = 'miniclaw.mcp.call.v1';
-export const MCP_GENERATION_GRANTS_MEMO = 'miniclaw.mcp.generation-grants.v1';
+export const MCP_CALL_MEMO = 'evobot.mcp.call.v1';
+export const MCP_GENERATION_GRANTS_MEMO = 'evobot.mcp.generation-grants.v1';
 /** Frozen before the generation's first provider request, never borrowed from a later Run. */
 export const McpGenerationGrantSchema = McpCallIntentSchema.pick({
   version: true,

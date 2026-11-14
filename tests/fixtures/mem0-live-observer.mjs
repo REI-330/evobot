@@ -25,7 +25,7 @@ globalThis.fetch = async function (input, init) {
   try {
     const response = await original(input, init);
     fs.appendFileSync(
-      process.env.OPENDOT_REAL_MEM0_LEDGER,
+      process.env.EVOBOT_REAL_MEM0_LEDGER,
       JSON.stringify({ operation, status: response.status, app_id, scope }) +
         '\n',
       { mode: 0o600 },
@@ -33,7 +33,7 @@ globalThis.fetch = async function (input, init) {
     return response;
   } catch (e) {
     fs.appendFileSync(
-      process.env.OPENDOT_REAL_MEM0_LEDGER,
+      process.env.EVOBOT_REAL_MEM0_LEDGER,
       JSON.stringify({
         operation,
         status: 'network_error',

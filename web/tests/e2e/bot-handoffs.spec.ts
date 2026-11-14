@@ -118,7 +118,7 @@ test('formal Group UI uses actual Chief and Researcher native tasks, explicit de
     await computer.keyboard.press('Escape');
     await computer
       .locator('.group-task-activity')
-      .filter({ hasText: 'Miniclaw' })
+      .filter({ hasText: 'EvoBot' })
       .first()
       .click();
     await computer.getByLabel('委派目标 Bot').selectOption(profile.id);

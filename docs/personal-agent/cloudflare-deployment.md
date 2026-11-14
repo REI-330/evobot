@@ -5,7 +5,7 @@
 `apps/cloud-agent` is a separately locked Cloud Runtime using official PiHarness
 and real Workers SQLite Durable Objects. Opt-in formal Session creation,
 message dispatch, authoritative snapshots, Queue controls and durable result
-projection now integrate with MiniClaw's existing Node product authority. This
+projection now integrate with EvoBot's existing Node product authority. This
 is a hybrid deployment: the trusted Node business API/Provider authority must
 remain reachable; the Worker does not replace that service or upload its backend.
 Opt-in Memory reads, exact-content approvals, formal Group Handoffs, Goals and
@@ -15,7 +15,7 @@ standalone replacement for Node authority. Direct member-discussion Device
 execution remains unsupported. Local tests do not establish a production
 deployment, platform hibernation, billing, backup or rollback rehearsal.
 
-`workers_dev` and `MINICLAW_CLOUD_ADMISSION` default off. Without a configured
+`workers_dev` and `EVOBOT_CLOUD_ADMISSION` default off. Without a configured
 signing key, requests fail closed. PoC APIs are private gateway operations, not
 anonymous chat or a replacement login system.
 
@@ -45,14 +45,14 @@ log them. Required Worker configuration:
 | Binding / variable             | Purpose                                                                        |
 | ------------------------------ | ------------------------------------------------------------------------------ |
 | `SESSIONS`                     | SQLite Durable Object namespace, class `CloudSession`                          |
-| `MINICLAW_CLOUD_ADMISSION`     | Explicit `true` permits new PoC bindings only                                  |
-| `MINICLAW_CLOUD_SHARED_SECRET` | Dedicated >=32-character HMAC key shared with trusted business gateway         |
+| `EVOBOT_CLOUD_ADMISSION`     | Explicit `true` permits new PoC bindings only                                  |
+| `EVOBOT_CLOUD_SHARED_SECRET` | Dedicated >=32-character HMAC key shared with trusted business gateway         |
 | `MODEL_BASE_URL`               | Fixed configured HTTPS OpenAI Completions base URL; no userinfo/query/fragment |
 | `MODEL_ID`                     | Exact selected model ID; provision requests cannot switch it                   |
 | `MODEL_API_KEY`                | Deployment secret for the selected PoC model                                   |
 | `MODEL_SERVICE`                | Optional trusted service transport; used by the test-only model Worker         |
 
-Product mode uses the existing encrypted MiniClaw Provider authority described
+Product mode uses the existing encrypted EvoBot Provider authority described
 below and ignores the PoC model key/base/model. The deployment-bound PoC provider
 is not a substitute for product credential management. A proxy-backed secret placeholder may be valid as an HTTP
 credential through its configured destination; it is **not** a raw HMAC key.
@@ -84,7 +84,7 @@ The other private routes use `/internal/cloud-sessions/:id`:
   by trusted business scheduling. It is not a cron definition. A Lifecycle job
   shares the physical Alarm with PiHarness. Occurrence/input receipts dedupe
   delivery across retries and completed-wake ACK loss; a persisted-intent/job
-  gap is rearmed at startup. Existing MiniClaw business schedule definitions
+  gap is rearmed at startup. Existing EvoBot business schedule definitions
   stay on the current Scheduler; this API is not yet connected to them.
 - `POST /abort`: withdraw/abort the exact native operation by `request_id`, never
   whichever generation happens to be newest. Full queue edit/reorder and product
@@ -129,9 +129,9 @@ and model binding explicit. No Worker route, account ID, secret value or product
 endpoint is guessed by this repository.
 
 `npm --prefix apps/cloud-agent run test:live` targets an already authorized
-staging deployment; it does not deploy. It requires `MINICLAW_CLOUD_LIVE_URL`,
-`MINICLAW_CLOUD_SHARED_SECRET`, `MINICLAW_CLOUD_LIVE_PROVIDER_ID`, the exact
-`MINICLAW_ZEN_MODEL`, and explicit `MINICLAW_CLOUD_STAGING_AUTHORIZED=true`.
+staging deployment; it does not deploy. It requires `EVOBOT_CLOUD_LIVE_URL`,
+`EVOBOT_CLOUD_SHARED_SECRET`, `EVOBOT_CLOUD_LIVE_PROVIDER_ID`, the exact
+`EVOBOT_ZEN_MODEL`, and explicit `EVOBOT_CLOUD_STAGING_AUTHORIZED=true`.
 Missing bindings/authorization produce **exit 2 / Pending** before requests.
 It creates one isolated administrative PoC Session, verifies an actual tool
 result and future Alarm result using separate connections, and reports only safe
@@ -177,10 +177,10 @@ authorized staging account before rollout.
 
 ## Product authority foundation and signed callbacks
 
-Product-mode bindings set immutable `execution_authority: miniclaw-product`.
-Their Worker needs trusted HTTPS root origins `MINICLAW_CLOUD_ORIGIN` and
-`MINICLAW_AUTHORITY_ORIGIN`, plus its dedicated signing secret. The first must
-match the persisted gateway origin. `MINICLAW_AUTHORITY_SERVICE` is an optional
+Product-mode bindings set immutable `execution_authority: evobot-product`.
+Their Worker needs trusted HTTPS root origins `EVOBOT_CLOUD_ORIGIN` and
+`EVOBOT_AUTHORITY_ORIGIN`, plus its dedicated signing secret. The first must
+match the persisted gateway origin. `EVOBOT_AUTHORITY_SERVICE` is an optional
 trusted service binding for controlled deployment/test transports; it never
 comes from client JSON. Do not use the PoC model key to authorize product work.
 
@@ -240,7 +240,7 @@ currently refuses Harness activation after that deadline, including its normal
 snapshot route; it is not a complete long-lived Session history service.
 
 Product-mode messages require `product_receipt_digest` from the original
-MiniClaw input transaction. The Worker verifies that receipt through the private
+EvoBot input transaction. The Worker verifies that receipt through the private
 `inputs` callback both on admission and before native recovery. The callback
 binds full product payload identity, not merely prompt text. A product receipt
 that acknowledges a missing/different native submission is rejected. Warm-object
@@ -274,16 +274,16 @@ Deploy the execution fence and private callbacks to **all** Node executors befor
 admitting Cloud Sessions. The Node product authority needs these deployment
 settings, supplied through the existing secure environment/provider mechanisms:
 
-- `MINICLAW_CLOUD_RUNTIME=true`: allow explicit new Cloud Sessions; default off.
-- `MINICLAW_CLOUD_ORIGIN`: exact trusted HTTPS Worker origin, without a path.
-- `MINICLAW_CLOUD_SHARED_SECRET`: actual private HMAC material shared with Worker.
+- `EVOBOT_CLOUD_RUNTIME=true`: allow explicit new Cloud Sessions; default off.
+- `EVOBOT_CLOUD_ORIGIN`: exact trusted HTTPS Worker origin, without a path.
+- `EVOBOT_CLOUD_SHARED_SECRET`: actual private HMAC material shared with Worker.
 - An existing encrypted Provider with an explicit model and
-  `MINICLAW_MODEL_API=openai-completions`; no client-supplied model endpoint/key.
+  `EVOBOT_MODEL_API=openai-completions`; no client-supplied model endpoint/key.
 
 The Worker separately needs the same HMAC secret, exact Cloud origin,
-`MINICLAW_AUTHORITY_ORIGIN` pointing to the trusted HTTPS Node product API, its
-SQLite namespace and `MINICLAW_CLOUD_ADMISSION=true` for initial object bindings.
-`MINICLAW_DURABLE_RUNTIME` still controls default Node Durable creation; explicit
+`EVOBOT_AUTHORITY_ORIGIN` pointing to the trusted HTTPS Node product API, its
+SQLite namespace and `EVOBOT_CLOUD_ADMISSION=true` for initial object bindings.
+`EVOBOT_DURABLE_RUNTIME` still controls default Node Durable creation; explicit
 Cloud creation uses its own admission flag. Repeated creation with an existing
 key is valid after either new-admission flag closes.
 
@@ -321,7 +321,7 @@ it is not an actual Cloudflare account deployment or physical-device test.
 
 ### Optional Personal Memory tool
 
-Enable `MINICLAW_CLOUD_MEMORY=true` together with `MINICLAW_PERSONAL_MEMORY=true`
+Enable `EVOBOT_CLOUD_MEMORY=true` together with `EVOBOT_PERSONAL_MEMORY=true`
 on the trusted Node authority before creating a new Cloud Session. Current
 per-item Workspace grants are still required; these flags grant no cross-owner
 access. No vendor key or Home data store is copied into the Worker. Historical
@@ -335,7 +335,7 @@ lease and original receipt; do not reset SDK job rows or add a competing poller.
 
 ### Optional exact-content artifact approvals
 
-`MINICLAW_CLOUD_APPROVALS=true` on the trusted Node authority enables the artifact
+`EVOBOT_CLOUD_APPROVALS=true` on the trusted Node authority enables the artifact
 capability for newly created Cloud Sessions. It is off by default and independent
 of the Memory flag. The existing Cookie approval and artifact APIs are reused;
 no new public credential or computer filesystem mapping is introduced. A signed
@@ -351,9 +351,9 @@ off on existing services while using the isolated local tests.
 
 ### Explicit Cloud Goal admission
 
-On the trusted Node authority, `MINICLAW_CLOUD_GOALS=true` enables selection of
-Cloud for a new Goal only when `MINICLAW_PERSONAL_GOALS`, `MINICLAW_CLOUD_RUNTIME`
-and `MINICLAW_CLOUD_APPROVALS` are also true, the current user owns an authorized
+On the trusted Node authority, `EVOBOT_CLOUD_GOALS=true` enables selection of
+Cloud for a new Goal only when `EVOBOT_PERSONAL_GOALS`, `EVOBOT_CLOUD_RUNTIME`
+and `EVOBOT_CLOUD_APPROVALS` are also true, the current user owns an authorized
 Host Workspace, and its configured model supports `openai-completions`. It does
 not require enabling new Node Durable Sessions. The normal Goal page queries
 `GET /api/goals/availability?workspace_jid=...` and sends explicit
@@ -373,12 +373,12 @@ Cloudflare hibernation/billing or vendor inference. See
 
 ## Optional formal Cloud Group Handoffs
 
-On the trusted Node authority, explicitly set `MINICLAW_CLOUD_BOT_HANDOFFS=true`
-alongside `MINICLAW_BOT_GROUPS`, `MINICLAW_BOT_HANDOFFS` and
-`MINICLAW_CLOUD_RUNTIME`. Reuse the existing HTTPS gateway/shared-secret and
+On the trusted Node authority, explicitly set `EVOBOT_CLOUD_BOT_HANDOFFS=true`
+alongside `EVOBOT_BOT_GROUPS`, `EVOBOT_BOT_HANDOFFS` and
+`EVOBOT_CLOUD_RUNTIME`. Reuse the existing HTTPS gateway/shared-secret and
 encrypted OpenAI-Completions Provider configuration. The flag defaults off;
-the separate `MINICLAW_CLOUD_GOALS` is neither required nor implicitly enabled.
-For reviewed artifact effects also enable `MINICLAW_CLOUD_APPROVALS`. The Owner
+the separate `EVOBOT_CLOUD_GOALS` is neither required nor implicitly enabled.
+For reviewed artifact effects also enable `EVOBOT_CLOUD_APPROVALS`. The Owner
 must still explicitly grant the Bot's owned Workspace, tool list, model quota
 and expiry through the normal Group UI/API. Cloud read-only text inspection is
 computation only; no laptop filesystem, Shell, MCP or memory grant is inherited.

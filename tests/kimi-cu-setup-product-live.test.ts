@@ -13,26 +13,26 @@ import { installOptionalGroupModel } from './helpers/live-openai-model.js';
 
 test.skipIf(
   process.platform !== 'darwin' ||
-    !process.env.OPENDOT_TEST_KIMICU_PID ||
-    !process.env.OPENDOT_TEST_KIMICU_WINDOW_ID,
+    !process.env.EVOBOT_TEST_KIMICU_PID ||
+    !process.env.EVOBOT_TEST_KIMICU_WINDOW_ID,
 )(
   'KimiCU setup creates a paired device and requires approvals for a synthetic action',
   async () => {
     const f = await botHandoffHttpFixture(undefined, {
-      MINICLAW_PI_MCP: 'true',
-      MINICLAW_DEVICE_NODES: 'true',
+      EVOBOT_PI_MCP: 'true',
+      EVOBOT_DEVICE_NODES: 'true',
     });
     const realModelPath = await installOptionalGroupModel(
       f,
       'Isolated KimiCU real model',
     );
-    const serverId = 'opendot_kimicu_' + randomUUID().replaceAll('-', '');
+    const serverId = 'evobot_kimicu_' + randomUUID().replaceAll('-', '');
     fs.symlinkSync(path.resolve('dist'), path.join(f.root, 'dist'));
     const paths = await f.json<any>(await f.call('/api/local-device-setup'));
     const env = {
-      OPENDOT_KIMICU_APP_ID: 'net.opendot.kimi-screenshot-fixture',
-      OPENDOT_KIMICU_PID: process.env.OPENDOT_TEST_KIMICU_PID!,
-      OPENDOT_KIMICU_WINDOW_ID: process.env.OPENDOT_TEST_KIMICU_WINDOW_ID!,
+      EVOBOT_KIMICU_APP_ID: 'net.evobot.kimi-screenshot-fixture',
+      EVOBOT_KIMICU_PID: process.env.EVOBOT_TEST_KIMICU_PID!,
+      EVOBOT_KIMICU_WINDOW_ID: process.env.EVOBOT_TEST_KIMICU_WINDOW_ID!,
     };
     try {
       const group = await f.createGroup();
@@ -201,13 +201,13 @@ test.skipIf(
         return current.inputs.some((input: any) => input.state === 'completed');
       });
       if (!realModelPath)
-        expect(observation).toContain('OpenDot Green Fixture');
+        expect(observation).toContain('EvoBot Green Fixture');
       else expect(f.requests).toHaveLength(0);
       expect(
         await readKimiCuAppState({
-          app: 'net.opendot.kimi-screenshot-fixture',
-          pid: Number(env.OPENDOT_KIMICU_PID),
-          windowId: Number(env.OPENDOT_KIMICU_WINDOW_ID),
+          app: 'net.evobot.kimi-screenshot-fixture',
+          pid: Number(env.EVOBOT_KIMICU_PID),
+          windowId: Number(env.EVOBOT_KIMICU_WINDOW_ID),
         }),
       ).toContain('Synthetic action complete');
       expect(

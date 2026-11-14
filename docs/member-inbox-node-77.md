@@ -15,7 +15,7 @@ main 目前仅手动 CI，当前提交没有 exact-head 远程 CI 通过证明�
 
 ## 产品入口
 
-服务端显式设置 `MINICLAW_GROUP_MEMBER_INBOX=true` 后，群聊高级讨论设置显示
+服务端显式设置 `EVOBOT_GROUP_MEMBER_INBOX=true` 后，群聊高级讨论设置显示
 “边工作边互相提问（实验）”。选择两位本机 Dot，启用并保存；设置只影响新讨论。
 普通建群、选择 Dot 和启用讨论仍走现有 API，测试没有预写执行 grant 绕过入口。
 基础问答不授予文件、Shell、部署、Device 或私人 Memory 权限。
@@ -96,7 +96,7 @@ Node 与个人 Agent TypeScript、Web 和 E2E 类型检查通过；最终 Web �
 复现：
 
 ```sh
-MINICLAW_MEMBER_PROOF_DIR=/absolute/private/evidence \
+EVOBOT_MEMBER_PROOF_DIR=/absolute/private/evidence \
   node node_modules/vitest/vitest.mjs run \
   tests/group-member-inbox-http.test.ts tests/schema-v89-member-inbox.test.ts
 node node_modules/typescript/bin/tsc -p tsconfig.personal-agent.json --noEmit

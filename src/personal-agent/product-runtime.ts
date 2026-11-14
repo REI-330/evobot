@@ -708,7 +708,7 @@ export class ProductRuntimeService {
             id: `durable-failure:${input.id}`,
             chat_jid: chatJid,
             sender: 'pi-durable',
-            sender_name: 'MiniClaw',
+            sender_name: 'EvoBot',
             content: durableFailureAnswer(failure),
             timestamp,
             is_from_me: true,
@@ -1312,10 +1312,10 @@ export class ProductRuntimeService {
           api.callId,
           source,
         );
-        let memo = await api.memo('miniclaw.member.send.v1', context);
+        let memo = await api.memo('evobot.member.send.v1', context);
         if (memo === undefined)
           memo = await api.memo(
-            'miniclaw.member.send.v1',
+            'evobot.member.send.v1',
             prepareMemberSend(
               sessionId,
               source,
@@ -1401,7 +1401,7 @@ export class ProductRuntimeService {
         const control = memberEffectControl(sessionId);
         const savedControl = control
           ? await api.memo(
-              'miniclaw.member.effect-control.v1',
+              'evobot.member.effect-control.v1',
               control,
               context,
             )
@@ -1478,7 +1478,7 @@ export class ProductRuntimeService {
       : baseTools;
     let mcpBridge: ReturnType<typeof createDurableMcpTools> | undefined;
     const extension = defineExtension({
-      name: 'miniclaw-product-session',
+      name: 'evobot-product-session',
       // Definition availability is not permission: Group tools are selected
       // from the active immutable grant per lease and reauthorized on execute.
       tools: groupSessionOrigin(sessionId)
@@ -1756,7 +1756,7 @@ export class ProductRuntimeService {
             )
               return false;
             const raw = (result.structuredContent as Record<string, unknown>)
-              .__opendot_device_attachment;
+              .__evobot_device_attachment;
             if (!raw || typeof raw !== 'object' || Array.isArray(raw))
               return false;
             const image = raw as Record<string, unknown>;
@@ -1837,7 +1837,7 @@ export class ProductRuntimeService {
       }
       const mcpExtension = mcpBridge
         ? defineExtension({
-            name: 'miniclaw-external-mcp',
+            name: 'evobot-external-mcp',
             tools: mcpBridge.tools,
           })
         : undefined;
@@ -2378,7 +2378,7 @@ export class ProductRuntimeService {
           id: answer?.messageId ?? `durable-answer:${input.id}`,
           chat_jid: `${runtime.workspace_jid}#agent:${runtime.session_id}`,
           sender: 'pi-durable',
-          sender_name: 'MiniClaw',
+          sender_name: 'EvoBot',
           content: result.completed
             ? result.text
             : durableIncompleteAnswer(result.reason, result.reasonDetail),
@@ -2527,7 +2527,7 @@ export class ProductRuntimeService {
           id: answer?.messageId ?? `durable-answer:${input.id}`,
           chat_jid: chatJid,
           sender: 'pi-durable',
-          sender_name: 'MiniClaw',
+          sender_name: 'EvoBot',
           timestamp,
           is_from_me: true,
           content:
@@ -2927,7 +2927,7 @@ export class ProductRuntimeService {
         if (input && receipt.submission_id !== null)
           markProductInputSubmitted(input.id, receipt.submission_id);
       }
-    // MiniClaw metadata is one transaction. The subsequent committed Harness
+    // EvoBot metadata is one transaction. The subsequent committed Harness
     // view may be newer; revision is an invalidation fence, not a distributed tx.
     const metadata = readProductSnapshot(() => ({
       runtime: this.authorize(sessionId, actorId),

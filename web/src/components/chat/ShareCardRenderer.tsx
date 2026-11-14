@@ -210,11 +210,11 @@ export const ShareCardRenderer = forwardRef<
       >
         <img
           src={appIconUrl}
-          alt="OpenDot"
+          alt="EvoBot"
           style={{ width: 16, height: 16, borderRadius: 3 }}
         />
         <span style={{ fontSize: 12, color: '#94a3b8' }}>
-          OpenDot · github.com/helsome/OpenDot
+          EvoBot · github.com/REI-330/evobot
         </span>
       </div>
     </div>

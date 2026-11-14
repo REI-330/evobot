@@ -96,7 +96,7 @@ const output = path.resolve(flags['--output']);
 fs.mkdirSync(output, { recursive: true, mode: 0o700 });
 assert.equal(fs.readdirSync(output).length, 0, 'Use fresh evidence directory');
 const sandbox = fs.realpathSync(
-  fs.mkdtempSync(path.join(os.tmpdir(), 'miniclaw-load77-')),
+  fs.mkdtempSync(path.join(os.tmpdir(), 'evobot-load77-')),
 );
 const home = path.join(sandbox, 'home');
 const project = path.join(sandbox, 'project');

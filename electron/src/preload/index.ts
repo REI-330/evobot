@@ -1,6 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron';
 
-export interface MiniclawDesktopConfig {
+export interface EvoBotDesktopConfig {
   appName: string;
   version: string;
   serverUrl: string;
@@ -8,15 +8,15 @@ export interface MiniclawDesktopConfig {
   isPackaged: boolean;
 }
 
-export interface MiniclawDesktopAPI {
-  getConfig(): Promise<MiniclawDesktopConfig>;
+export interface EvoBotDesktopAPI {
+  getConfig(): Promise<EvoBotDesktopConfig>;
   openExternal(url: string): Promise<void>;
   retry(): Promise<void>;
   reload(): void;
   showAbout(): Promise<void>;
 }
 
-const api: MiniclawDesktopAPI = {
+const api: EvoBotDesktopAPI = {
   getConfig: () => ipcRenderer.invoke('desktop:get-config'),
   openExternal: (url) => ipcRenderer.invoke('desktop:open-external', url),
   retry: () => ipcRenderer.invoke('desktop:retry'),
@@ -24,4 +24,4 @@ const api: MiniclawDesktopAPI = {
   showAbout: () => ipcRenderer.invoke('desktop:show-about'),
 };
 
-contextBridge.exposeInMainWorld('miniclawDesktop', api);
+contextBridge.exposeInMainWorld('evobotDesktop', api);

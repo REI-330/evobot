@@ -108,7 +108,7 @@ export async function main(args = process.argv.slice(2)) {
         throw new Error('Invalid backend response');
     } catch {
       throw new Error(
-        `Miniclaw is not responding on ${target}. Start the backend first; nothing was changed.`,
+        `EvoBot is not responding on ${target}. Start the backend first; nothing was changed.`,
       );
     }
     try {
@@ -127,7 +127,7 @@ export async function main(args = process.argv.slice(2)) {
   }
   console.log(
     serve || configured
-      ? `Miniclaw: ${origin}/chat`
+      ? `EvoBot: ${origin}/chat`
       : `Planned URL: ${origin}/chat`,
   );
   if (!serve && !configured)
@@ -135,7 +135,7 @@ export async function main(args = process.argv.slice(2)) {
       'Read-only check. Run again with --serve to enable this route.',
     );
   console.log(
-    'Keep Miniclaw login enabled. Tailscale identity headers are not login credentials.',
+    'Keep EvoBot login enabled. Tailscale identity headers are not login credentials.',
   );
   console.log(
     'Join the phone to the same Tailnet. The backend host must remain awake.',

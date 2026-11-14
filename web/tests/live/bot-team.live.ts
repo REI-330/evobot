@@ -21,7 +21,7 @@ test('two real-model Bots read separate workspaces, recover original approvals a
   browser,
 }) => {
   const config = readZenModelConfiguration();
-  const evidence = process.env.MINICLAW_LIVE_EVIDENCE_PATH!;
+  const evidence = process.env.EVOBOT_LIVE_EVIDENCE_PATH!;
   const checks: string[] = [];
   let phase = 'setup';
   let failureLocation: string | undefined;
@@ -91,8 +91,8 @@ test('two real-model Bots read separate workspaces, recover original approvals a
         type: 'third_party',
         anthropicBaseUrl: config.baseUrl,
         anthropicModel: config.modelId,
-        anthropicApiKey: process.env.MINICLAW_ZEN_API_KEY!.trim(),
-        customEnv: { MINICLAW_MODEL_API: 'openai-completions' },
+        anthropicApiKey: process.env.EVOBOT_ZEN_API_KEY!.trim(),
+        customEnv: { EVOBOT_MODEL_API: 'openai-completions' },
       }),
     );
     const base = await f.createGroup();

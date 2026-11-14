@@ -2866,7 +2866,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
         if (typeof document === 'undefined' || !document.hidden) {
           showToast(`${desc} ${status}`, event.taskSummary);
         }
-        notifyIfHidden(`Miniclaw: ${desc} ${status}`, event.taskSummary);
+        notifyIfHidden(`EvoBot: ${desc} ${status}`, event.taskSummary);
       }
 
       set((s) => {
@@ -3602,7 +3602,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
         let orderedAgents = visibleAgents;
         try {
           const savedOrder = localStorage.getItem(
-            `miniclaw-agent-order-${jid}`,
+            `evobot-agent-order-${jid}`,
           );
           if (savedOrder) {
             const ids: string[] = JSON.parse(savedOrder);
@@ -3711,7 +3711,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
     // Persist to localStorage
     try {
       localStorage.setItem(
-        `miniclaw-agent-order-${jid}`,
+        `evobot-agent-order-${jid}`,
         JSON.stringify(orderedIds),
       );
     } catch {

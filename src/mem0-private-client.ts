@@ -45,7 +45,7 @@ export function mem0PrivateScope(input: {
   profileId: string;
   sessionId: string;
 }): Mem0PrivateScope {
-  const app = `opendot:${stableId(input.installationId)}:${stableId(input.environment)}:private:v1`;
+  const app = `evobot:${stableId(input.installationId)}:${stableId(input.environment)}:private:v1`;
   const dot = `${stableId(input.ownerUserId)}:dot:${stableId(input.profileId)}:private:v1`;
   return Object.freeze({
     app_id: app,
@@ -237,7 +237,7 @@ export class Mem0PrivateClient {
         ],
         ...input.scope,
         metadata: {
-          source: 'opendot-owner-private',
+          source: 'evobot-owner-private',
           turn_id: stableId(input.turnId),
         },
       },

@@ -3,9 +3,9 @@ import { defineConfig } from '@playwright/test';
 
 // Real provider configuration crosses the fixture API. Never record network
 // traces, screenshots or video containing credentials or authenticated cookies.
-const evidence = process.env.MINICLAW_LIVE_EVIDENCE_PATH;
+const evidence = process.env.EVOBOT_LIVE_EVIDENCE_PATH;
 if (!evidence) throw new Error('Run npm run test:personal-agent-live');
-const scenario = process.env.MINICLAW_LIVE_SCENARIO || 'personal-agent';
+const scenario = process.env.EVOBOT_LIVE_SCENARIO || 'personal-agent';
 if (!['personal-agent', 'bot-team'].includes(scenario))
   throw new Error('Unsupported live acceptance scenario');
 export default defineConfig({

@@ -9,8 +9,8 @@ test('mobile creates three Dots in one Group and explicitly enables bounded coop
 }) => {
   test.setTimeout(180000);
   const f = await botHandoffHttpFixture(undefined, {
-    MINICLAW_GROUP_MEMBER_INBOX: 'true',
-    MINICLAW_GROUP_MEMBER_CONCURRENCY: 'true',
+    EVOBOT_GROUP_MEMBER_INBOX: 'true',
+    EVOBOT_GROUP_MEMBER_CONCURRENCY: 'true',
   });
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(e.message));
@@ -82,7 +82,7 @@ test('mobile creates three Dots in one Group and explicitly enables bounded coop
     const form = panel.getByRole('form', { name: '新建群聊', exact: true });
     await form.getByLabel('群聊名称', { exact: true }).fill('三位搭子一起协作');
     await form
-      .getByRole('checkbox', { name: 'Miniclaw', exact: true })
+      .getByRole('checkbox', { name: 'EvoBot', exact: true })
       .uncheck();
     for (const p of people)
       await form.getByRole('checkbox', { name: p.name, exact: true }).check();

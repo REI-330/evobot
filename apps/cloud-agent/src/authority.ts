@@ -19,18 +19,18 @@ import {
 import { z } from 'zod';
 import { CloudError, type SessionBinding, type CloudInput } from './protocol';
 export interface AuthorityEnvironment {
-  MINICLAW_AUTHORITY_ORIGIN?: string;
-  MINICLAW_CLOUD_ORIGIN?: string;
-  MINICLAW_CLOUD_SHARED_SECRET?: string;
-  MINICLAW_AUTHORITY_SERVICE?: Fetcher;
+  EVOBOT_AUTHORITY_ORIGIN?: string;
+  EVOBOT_CLOUD_ORIGIN?: string;
+  EVOBOT_CLOUD_SHARED_SECRET?: string;
+  EVOBOT_AUTHORITY_SERVICE?: Fetcher;
 }
 function origin(env: AuthorityEnvironment) {
   const url = new URL(
-    env.MINICLAW_AUTHORITY_ORIGIN ?? 'https://unconfigured.invalid',
+    env.EVOBOT_AUTHORITY_ORIGIN ?? 'https://unconfigured.invalid',
   );
   if (
     url.protocol !== 'https:' ||
-    url.origin !== env.MINICLAW_AUTHORITY_ORIGIN ||
+    url.origin !== env.EVOBOT_AUTHORITY_ORIGIN ||
     url.username ||
     url.password
   )
@@ -50,7 +50,7 @@ async function request(
     throw new CloudError(503, 'CLOUD_AUTHORITY_UNAVAILABLE');
   const url = `${origin(env)}/api/cloud-runtime/${binding.session_id}/objects/${objectId}/${suffix}`;
   const signed = await signedRequest(
-    env.MINICLAW_CLOUD_SHARED_SECRET ?? '',
+    env.EVOBOT_CLOUD_SHARED_SECRET ?? '',
     binding,
     url,
     'POST',
@@ -72,8 +72,8 @@ async function request(
       outbound.signal.addEventListener('abort', abort, { once: true });
     });
     const pending = (
-      env.MINICLAW_AUTHORITY_SERVICE
-        ? env.MINICLAW_AUTHORITY_SERVICE.fetch(outbound)
+      env.EVOBOT_AUTHORITY_SERVICE
+        ? env.EVOBOT_AUTHORITY_SERVICE.fetch(outbound)
         : fetch(outbound, { redirect: 'error' })
     ).then((response) => {
       if (outbound.signal.aborted) {
@@ -133,7 +133,7 @@ export async function productTool(
   body: string,
   signal?: AbortSignal,
 ) {
-  if (binding.execution_authority !== 'miniclaw-product')
+  if (binding.execution_authority !== 'evobot-product')
     throw new CloudError(403, 'CLOUD_TOOL_NOT_GRANTED');
   const deadline = new AbortController();
   const timer = setTimeout(() => deadline.abort(), 15000);
@@ -201,7 +201,7 @@ export async function authorizeProduct(
   execution?: CloudExecutionGrant,
   signal?: AbortSignal,
 ) {
-  if (binding.execution_authority !== 'miniclaw-product') return;
+  if (binding.execution_authority !== 'evobot-product') return;
   const response = await requestJson(
     env,
     binding,
@@ -209,7 +209,7 @@ export async function authorizeProduct(
     'policy',
     JSON.stringify({
       binding_digest: await bindingDigest(binding),
-      gateway_origin: env.MINICLAW_CLOUD_ORIGIN,
+      gateway_origin: env.EVOBOT_CLOUD_ORIGIN,
       ...(purpose === 'read' ? { purpose } : {}),
       ...(execution
         ? {
@@ -280,7 +280,7 @@ export async function authorizeProductInput(
   },
   purpose: 'execute' | 'read' = 'execute',
 ) {
-  if (binding.execution_authority !== 'miniclaw-product') return;
+  if (binding.execution_authority !== 'evobot-product') return;
   if (!input.product_receipt_digest)
     throw new CloudError(409, 'CLOUD_PRODUCT_INPUT_UNAVAILABLE');
   const response = await requestJson(
@@ -337,7 +337,7 @@ export async function authorizeProductControl(
   purpose: 'execute' | 'read' = 'execute',
   execution?: CloudExecutionRef,
 ) {
-  if (binding.execution_authority !== 'miniclaw-product')
+  if (binding.execution_authority !== 'evobot-product')
     throw new CloudError(409, 'CLOUD_PRODUCT_CONTROL_UNAVAILABLE');
   const response = await requestJson(
     env,
@@ -405,7 +405,7 @@ export async function authorizeProductHandoffResume(
 ) {
   if (
     !binding.bot_handoff ||
-    binding.execution_authority !== 'miniclaw-product'
+    binding.execution_authority !== 'evobot-product'
   )
     throw new CloudError(409, 'CLOUD_HANDOFF_RESUME_CHANGED');
   const response = await requestJson(
@@ -415,7 +415,7 @@ export async function authorizeProductHandoffResume(
     'policy',
     JSON.stringify({
       binding_digest: await bindingDigest(binding),
-      gateway_origin: env.MINICLAW_CLOUD_ORIGIN,
+      gateway_origin: env.EVOBOT_CLOUD_ORIGIN,
       handoff_resume: fence,
     }),
   );

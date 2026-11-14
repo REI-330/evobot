@@ -4,7 +4,7 @@ import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import Database from 'better-sqlite3';
 import { afterAll, beforeAll, expect, test, vi } from 'vitest';
-const root = fs.mkdtempSync(path.join(os.tmpdir(), 'miniclaw-bot-handoffs-'));
+const root = fs.mkdtempSync(path.join(os.tmpdir(), 'evobot-bot-handoffs-'));
 vi.mock('../src/config.js', async (original) => ({
   ...(await original<Record<string, unknown>>()),
   DATA_DIR: root,
@@ -319,7 +319,7 @@ test('model attempts never reset and grants do not authorize undeclared tools; r
 test('JSON-expanded context is rejected atomically before creating a Handoff or native association', () => {
   const created = fixture(),
     before = groups.getBotGroupSnapshot('alice', created.groupId);
-  vi.stubEnv('MINICLAW_BOT_HANDOFFS', 'true');
+  vi.stubEnv('EVOBOT_BOT_HANDOFFS', 'true');
   try {
     expect(() =>
       groups.postBotGroupMessage('alice', created.groupId, randomUUID(), {
@@ -875,10 +875,10 @@ function cloudAssociationFixture() {
 }
 test('public Cloud Handoff admission requires each explicit feature gate and does not widen legacy runtime selection', () => {
   const keys = [
-    'MINICLAW_BOT_GROUPS',
-    'MINICLAW_BOT_HANDOFFS',
-    'MINICLAW_CLOUD_RUNTIME',
-    'MINICLAW_CLOUD_BOT_HANDOFFS',
+    'EVOBOT_BOT_GROUPS',
+    'EVOBOT_BOT_HANDOFFS',
+    'EVOBOT_CLOUD_RUNTIME',
+    'EVOBOT_CLOUD_BOT_HANDOFFS',
   ];
   try {
     for (const key of keys) vi.stubEnv(key, 'true');
@@ -888,7 +888,7 @@ test('public Cloud Handoff admission requires each explicit feature gate and doe
       expect(handoffs.cloudBotHandoffsEnabled()).toBe(false);
       vi.stubEnv(key, 'true');
     }
-    vi.stubEnv('MINICLAW_CLOUD_BOT_HANDOFFS', undefined);
+    vi.stubEnv('EVOBOT_CLOUD_BOT_HANDOFFS', undefined);
     expect(handoffs.cloudBotHandoffsEnabled()).toBe(false);
   } finally {
     vi.unstubAllEnvs();

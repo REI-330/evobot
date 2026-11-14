@@ -44,8 +44,8 @@ const cookies = new Map<string, string>();
 const secret = 'synthetic-webhook-secret-for-local-tests-only';
 const base = {
   workspace_jid: 'web:alice',
-  repository: 'helsome/miniclaw',
-  secret_variable: 'MINICLAW_GITHUB_WEBHOOK_TEST',
+  repository: 'REI-330/evobot',
+  secret_variable: 'EVOBOT_GITHUB_WEBHOOK_TEST',
   objective:
     'Investigate important repository changes using workspace evidence',
   completion_criteria: ['artifact_contains:VERIFIED_FINDINGS'],
@@ -87,7 +87,7 @@ beforeAll(() => {
       last_active_at: now,
       expires_at: new Date(Date.now() + 3600000).toISOString(),
     });
-    cookies.set(id, `miniclaw_session=${auth.signSessionToken(token)}`);
+    cookies.set(id, `evobot_session=${auth.signSessionToken(token)}`);
   }
   config.createProvider({
     name: 'Fixture configuration, never called',
@@ -95,18 +95,18 @@ beforeAll(() => {
     anthropicBaseUrl: 'http://127.0.0.1:1/v1',
     anthropicApiKey: 'synthetic-fixture-token',
     anthropicModel: 'fixture',
-    customEnv: { MINICLAW_MODEL_API: 'openai-completions' },
+    customEnv: { EVOBOT_MODEL_API: 'openai-completions' },
   });
 });
 beforeEach(() => {
   for (const run of db.getTaskRunsByStatus(['queued', 'running', 'retry_wait']))
     db.cancelTaskRun(run.id);
-  vi.stubEnv('MINICLAW_PERSONAL_GOALS', 'true');
-  vi.stubEnv('MINICLAW_DURABLE_RUNTIME', 'true');
-  vi.stubEnv('MINICLAW_GITHUB_GOALS', 'true');
-  vi.stubEnv('MINICLAW_GITHUB_WEBHOOK_TEST', secret);
+  vi.stubEnv('EVOBOT_PERSONAL_GOALS', 'true');
+  vi.stubEnv('EVOBOT_DURABLE_RUNTIME', 'true');
+  vi.stubEnv('EVOBOT_GITHUB_GOALS', 'true');
+  vi.stubEnv('EVOBOT_GITHUB_WEBHOOK_TEST', secret);
   vi.stubEnv(
-    'MINICLAW_GITHUB_WEBHOOK_GRANTS',
+    'EVOBOT_GITHUB_WEBHOOK_GRANTS',
     JSON.stringify([
       {
         owner_user_id: 'alice',
@@ -156,7 +156,7 @@ async function create(overrides: Record<string, unknown> = {}) {
 function payload(runId = 1, conclusion = 'failure') {
   return {
     action: 'completed',
-    repository: { full_name: 'helsome/miniclaw' },
+    repository: { full_name: 'REI-330/evobot' },
     workflow_run: {
       id: runId,
       head_sha: 'a'.repeat(40),
@@ -222,14 +222,14 @@ test('management uses account/workspace ACL; signing variables are deployment gr
       await request(
         '/',
         'POST',
-        { ...base, secret_variable: 'MINICLAW_GITHUB_WEBHOOK_MISSING' },
+        { ...base, secret_variable: 'EVOBOT_GITHUB_WEBHOOK_MISSING' },
         'alice',
         randomUUID(),
       )
     ).status,
   ).toBe(404);
   vi.stubEnv(
-    'MINICLAW_GITHUB_WEBHOOK_GRANTS',
+    'EVOBOT_GITHUB_WEBHOOK_GRANTS',
     JSON.stringify([
       {
         owner_user_id: 'alice',
@@ -239,7 +239,7 @@ test('management uses account/workspace ACL; signing variables are deployment gr
       {
         owner_user_id: 'alice',
         workspace_jid: 'web:alice',
-        secret_variable: 'MINICLAW_GITHUB_WEBHOOK_MISSING',
+        secret_variable: 'EVOBOT_GITHUB_WEBHOOK_MISSING',
       },
     ]),
   );
@@ -248,7 +248,7 @@ test('management uses account/workspace ACL; signing variables are deployment gr
       await request(
         '/',
         'POST',
-        { ...base, secret_variable: 'MINICLAW_GITHUB_WEBHOOK_MISSING' },
+        { ...base, secret_variable: 'EVOBOT_GITHUB_WEBHOOK_MISSING' },
         'alice',
         randomUUID(),
       )
@@ -270,7 +270,7 @@ test('management uses account/workspace ACL; signing variables are deployment gr
   ).toBe(404);
   const listed = await request('/');
   expect(await listed.text()).not.toContain(secret);
-  vi.stubEnv('MINICLAW_GITHUB_GOALS', 'false');
+  vi.stubEnv('EVOBOT_GITHUB_GOALS', 'false');
   expect((await request('/')).status).toBe(404);
   expect((await webhook(trigger.id)).status).toBe(404);
 });
@@ -335,7 +335,7 @@ test('creation retries retain one subscription and conflicting config cannot reu
     'POST',
     {
       ...base,
-      repository: 'HELSOME/MINICLAW',
+      repository: 'HELSOME/EVOBOT',
       events: ['pull_request', 'workflow_failure'],
     },
     'alice',
@@ -389,7 +389,7 @@ test('only selected repository CI failures and PR transitions route; no raw body
   const pr = {
     action: 'synchronize',
     number: 42,
-    repository: { full_name: 'HELSOME/MINICLAW' },
+    repository: { full_name: 'HELSOME/EVOBOT' },
     pull_request: {
       id: 99,
       head: { sha: 'b'.repeat(40) },
@@ -562,7 +562,7 @@ test('signing capability grants are workspace-bound, hidden across owners and re
       )
     ).status,
   ).toBe(404);
-  vi.stubEnv('MINICLAW_GITHUB_WEBHOOK_GRANTS', '[]');
+  vi.stubEnv('EVOBOT_GITHUB_WEBHOOK_GRANTS', '[]');
   expect((await webhook(trigger.id, payload(2))).status).toBe(404);
   expect(store.githubGoalSourceAllowed(event.goal_id!)).toBe(false);
   expect(
@@ -570,7 +570,7 @@ test('signing capability grants are workspace-bound, hidden across owners and re
       db.getTaskRunById(event.run_id!)!.task_id,
     ),
   ).toBe('GitHub routine cancelled or authorization revoked');
-  vi.stubEnv('MINICLAW_GITHUB_WEBHOOK_GRANTS', 'invalid-json');
+  vi.stubEnv('EVOBOT_GITHUB_WEBHOOK_GRANTS', 'invalid-json');
   expect(
     (
       (await (await request('/availability')).json()) as {

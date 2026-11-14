@@ -10,7 +10,7 @@ const __dirname = dirname(__filename);
 const webDir = join(__dirname, '..');
 const repoRoot = join(webDir, '..');
 const publicDir = join(webDir, 'public', 'icons');
-const sourcePath = join(repoRoot, 'assets', 'miniclaw-icon.svg');
+const sourcePath = join(repoRoot, 'assets', 'evobot-icon.svg');
 
 const sizes = [48, 72, 96, 128, 144, 152, 192, 384, 512];
 
@@ -21,14 +21,14 @@ async function generateIcons() {
     .update(sourceBuffer)
     .digest('hex')
     .slice(0, 12);
-  writeFileSync(join(webDir, 'public', 'opendot-robot.svg'), sourceBuffer);
+  writeFileSync(join(webDir, 'public', 'evobot-robot.svg'), sourceBuffer);
   writeFileSync(join(webDir, 'public', 'favicon.svg'), sourceBuffer);
 
   const htmlPath = join(webDir, 'index.html');
   writeFileSync(
     htmlPath,
     readFileSync(htmlPath, 'utf8').replace(
-      /(href="%BASE_URL%(?:opendot-robot\.svg|icons\/apple-touch-icon-180\.png))(?:\?v=[^"]*)?"/g,
+      /(href="%BASE_URL%(?:evobot-robot\.svg|icons\/apple-touch-icon-180\.png))(?:\?v=[^"]*)?"/g,
       `$1?v=${revision}"`,
     ),
   );
@@ -70,7 +70,7 @@ async function generateIcons() {
   const desktopDir = join(repoRoot, 'electron', 'assets');
   mkdirSync(desktopDir, { recursive: true });
   writeFileSync(
-    join(desktopDir, 'miniclaw-icon.png'),
+    join(desktopDir, 'evobot-icon.png'),
     readFileSync(logo1024Path),
   );
   const nativeSizes = {
@@ -95,7 +95,7 @@ async function generateIcons() {
   header.write('icns', 0, 4, 'ascii');
   header.writeUInt32BE(body.length + 8, 4);
   writeFileSync(
-    join(desktopDir, 'miniclaw.icns'),
+    join(desktopDir, 'evobot.icns'),
     Buffer.concat([header, body]),
   );
   console.log('✓ Generated Electron PNG and macOS ICNS');
@@ -117,7 +117,7 @@ async function generateIcons() {
     .toFile(appleTouchIconPath);
   console.log(`✓ Generated ${appleTouchIconPath}`);
 
-  console.log('\n✅ All Miniclaw icons generated successfully!');
+  console.log('\n✅ All EvoBot icons generated successfully!');
 }
 
 generateIcons().catch((error) => {

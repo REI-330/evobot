@@ -28,7 +28,7 @@ function pendingTask(snapshot: BotGroupSnapshot, profile: string) {
 
 test('a final answer before queued peer consumption stays provisional until the actual reply input finishes', async () => {
   const f = await botHandoffHttpFixture(undefined, {
-    MINICLAW_GROUP_MEMBER_INBOX: 'true',
+    EVOBOT_GROUP_MEMBER_INBOX: 'true',
   });
   let storage: Database.Database | undefined;
   try {
@@ -139,7 +139,7 @@ const approvalPath = (
 
 test('a Group Dot cannot adopt its own private native transcript or inherit private Memory tools from that workspace', async () => {
   const f = await botHandoffHttpFixture(undefined, {
-    MINICLAW_GROUP_MEMBER_INBOX: 'true',
+    EVOBOT_GROUP_MEMBER_INBOX: 'true',
   });
   let storage: Database.Database | undefined;
   try {
@@ -297,7 +297,7 @@ test.each([false, true])(
   'peer reply and user correction=%s while approval is pending preserve the native boundary and exact consent',
   async (correct) => {
     const f = await botHandoffHttpFixture(undefined, {
-      MINICLAW_GROUP_MEMBER_INBOX: 'true',
+      EVOBOT_GROUP_MEMBER_INBOX: 'true',
     });
     let storage: Database.Database | undefined;
     try {
@@ -556,7 +556,7 @@ test.each([false, true])(
 
 test('member model budget denial is an explicit waiting-user outcome, fences both owners, and dispatches no extra inference', async () => {
   const f = await botHandoffHttpFixture(undefined, {
-    MINICLAW_GROUP_MEMBER_INBOX: 'true',
+    EVOBOT_GROUP_MEMBER_INBOX: 'true',
   });
   let storage: Database.Database | undefined;
   try {
@@ -631,7 +631,7 @@ test('member model budget denial is an explicit waiting-user outcome, fences bot
 
 test('retryable upstream errors consume each native attempt and end with no fabricated answer or replacement input', async () => {
   const f = await botHandoffHttpFixture(undefined, {
-    MINICLAW_GROUP_MEMBER_INBOX: 'true',
+    EVOBOT_GROUP_MEMBER_INBOX: 'true',
   });
   let storage: Database.Database | undefined;
   try {
@@ -712,7 +712,7 @@ test('an expired peer question retains its original deadline and terminates both
   let storage: Database.Database | undefined;
   try {
     f = await botHandoffHttpFixture(preload, {
-      MINICLAW_GROUP_MEMBER_INBOX: 'true',
+      EVOBOT_GROUP_MEMBER_INBOX: 'true',
     });
     const { groupId, people } = await freshMemberGroup(f);
     let a = 0;
@@ -794,7 +794,7 @@ test('an expired peer question retains its original deadline and terminates both
 
 test('a native A-B question cycle is bounded at four causal hops even when a newer user control is the last input', async () => {
   const f = await botHandoffHttpFixture(undefined, {
-    MINICLAW_GROUP_MEMBER_INBOX: 'true',
+    EVOBOT_GROUP_MEMBER_INBOX: 'true',
   });
   let storage: Database.Database | undefined;
   let modelFailure: unknown;

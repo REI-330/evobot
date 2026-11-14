@@ -37,7 +37,7 @@ limits, receipt retention and cancellation semantics.
 
 ## Existing boundaries to preserve
 
-MiniClaw owns authentication, user/session and workspace ACLs, authorized tool selection, workspace mount policy, scheduler policy, channel account binding, and workspace-memory provenance. Pi Durable must execute only capabilities deliberately installed in its registry and environment. Importing its general coding tool bundle without a MiniClaw policy adapter would bypass product constraints and is prohibited.
+EvoBot owns authentication, user/session and workspace ACLs, authorized tool selection, workspace mount policy, scheduler policy, channel account binding, and workspace-memory provenance. Pi Durable must execute only capabilities deliberately installed in its registry and environment. Importing its general coding tool bundle without a EvoBot policy adapter would bypass product constraints and is prohibited.
 
 The pilot's snapshot, submit, watch, and submission-recovery operations call an injected authorization callback; watch delivery rechecks read authorization on each frame. Input submission invokes a required host admission hook and independently commits a persisted request/payload digest before calling Pi Durable. It has no direct HTTP route and registers no tools. The Harness does not resume on open; submit is gated until an explicit activation callback verifies recovered ownership. Its SQLite database file is set to mode `0600`; the parent directory is created with mode `0700` subject to existing directory permissions. Online backup/restore is implemented; production ownership mapping remains pending.
 
@@ -55,7 +55,7 @@ The product runtime's Goal owner is immutable independently of mutable task link
 
 Goal outbox delivery rechecks current Goal state, active owner/Host permission, workspace identity and the exact owned result route. Ownership transfer or a pause/cancel fence suppresses pending delivery with a skipped receipt; it does not send old private text into a newly owned workspace or rerun the model to repair delivery. Product completion receipts ahead of unsettled Durable inputs also block recovery before activation, so inconsistent cross-database snapshots cannot silently replay a completed run.
 
-Pi Durable returns the prior submission for a repeated request ID without checking if the content changed. MiniClaw must bind an input request ID to a payload digest and reject mismatches before submission. Input request IDs prevent duplicate admission only. Before a non-idempotent external write, persist a MiniClaw authorization/intent record and an operation idempotency key. After the call, persist the provider receipt. If a crash leaves the outcome unknown, surface `uncertain` and require reconciliation or approval; do not replay the raw prompt or blindly repeat the tool.
+Pi Durable returns the prior submission for a repeated request ID without checking if the content changed. EvoBot must bind an input request ID to a payload digest and reject mismatches before submission. Input request IDs prevent duplicate admission only. Before a non-idempotent external write, persist a EvoBot authorization/intent record and an operation idempotency key. After the call, persist the provider receipt. If a crash leaves the outcome unknown, surface `uncertain` and require reconciliation or approval; do not replay the raw prompt or blindly repeat the tool.
 
 Read-only tools may be replayed only when their scope and workspace authorization are revalidated. File writes/deletes, email or message sending, and remote changes must remain approval-gated according to existing policy and use receipts. Logs and notifications must not include credentials or private tool output by default.
 
@@ -139,7 +139,7 @@ transport failure retains original IDs rather than resubmitting under new ones.
 Queue controls retain their original Goal run and must match it in the signed
 Node proof. Settled native controls may reconcile historical ACKs after a newer
 run; an unsettled control cannot borrow that newer run's authority. Explicit
-Cloud Goal creation requires the separate default-off `MINICLAW_CLOUD_GOALS`
+Cloud Goal creation requires the separate default-off `EVOBOT_CLOUD_GOALS`
 flag, current owned Host Workspace permission, compatible model and exact-artifact
 capability. Creation and edits reject oversized core contexts or budgets above
 100 runs transactionally. Runtime selection cannot adopt an existing Session or

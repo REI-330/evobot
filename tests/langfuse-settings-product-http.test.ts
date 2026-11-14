@@ -8,7 +8,7 @@ import { expect, test } from 'vitest';
 import { botHandoffHttpFixture, waitFor } from './helpers/bot-handoff-http-fixture.js';
 
 test('saved Langfuse settings load after restart and export metadata to the configured project', async () => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'opendot-langfuse-https-'));
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'evobot-langfuse-https-'));
   const key = path.join(root, 'key.pem'), cert = path.join(root, 'cert.pem');
   const generated = spawnSync('openssl', ['req', '-x509', '-newkey', 'rsa:2048', '-nodes', '-keyout', key, '-out', cert, '-days', '1', '-subj', '/CN=127.0.0.1', '-addext', 'subjectAltName=IP:127.0.0.1'], { stdio: 'ignore', timeout: 30000 });
   expect(generated.status).toBe(0);

@@ -105,7 +105,7 @@ export class BotHandoffService {
       if (
         cloud &&
         toolCapabilities.includes('create_approved_artifact') &&
-        process.env.MINICLAW_CLOUD_APPROVALS !== 'true'
+        process.env.EVOBOT_CLOUD_APPROVALS !== 'true'
       )
         throw new BotGroupError('BOT_HANDOFF_TOOL_NOT_GRANTED', 400);
       const workspace = getRegisteredGroup(grant.workspace_jid)!;

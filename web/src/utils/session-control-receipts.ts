@@ -8,9 +8,9 @@ export type PendingSessionControl = {
   requestId: string;
   command: SessionControlCommand;
 };
-export const SESSION_CONTROL_RECEIPT_EVENT = 'miniclaw:control-receipt';
+export const SESSION_CONTROL_RECEIPT_EVENT = 'evobot:control-receipt';
 const key = (owner: string, sessionId: string) =>
-  `miniclaw:queue-control:${owner}:${sessionId}`;
+  `evobot:queue-control:${owner}:${sessionId}`;
 /** Per-tab journal survives reload; another tab cannot overwrite an unknown result. */
 export function readSessionControl(
   owner: string,

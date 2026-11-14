@@ -134,14 +134,14 @@ On an arm64 Mac, the official Kimi Browser Extension 2.0.24 and the official
 WebBridge daemon v2.0.27 reported a connected state. The downloaded WebBridge
 binary is ad-hoc signed; the official installer does not provide a signed
 checksum manifest for it. This readiness observation does not establish
-origin fencing, action approvals, or any OpenDot-to-browser call.
+origin fencing, action approvals, or any EvoBot-to-browser call.
 
 The official KimiCU 0.6.8 application was checked against the vendor's SHA-256
 manifest and verified with macOS code signing before installation. Its
 `service-status` reported registered, and a local MCP initialize plus
 `tools/list` returned 20 tool declarations. The inventory contains broad
 operations such as `launch_app` and `js`; none were invoked or registered with
-OpenDot. OS Accessibility and Screen Recording permissions were not inferred
+EvoBot. OS Accessibility and Screen Recording permissions were not inferred
 from service registration, and no desktop state or screenshot was read.
 
 `scripts/kimi-computer-use-status.ts` provides a device-local read-only

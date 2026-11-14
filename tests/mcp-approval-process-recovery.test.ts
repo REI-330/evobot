@@ -106,7 +106,7 @@ test.each(['before-marker', 'after-marker', 'after-effect'] as const)(
         native_tool_task: first.record.native_tool_task,
         native_generation: first.record.native_generation,
       });
-      const proofRoot = process.env.MINICLAW_MCP_PROOF_DIR;
+      const proofRoot = process.env.EVOBOT_MCP_PROOF_DIR;
       if (proofRoot) {
         fs.mkdirSync(proofRoot, { recursive: true, mode: 0o700 });
         const paths = [

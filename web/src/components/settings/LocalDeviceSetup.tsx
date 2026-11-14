@@ -62,16 +62,16 @@ export function LocalDeviceSetup({ onCreated, beforeConnect }: { onCreated: () =
     if (!desktop && !computer) {
       try {
         const url = new URL(origin);
-        if (!/^opendot-[0-9a-f-]{36}$/i.test(session) || !positive(tabId) || !positive(port) || Number(port) > 65535 || !['http:', 'https:'].includes(url.protocol) || url.origin !== origin || url.username || url.password) throw new Error('invalid');
+        if (!/^evobot-[0-9a-f-]{36}$/i.test(session) || !positive(tabId) || !positive(port) || Number(port) > 65535 || !['http:', 'https:'].includes(url.protocol) || url.origin !== origin || url.username || url.password) throw new Error('invalid');
       } catch { setError('请填写专用会话、标签 ID、页面源地址和端口。'); return; }
     }
     setBusy(true);
-    const id = `opendot_${kind}_${crypto.randomUUID().replaceAll('-', '')}`;
+    const id = `evobot_${kind}_${crypto.randomUUID().replaceAll('-', '')}`;
     const tools = desktop ? ['observe_window', 'act_on_window', 'capture_window'] : computer ? ['list_windows', 'open_application', 'observe_window', 'act_on_window'] : ['read_page'];
     const policy = { version: 1, enabled: true, location: { kind: 'device', node_id: crypto.randomUUID() }, tools };
     const env = computer ? {} : desktop
-      ? { OPENDOT_KIMICU_APP_ID: appId, OPENDOT_KIMICU_PID: pid, OPENDOT_KIMICU_WINDOW_ID: windowId }
-      : { OPENDOT_WEBBRIDGE_SESSION: session, OPENDOT_WEBBRIDGE_TAB_ID: tabId, OPENDOT_WEBBRIDGE_ORIGIN: origin, OPENDOT_WEBBRIDGE_PORT: port };
+      ? { EVOBOT_KIMICU_APP_ID: appId, EVOBOT_KIMICU_PID: pid, EVOBOT_KIMICU_WINDOW_ID: windowId }
+      : { EVOBOT_WEBBRIDGE_SESSION: session, EVOBOT_WEBBRIDGE_TAB_ID: tabId, EVOBOT_WEBBRIDGE_ORIGIN: origin, EVOBOT_WEBBRIDGE_PORT: port };
     try {
       if (beforeConnect) await beforeConnect();
       const args = [...(paths.loader ? ['--import', paths.loader] : []), desktop ? paths.desktop : computer ? paths.computer : paths.browser];
@@ -116,7 +116,7 @@ export function LocalDeviceSetup({ onCreated, beforeConnect }: { onCreated: () =
     } finally { setBusy(false); }
   }
   if (!paths) return <p className="text-sm">正在检查本机节点环境…</p>;
-  if (!paths.available) return <p className="text-sm text-muted-foreground">本机向导需要 macOS 上可用的 OpenDot 设备节点运行环境；其他设备请使用本地节点配置。</p>;
+  if (!paths.available) return <p className="text-sm text-muted-foreground">本机向导需要 macOS 上可用的 EvoBot 设备节点运行环境；其他设备请使用本地节点配置。</p>;
   return <section className="space-y-3 rounded-xl border border-border p-4">
     <h2 className="font-semibold">连接本机电脑操作</h2>
     <label className="block text-sm">连接方式<select className="mt-1 min-h-11 w-full rounded-lg border bg-background px-3" value={kind} onChange={(event) => setKind(event.target.value as typeof kind)}><option value="computer">电脑操作（自动选择窗口）</option><option value="kimicu">指定窗口（高级）</option><option value="webbridge">WebBridge 页面读取</option></select></label>
@@ -134,7 +134,7 @@ export function LocalDeviceSetup({ onCreated, beforeConnect }: { onCreated: () =
       <label className="block text-sm">要读取的网页<Input type="url" value={targetUrl} onChange={(e) => setTargetUrl(e.target.value)} placeholder="https://example.com" /></label>
       <Button type="button" variant="outline" disabled={opening || !targetUrl} onClick={() => void openBrowserTab()}>{opening ? '正在打开…' : '打开网页并选择标签'}</Button>
       <p className="text-xs text-muted-foreground">点击后会在本机浏览器打开该网页；如果网页跳转到其他网站，读取会被拒绝。</p>
-      <label className="block text-sm">专用 WebBridge 会话<Input value={session} onChange={(e) => setSession(e.target.value)} placeholder="opendot-…" /></label>
+      <label className="block text-sm">专用 WebBridge 会话<Input value={session} onChange={(e) => setSession(e.target.value)} placeholder="evobot-…" /></label>
       <label className="block text-sm">标签 ID<Input inputMode="numeric" value={tabId} onChange={(e) => setTabId(e.target.value)} /></label>
       <label className="block text-sm">页面源地址<Input value={origin} onChange={(e) => setOrigin(e.target.value)} placeholder="https://example.com" /></label>
       <label className="block text-sm">本机 WebBridge 端口<Input inputMode="numeric" value={port} onChange={(e) => setPort(e.target.value)} /></label>

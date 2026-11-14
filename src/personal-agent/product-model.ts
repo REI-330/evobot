@@ -78,10 +78,10 @@ export function productModelConfiguration(
     required: true,
     requireEnabled: true,
   });
-  const api = customEnv.MINICLAW_MODEL_API ?? 'anthropic-messages';
+  const api = customEnv.EVOBOT_MODEL_API ?? 'anthropic-messages';
   if (!['openai-completions', 'anthropic-messages'].includes(api))
     throw new Error('Configured model API is not supported by Durable');
-  const configuredOutputLimit = customEnv.MINICLAW_MODEL_MAX_OUTPUT_TOKENS;
+  const configuredOutputLimit = customEnv.EVOBOT_MODEL_MAX_OUTPUT_TOKENS;
   const maxOutputTokens =
     configuredOutputLimit === undefined || configuredOutputLimit === ''
       ? 4096
@@ -102,7 +102,7 @@ export function productModelConfiguration(
     );
   if (!['https:', 'http:'].includes(parsed.protocol))
     throw new Error('Unsupported provider protocol');
-  const visionInput = customEnv.MINICLAW_MODEL_VISION_INPUT === 'true';
+  const visionInput = customEnv.EVOBOT_MODEL_VISION_INPUT === 'true';
   const modelId = config.anthropicModel?.trim();
   if (!modelId)
     throw new Error('Selected model configuration requires an explicit model');
@@ -152,13 +152,13 @@ export function selectNewProductRuntime(
 ): RuntimeSelection {
   if (requested === 'local-pi') return { kind: 'pi-coding-agent' };
   if (requested === 'cloudflare-durable') {
-    if (process.env.MINICLAW_CLOUD_RUNTIME !== 'true')
+    if (process.env.EVOBOT_CLOUD_RUNTIME !== 'true')
       throw new Error('Cloud Session admission is disabled');
-    const gateway = new URL(process.env.MINICLAW_CLOUD_ORIGIN ?? '');
+    const gateway = new URL(process.env.EVOBOT_CLOUD_ORIGIN ?? '');
     if (
       gateway.protocol !== 'https:' ||
-      gateway.origin !== process.env.MINICLAW_CLOUD_ORIGIN ||
-      (process.env.MINICLAW_CLOUD_SHARED_SECRET?.length ?? 0) < 32
+      gateway.origin !== process.env.EVOBOT_CLOUD_ORIGIN ||
+      (process.env.EVOBOT_CLOUD_SHARED_SECRET?.length ?? 0) < 32
     )
       throw new Error('Cloud gateway configuration is unavailable');
     const selected = productModelConfiguration(workspaceJid);
@@ -174,11 +174,11 @@ export function selectNewProductRuntime(
       : '';
     const capabilities: CloudToolCapability[] = [];
     if (
-      process.env.MINICLAW_CLOUD_MEMORY === 'true' &&
-      process.env.MINICLAW_PERSONAL_MEMORY === 'true'
+      process.env.EVOBOT_CLOUD_MEMORY === 'true' &&
+      process.env.EVOBOT_PERSONAL_MEMORY === 'true'
     )
       capabilities.push('read_personal_memory');
-    if (process.env.MINICLAW_CLOUD_APPROVALS === 'true')
+    if (process.env.EVOBOT_CLOUD_APPROVALS === 'true')
       capabilities.push('create_approved_artifact');
     return {
       kind: 'pi-durable',
@@ -189,14 +189,14 @@ export function selectNewProductRuntime(
         gateway_origin: gateway.origin,
         model_id: selected.modelId,
         instructions: `${instructions}\n\nSession instructions:\n${prompt}`,
-        // Bounded pilot grant. MINICLAW_CLOUD_MAX_MODEL_STEPS raises it up to 64.
+        // Bounded pilot grant. EVOBOT_CLOUD_MAX_MODEL_STEPS raises it up to 64.
         max_model_steps: cloudModelStepLimit(),
         deadline_at: Date.now() + 24 * 60 * 60 * 1000,
         ...(capabilities.length ? { tool_capabilities: capabilities } : {}),
       },
     };
   }
-  if (process.env.MINICLAW_DURABLE_RUNTIME?.trim().toLowerCase() !== 'true') {
+  if (process.env.EVOBOT_DURABLE_RUNTIME?.trim().toLowerCase() !== 'true') {
     if (requested === 'node-durable')
       throw new Error('Node Durable Session admission is disabled');
     return { kind: 'pi-coding-agent' };
@@ -236,7 +236,7 @@ export function createProductModels(
     throw new Error(
       'Session model/workspace/capability identity changed; recovery is blocked',
     );
-  const id = 'miniclaw-configured';
+  const id = 'evobot-configured';
   const common = {
     id: selected.modelId,
     name: selected.modelId,
@@ -254,7 +254,7 @@ export function createProductModels(
   };
   const auth = {
     apiKey: {
-      name: 'MiniClaw configured provider',
+      name: 'EvoBot configured provider',
       resolve: async () => {
         authorize();
         const current = productModelConfiguration(
@@ -267,7 +267,7 @@ export function createProductModels(
         const { config } = resolveProviderById(current.id, { required: true });
         return {
           auth: { apiKey: config.anthropicApiKey || config.anthropicAuthToken },
-          source: 'MiniClaw encrypted provider configuration',
+          source: 'EvoBot encrypted provider configuration',
         };
       },
     },
@@ -277,7 +277,7 @@ export function createProductModels(
     models.setProvider(
       createProvider({
         id,
-        name: 'MiniClaw configured model',
+        name: 'EvoBot configured model',
         baseUrl: selected.baseUrl,
         auth,
         models: [{ ...common, api: 'openai-completions' }],
@@ -294,7 +294,7 @@ export function createProductModels(
     models.setProvider(
       createProvider({
         id,
-        name: 'MiniClaw configured model',
+        name: 'EvoBot configured model',
         baseUrl: selected.baseUrl,
         auth,
         models: [{ ...common, api: 'anthropic-messages' }],

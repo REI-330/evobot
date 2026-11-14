@@ -29,7 +29,7 @@ routes.all('*', async (c) => {
     const raw = await boundedBody(c.req.raw);
     const scope = await authenticate(
       c.req.raw,
-      process.env.MINICLAW_CLOUD_SHARED_SECRET ?? '',
+      process.env.EVOBOT_CLOUD_SHARED_SECRET ?? '',
       raw,
     );
     const base = `/api/cloud-runtime/${scope.session_id}`;

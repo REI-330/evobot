@@ -13,7 +13,7 @@ import {
   vi,
 } from 'vitest';
 const root = fs.mkdtempSync(
-  path.join(os.tmpdir(), 'miniclaw-discussion-unit-'),
+  path.join(os.tmpdir(), 'evobot-discussion-unit-'),
 );
 vi.mock('../src/config.js', async (original) => ({
   ...(await original<Record<string, unknown>>()),
@@ -53,8 +53,8 @@ beforeAll(() => {
   db.assignWorkspaceAgentProfile('alice', profileId);
 });
 beforeEach(() => {
-  vi.stubEnv('MINICLAW_BOT_GROUPS', 'true');
-  vi.stubEnv('MINICLAW_BOT_HANDOFFS', 'true');
+  vi.stubEnv('EVOBOT_BOT_GROUPS', 'true');
+  vi.stubEnv('EVOBOT_BOT_HANDOFFS', 'true');
 });
 afterEach(() => vi.unstubAllEnvs());
 afterAll(() => {

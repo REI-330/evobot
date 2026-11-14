@@ -2,12 +2,12 @@
  * file rather than docker arguments/logs; explicit provider/workspace values win. */
 export function applyContainerProxyEnv(
   lines: string[],
-  proxy = process.env.MINICLAW_CONTAINER_PROXY,
+  proxy = process.env.EVOBOT_CONTAINER_PROXY,
 ): void {
   if (!proxy?.trim()) return;
   const url = new URL(proxy);
   if (!['http:', 'https:'].includes(url.protocol) || /[\r\n]/.test(proxy)) {
-    throw new Error('MINICLAW_CONTAINER_PROXY must be an HTTP(S) proxy URL');
+    throw new Error('EVOBOT_CONTAINER_PROXY must be an HTTP(S) proxy URL');
   }
   const has = (name: string) =>
     lines.some(

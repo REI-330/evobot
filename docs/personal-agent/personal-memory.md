@@ -2,7 +2,7 @@
 
 ## Implemented scope
 
-`MINICLAW_PERSONAL_MEMORY=true` enables explicit Personal Memory management on
+`EVOBOT_PERSONAL_MEMORY=true` enables explicit Personal Memory management on
 the Goals page and through `/api/personal-memory`. It defaults off. The existing
 Home Workspace Memory store owns the content, revisions, actor/provenance,
 forget tombstones and mutation receipts. No second memory database or automatic
@@ -129,7 +129,7 @@ retroactive transcript erasure are not implemented or claimed.
 ## Cloud Sessions
 
 New product Cloud Sessions also register the existing read semantics when
-`MINICLAW_CLOUD_MEMORY=true` and `MINICLAW_PERSONAL_MEMORY=true` are enabled at
+`EVOBOT_CLOUD_MEMORY=true` and `EVOBOT_PERSONAL_MEMORY=true` are enabled at
 creation. Their immutable Cloud binding records that explicit tool capability.
 Old Sessions keep their existing tools. Current reads travel through the private
 signed Tool Gateway and use the original grants, revision rules and audit table.

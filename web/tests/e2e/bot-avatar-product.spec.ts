@@ -9,7 +9,7 @@ test('Bot identity follows real work across Chief, contacts, Group, attention an
 }) => {
   test.setTimeout(180000);
   const f = await botHandoffHttpFixture(undefined, {
-    MINICLAW_PERSONAL_GOALS: 'true',
+    EVOBOT_PERSONAL_GOALS: 'true',
   });
   const contexts = [];
   try {
@@ -113,7 +113,7 @@ test('Bot identity follows real work across Chief, contacts, Group, attention an
       for (const theme of ['light', 'dark']) {
         await page.goto(base + '/bots?view=team');
         await page.evaluate(
-          (value) => localStorage.setItem('miniclaw-theme', value),
+          (value) => localStorage.setItem('evobot-theme', value),
           theme,
         );
         await page.reload();
@@ -139,7 +139,7 @@ test('Bot identity follows real work across Chief, contacts, Group, attention an
           });
           await expect(
             navigation
-              .getByRole('link', { name: 'Miniclaw', exact: true })
+              .getByRole('link', { name: 'EvoBot', exact: true })
               .locator('.bot-avatar'),
           ).toHaveAttribute('data-bot-id', group.profileId);
         }

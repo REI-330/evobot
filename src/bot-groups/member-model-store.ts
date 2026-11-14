@@ -24,7 +24,7 @@ const db = () => {
 };
 const fail = (code: string) => new BotGroupError(code);
 export const memberConcurrencyEnabled = () =>
-  process.env.MINICLAW_GROUP_MEMBER_CONCURRENCY === 'true';
+  process.env.EVOBOT_GROUP_MEMBER_CONCURRENCY === 'true';
 export type MemberModelLimits = {
   run_id: string;
   version: 1;
@@ -56,7 +56,7 @@ export function freezeMemberModelLimits(runId: string) {
       'INSERT INTO bot_group_member_execution_policies VALUES(?,1,2,4,1,32,2000000,8000000,256,262144,90000) ON CONFLICT(run_id) DO NOTHING',
     )
     .run(runId);
-  if (process.env.MINICLAW_GROUP_MEMBER_CLOUD === 'true')
+  if (process.env.EVOBOT_GROUP_MEMBER_CLOUD === 'true')
     db()
       .prepare(
         'INSERT INTO bot_group_member_cloud_runs VALUES(?,1) ON CONFLICT(run_id) DO NOTHING',

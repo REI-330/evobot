@@ -29,14 +29,14 @@ export default defineConfig({
         ],
         serviceBindings: {
           MODEL_SERVICE: 'model-fixture',
-          MINICLAW_AUTHORITY_SERVICE: 'authority-fixture',
+          EVOBOT_AUTHORITY_SERVICE: 'authority-fixture',
         },
         bindings: {
-          MINICLAW_CLOUD_ADMISSION: 'true',
-          MINICLAW_CLOUD_SHARED_SECRET:
+          EVOBOT_CLOUD_ADMISSION: 'true',
+          EVOBOT_CLOUD_SHARED_SECRET:
             'local-workerd-fixture-control-key-32bytes',
-          MINICLAW_AUTHORITY_ORIGIN: 'https://authority.fixture',
-          MINICLAW_CLOUD_ORIGIN: 'https://gateway.fixture',
+          EVOBOT_AUTHORITY_ORIGIN: 'https://authority.fixture',
+          EVOBOT_CLOUD_ORIGIN: 'https://gateway.fixture',
           MODEL_BASE_URL: 'https://provider.fixture/v1',
           MODEL_ID: 'fixture-model',
           MODEL_API_KEY: 'fixture-model-key',

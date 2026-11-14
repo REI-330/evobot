@@ -16,7 +16,7 @@ export {
   type ZenModelConfiguration,
 } from './zen-model-configuration.js';
 
-export const ZEN_PROVIDER_ID = 'miniclaw-zen';
+export const ZEN_PROVIDER_ID = 'evobot-zen';
 
 /** Configure Pi AI's official openai-completions implementation for OpenCode Zen. */
 export function createZenModels(
@@ -38,7 +38,7 @@ export function createZenModels(
   };
   const provider = createProvider({
     id: ZEN_PROVIDER_ID,
-    name: 'OpenCode Zen (MiniClaw configured)',
+    name: 'OpenCode Zen (EvoBot configured)',
     baseUrl: configuration.baseUrl,
     auth: {
       apiKey: envApiKeyAuth('OpenCode Zen API key', [ZEN_API_KEY_ENV]),

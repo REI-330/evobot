@@ -24,11 +24,11 @@ routes.use('*', authMiddleware);
 routes.get('/availability', (c) =>
   c.json({
     enabled:
-      process.env.MINICLAW_PERSONAL_MEMORY?.trim().toLowerCase() === 'true',
+      process.env.EVOBOT_PERSONAL_MEMORY?.trim().toLowerCase() === 'true',
   }),
 );
 routes.use('*', async (c, next) => {
-  if (process.env.MINICLAW_PERSONAL_MEMORY?.trim().toLowerCase() !== 'true')
+  if (process.env.EVOBOT_PERSONAL_MEMORY?.trim().toLowerCase() !== 'true')
     return c.json({ error: 'Not found' }, 404);
   await next();
 });

@@ -152,7 +152,7 @@ export class LocalDeviceMcpServer {
             (entry) => entry.identity.original_name === binding.tool_name,
           );
           if (
-            tool?.definition.annotations?.['opendot.requiresImageGrant'] ===
+            tool?.definition.annotations?.['evobot.requiresImageGrant'] ===
               true &&
             !uploadImage
           )

@@ -18,15 +18,15 @@ describe('frontend identity ownership', () => {
       }),
     ).toMatchObject({
       name: '代码审查员',
-      imageUrl: expect.stringContaining('assets/miniclaw-icon'),
+      imageUrl: expect.stringContaining('assets/evobot-icon'),
       fallbackChar: '代',
     });
   });
 
   test('uses the branded avatar as the final global fallback', () => {
     expect(resolveAgentDisplayIdentity()).toMatchObject({
-      name: 'Miniclaw',
-      imageUrl: expect.stringContaining('assets/miniclaw-icon'),
+      name: 'EvoBot',
+      imageUrl: expect.stringContaining('assets/evobot-icon'),
     });
   });
 

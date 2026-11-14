@@ -14,7 +14,7 @@ fs.mkdirSync(storeDir, { recursive: true });
 fs.mkdirSync(groupsDir, { recursive: true });
 
 vi.mock('../src/config.js', () => ({
-  ASSISTANT_NAME: 'Miniclaw',
+  ASSISTANT_NAME: 'EvoBot',
   STORE_DIR: storeDir,
   GROUPS_DIR: groupsDir,
   DATA_DIR: dataDir,

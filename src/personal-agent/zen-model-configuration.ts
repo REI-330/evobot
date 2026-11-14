@@ -1,7 +1,7 @@
 // Keep secure live preflight independent of the model SDK and browser runtime.
-export const ZEN_API_KEY_ENV = 'MINICLAW_ZEN_API_KEY';
-export const ZEN_BASE_URL_ENV = 'MINICLAW_ZEN_BASE_URL';
-export const ZEN_MODEL_ENV = 'MINICLAW_ZEN_MODEL';
+export const ZEN_API_KEY_ENV = 'EVOBOT_ZEN_API_KEY';
+export const ZEN_BASE_URL_ENV = 'EVOBOT_ZEN_BASE_URL';
+export const ZEN_MODEL_ENV = 'EVOBOT_ZEN_MODEL';
 
 export type ZenModelConfiguration = {
   baseUrl: string;

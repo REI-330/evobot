@@ -15,7 +15,7 @@ fs.mkdirSync(groups, { recursive: true });
 
 vi.mock('../src/config.js', () => ({
   DATA_DIR: path.dirname(store),
-  ASSISTANT_NAME: 'Miniclaw',
+  ASSISTANT_NAME: 'EvoBot',
   STORE_DIR: store,
   GROUPS_DIR: groups,
 }));
@@ -26,7 +26,7 @@ vi.mock('../src/logger.js', () => ({
 const db = await import('../src/db.js');
 
 afterAll(() => {
-  delete process.env.MINICLAW_MIGRATION_BACKUP_DIR;
+  delete process.env.EVOBOT_MIGRATION_BACKUP_DIR;
   try {
     db.closeDatabase();
   } catch {
@@ -74,7 +74,7 @@ describe('database upgrade safety gate', () => {
     `);
     legacy.close();
 
-    process.env.MINICLAW_MIGRATION_BACKUP_DIR = migrationBackups;
+    process.env.EVOBOT_MIGRATION_BACKUP_DIR = migrationBackups;
     db.initDatabase();
     expect(db.getRouterState('schema_version')).toBe(
       String(db.CURRENT_SCHEMA_VERSION),
@@ -137,7 +137,7 @@ describe('database upgrade safety gate', () => {
 
     const invalidBackupDir = path.join(tmp, 'not-a-directory');
     fs.writeFileSync(invalidBackupDir, 'blocks mkdir');
-    process.env.MINICLAW_MIGRATION_BACKUP_DIR = invalidBackupDir;
+    process.env.EVOBOT_MIGRATION_BACKUP_DIR = invalidBackupDir;
     expect(() => db.initDatabase()).toThrow(/pre-migration backup failed/);
 
     const afterFailure = new Database(dbPath, { readonly: true });
@@ -153,7 +153,7 @@ describe('database upgrade safety gate', () => {
     ).toBe('50');
     afterFailure.close();
 
-    process.env.MINICLAW_MIGRATION_BACKUP_DIR = migrationBackups;
+    process.env.EVOBOT_MIGRATION_BACKUP_DIR = migrationBackups;
     db.initDatabase();
     db.closeDatabase();
     const backupCountAfterRetry = fs.readdirSync(migrationBackups).length;

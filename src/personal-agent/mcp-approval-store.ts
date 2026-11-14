@@ -312,7 +312,7 @@ export function grantComputerAllowance(input: {
   appKey: string;
   expiresAt: number;
 }): void {
-  if (!input.serverId.startsWith('opendot_computer_')) return;
+  if (!input.serverId.startsWith('evobot_computer_')) return;
   if (input.expiresAt <= Date.now()) return;
   db()
     .prepare(
@@ -382,14 +382,14 @@ export async function requestMcpApproval(
       throw new Error('MCP approval deadline unavailable');
     const autoRead =
       computerApprovalTier(intent.original_name) === 'read' &&
-      intent.server_id.startsWith('opendot_computer_') &&
-      process.env.OPENDOT_COMPUTER_REQUIRE_READ_APPROVAL !== 'true';
+      intent.server_id.startsWith('evobot_computer_') &&
+      process.env.EVOBOT_COMPUTER_REQUIRE_READ_APPROVAL !== 'true';
     const usage = db()
       .prepare(
         `SELECT count(*) AS n,coalesce(sum(length(arguments_ciphertext)),0) AS bytes
          FROM product_mcp_calls WHERE session_id=?
          AND (?=0 OR NOT (
-           json_extract(intent_json,'$.server_id') LIKE 'opendot_computer_%'
+           json_extract(intent_json,'$.server_id') LIKE 'evobot_computer_%'
            AND json_extract(intent_json,'$.original_name') IN ('list_windows','observe_window','read_page')
          ))`,
       )

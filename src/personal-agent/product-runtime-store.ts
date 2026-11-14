@@ -393,7 +393,7 @@ export function registerProductRuntime(
       instructions: cloud.instructions,
       max_model_steps: cloud.max_model_steps,
       deadline_at: cloud.deadline_at,
-      execution_authority: 'miniclaw-product',
+      execution_authority: 'evobot-product',
       ...(cloud.tool_capabilities !== undefined
         ? { tool_capabilities: cloud.tool_capabilities }
         : {}),

@@ -11,9 +11,9 @@ export default defineConfig({
   retries: 0,
   timeout: 180000,
   reporter: 'line',
-  outputDir: process.env.MINICLAW_GROUP_DISCUSSION_EVIDENCE_DIR
-    ? `${process.env.MINICLAW_GROUP_DISCUSSION_EVIDENCE_DIR}/browser`
-    : '../.claude/skills/verify-miniclaw/artifacts/issue-69/browser',
+  outputDir: process.env.EVOBOT_GROUP_DISCUSSION_EVIDENCE_DIR
+    ? `${process.env.EVOBOT_GROUP_DISCUSSION_EVIDENCE_DIR}/browser`
+    : '../.claude/skills/verify-evobot/artifacts/issue-69/browser',
   use: {
     browserName: 'chromium',
     trace: 'retain-on-failure',

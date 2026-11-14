@@ -1,5 +1,5 @@
 /**
- * Miniclaw's production Agent Runner entry point.
+ * EvoBot's production Agent Runner entry point.
  *
  * This module intentionally imports only the runtime-neutral contracts, Pi,
  * and the existing capability/IPC layer. The former Claude runner remains in
@@ -23,16 +23,16 @@ import {
   type IpcInputMessage,
 } from './ipc-delivery.js';
 import {
-  acknowledgeMiniclawOwnerProfileFirstWake,
+  acknowledgeEvoBotOwnerProfileFirstWake,
   createMcpTools,
-  fetchMiniclawOwnerProfileTurn,
+  fetchEvoBotOwnerProfileTurn,
   fetchWorkspaceMemorySnapshot,
   fetchCodingMem0Recall,
   type McpContext,
 } from './mcp-tools.js';
-import { loadMiniclawOwnerProfileTurnContext } from './owner-profile-context.js';
+import { loadEvoBotOwnerProfileTurnContext } from './owner-profile-context.js';
 import { loadWorkspaceMemoryTurnContext } from './workspace-memory-context.js';
-import { buildMiniclawPromptPlan } from './prompt-plan.js';
+import { buildEvoBotPromptPlan } from './prompt-plan.js';
 import { resolveClaudeProviderRuntime } from './provider-runtime.js';
 import { resolveAgentRuntimeKind } from './runtime-config.js';
 import { adaptClaudeMcpToolsToPi } from './runtime/pi/pi-tools.js';
@@ -41,17 +41,17 @@ import { loadExternalMcpTools } from './runtime/pi/external-mcp.js';
 import { runPiQueryAttempt } from './runtime/pi/pi-runner.js';
 
 const WORKSPACE_GROUP =
-  process.env.MINICLAW_WORKSPACE_GROUP || '/workspace/group';
+  process.env.EVOBOT_WORKSPACE_GROUP || '/workspace/group';
 const WORKSPACE_IPC =
-  process.env.MINICLAW_WORKSPACE_IPC ||
-  process.env.MINICLAW_WORKSPACE_IPC ||
+  process.env.EVOBOT_WORKSPACE_IPC ||
+  process.env.EVOBOT_WORKSPACE_IPC ||
   '/workspace/ipc';
 const INPUT_DIR = path.join(WORKSPACE_IPC, 'input');
 const CLOSE_SENTINEL = path.join(INPUT_DIR, '_close');
 const INTERRUPT_SENTINEL = path.join(INPUT_DIR, '_interrupt');
 const DRAIN_SENTINEL = path.join(INPUT_DIR, '_drain');
-const OUTPUT_START = '---MINICLAW_OUTPUT_START---';
-const OUTPUT_END = '---MINICLAW_OUTPUT_END---';
+const OUTPUT_START = '---EVOBOT_OUTPUT_START---';
+const OUTPUT_END = '---EVOBOT_OUTPUT_END---';
 const DEFAULT_ALLOWED_TOOLS = [
   'Bash',
   'Read',
@@ -64,7 +64,7 @@ const DEFAULT_ALLOWED_TOOLS = [
   'Task',
   'TaskOutput',
   'TaskStop',
-  'mcp__miniclaw__*',
+  'mcp__evobot__*',
 ];
 const PROMPTS_DIR = path.join(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -247,13 +247,13 @@ function buildSystemPrompt(input: ContainerInput, ctx: McpContext): string {
     ? loadPrompt(`channels/${channel}.md`)
     : undefined;
   const identity = input.agentProfile?.identityPrompt?.trim();
-  const plan = buildMiniclawPromptPlan({
+  const plan = buildEvoBotPromptPlan({
     platformIdentity: input.agentProfile?.isDefault
-      ? loadPrompt('identity.miniclaw.md')
+      ? loadPrompt('identity.evobot.md')
       : undefined,
     platformBootstrap:
-      input.agentProfile?.isDefault && input.miniclawOwnerProfileEnabled
-        ? loadPrompt('bootstrap.miniclaw.md')
+      input.agentProfile?.isDefault && input.evobotOwnerProfileEnabled
+        ? loadPrompt('bootstrap.evobot.md')
         : undefined,
     agentIdentity: identity
       ? `<agent-identity profile_id="${input.agentProfile?.id}"><profile-prompt>${identity}</profile-prompt></agent-identity>`
@@ -308,8 +308,8 @@ async function runTurn(
     loadWorkspaceMemoryTurnContext(prompt, (query) =>
       fetchWorkspaceMemorySnapshot(ctx, query),
     ),
-    loadMiniclawOwnerProfileTurnContext(() =>
-      fetchMiniclawOwnerProfileTurn(ctx),
+    loadEvoBotOwnerProfileTurnContext(() =>
+      fetchEvoBotOwnerProfileTurn(ctx),
     ),
     fetchCodingMem0Recall(ctx).catch(() => null),
   ]);
@@ -328,7 +328,7 @@ async function runTurn(
     .join('\n\n');
   const tracker = new IpcTurnDeliveryTracker(initialMessages);
   const customTools = adaptClaudeMcpToolsToPi(createMcpTools(ctx), {
-    namespace: 'mcp__miniclaw',
+    namespace: 'mcp__evobot',
   });
   // The optional catalog is issued by the Host for the active turn only;
   // failure leaves external tools unavailable while the conversation works.
@@ -392,7 +392,7 @@ async function runTurn(
           Number.isInteger(leaseToken) &&
           leaseToken > 0
         ) {
-          void acknowledgeMiniclawOwnerProfileFirstWake(
+          void acknowledgeEvoBotOwnerProfileFirstWake(
             ctx,
             leaseToken,
             activeInputTurnId || input.turnId || generateTurnId(),
@@ -467,7 +467,7 @@ async function main(): Promise<void> {
     mem0CodingRecallEnabled: input.mem0CodingRecallEnabled === true,
     mem0CodingRecallTimeoutMs: input.mem0CodingRecallTimeoutMs,
     codingMcpEnabled: input.codingMcpEnabled === true,
-    ownerProfileEnabled: input.miniclawOwnerProfileEnabled === true,
+    ownerProfileEnabled: input.evobotOwnerProfileEnabled === true,
     interactionMode: input.interactionMode ?? 'assistant',
     isScheduledTask: input.isScheduledTask === true,
     currentTaskId: input.messageTaskId ?? null,

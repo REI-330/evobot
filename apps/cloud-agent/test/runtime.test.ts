@@ -389,7 +389,7 @@ test('bounded request bodies fail without admitting an input', async () => {
 });
 
 test('product authority gates factory resume and tools; Provider transport never falls back to PoC credentials', async () => {
-  const authority = cloud.MINICLAW_AUTHORITY_SERVICE!;
+  const authority = cloud.EVOBOT_AUTHORITY_SERVICE!;
   await (
     await authority.fetch('https://authority.fixture/fixture/reset', {
       method: 'POST',
@@ -397,7 +397,7 @@ test('product authority gates factory resume and tools; Provider transport never
   ).json();
   const b: SessionBinding = {
     ...binding(),
-    execution_authority: 'miniclaw-product',
+    execution_authority: 'evobot-product',
     model_id: 'product-configured-model',
   };
   const created = await call(b, 'create', 'POST', b);
@@ -608,7 +608,7 @@ test('expired interrupted history is readable after eviction without resuming a 
 });
 
 test('a lost result ACK survives eviction and an actual Alarm redelivers only the original result', async () => {
-  const authority = cloud.MINICLAW_AUTHORITY_SERVICE!;
+  const authority = cloud.EVOBOT_AUTHORITY_SERVICE!;
   await (
     await authority.fetch('https://authority.fixture/fixture/reset', {
       method: 'POST',
@@ -622,7 +622,7 @@ test('a lost result ACK survives eviction and an actual Alarm redelivers only th
   const b: SessionBinding = {
     ...binding(),
     deadline_at: Date.now() + 1200,
-    execution_authority: 'miniclaw-product',
+    execution_authority: 'evobot-product',
     model_id: 'product-configured-model',
   };
   const created = await call(b, 'create', 'POST', b);
@@ -707,7 +707,7 @@ test('a lost result ACK survives eviction and an actual Alarm redelivers only th
 });
 
 test('a native completion after projection scans cannot lose its wake when the previous Lifecycle job finishes', async () => {
-  const authority = cloud.MINICLAW_AUTHORITY_SERVICE!;
+  const authority = cloud.EVOBOT_AUTHORITY_SERVICE!;
   await (
     await authority.fetch('https://authority.fixture/fixture/reset', {
       method: 'POST',
@@ -715,7 +715,7 @@ test('a native completion after projection scans cannot lose its wake when the p
   ).json();
   const b: SessionBinding = {
     ...binding(),
-    execution_authority: 'miniclaw-product',
+    execution_authority: 'evobot-product',
     model_id: 'product-configured-model',
   };
   const created = await call(b, 'create', 'POST', b);
@@ -783,11 +783,11 @@ test('a native completion after projection scans cannot lose its wake when the p
 test('adding persistent projection retry time preserves existing native inputs, completed receipts and Root history', async () => {
   const b: SessionBinding = {
     ...binding(),
-    execution_authority: 'miniclaw-product',
+    execution_authority: 'evobot-product',
     model_id: 'product-configured-model',
   };
   await (
-    await cloud.MINICLAW_AUTHORITY_SERVICE!.fetch(
+    await cloud.EVOBOT_AUTHORITY_SERVICE!.fetch(
       'https://authority.fixture/fixture/reset',
       { method: 'POST' },
     )
@@ -944,7 +944,7 @@ test('an extra native conversation cannot inherit the product Root execution aut
 });
 
 test('a Cloud Memory read interrupted before its checkpoint resumes the same tool task and rechecks revoked grants', async () => {
-  const authority = cloud.MINICLAW_AUTHORITY_SERVICE!;
+  const authority = cloud.EVOBOT_AUTHORITY_SERVICE!;
   await authority.fetch('https://authority.fixture/fixture/reset', {
     method: 'POST',
   });
@@ -953,7 +953,7 @@ test('a Cloud Memory read interrupted before its checkpoint resumes the same too
   });
   const b: SessionBinding = {
     ...binding(),
-    execution_authority: 'miniclaw-product',
+    execution_authority: 'evobot-product',
     model_id: 'product-configured-model',
     tool_capabilities: ['read_personal_memory'],
   };
@@ -1006,13 +1006,13 @@ test('a Cloud Memory read interrupted before its checkpoint resumes the same too
 });
 
 test('legacy product Cloud bindings reject model-invented Memory tools and retain that boundary after restart', async () => {
-  const authority = cloud.MINICLAW_AUTHORITY_SERVICE!;
+  const authority = cloud.EVOBOT_AUTHORITY_SERVICE!;
   await authority.fetch('https://authority.fixture/fixture/reset', {
     method: 'POST',
   });
   const b: SessionBinding = {
     ...binding(),
-    execution_authority: 'miniclaw-product',
+    execution_authority: 'evobot-product',
     model_id: 'product-configured-model',
   };
   const created = await call(b, 'create', 'POST', b);
@@ -1060,7 +1060,7 @@ type ApprovalSnapshot = {
   view: { entries: unknown[]; docs: Record<string, unknown> };
 };
 async function approvalFixture(handoff = false) {
-  const authority = cloud.MINICLAW_AUTHORITY_SERVICE!;
+  const authority = cloud.EVOBOT_AUTHORITY_SERVICE!;
   await (
     await authority.fetch('https://authority.fixture/fixture/reset', {
       method: 'POST',
@@ -1068,7 +1068,7 @@ async function approvalFixture(handoff = false) {
   ).json();
   const b: SessionBinding = {
     ...binding(),
-    execution_authority: 'miniclaw-product',
+    execution_authority: 'evobot-product',
     model_id: 'product-configured-model',
     tool_capabilities: ['create_approved_artifact'],
     ...(handoff
@@ -1422,13 +1422,13 @@ test('the approval resume guard survives generation handoff and a later model in
 });
 
 test('a Cloud Handoff result carries the actual committed answer-producing Generation Task through the existing outbox (product policy simulated)', async () => {
-  await cloud.MINICLAW_AUTHORITY_SERVICE!.fetch(
+  await cloud.EVOBOT_AUTHORITY_SERVICE!.fetch(
     'https://authority.fixture/fixture/reset',
     { method: 'POST' },
   );
   const b: SessionBinding = {
     ...binding(),
-    execution_authority: 'miniclaw-product',
+    execution_authority: 'evobot-product',
     model_id: 'product-configured-model',
     tool_capabilities: ['inspect_text'],
     bot_handoff: {
@@ -1519,13 +1519,13 @@ test('a Cloud Handoff result carries the actual committed answer-producing Gener
 });
 
 test('Cloud Handoff empty capability grants expose no implicit tool while ordinary Cloud bindings preserve the legacy inspect tool', async () => {
-  await cloud.MINICLAW_AUTHORITY_SERVICE!.fetch(
+  await cloud.EVOBOT_AUTHORITY_SERVICE!.fetch(
     'https://authority.fixture/fixture/reset',
     { method: 'POST' },
   );
   const base = {
     ...binding(),
-    execution_authority: 'miniclaw-product' as const,
+    execution_authority: 'evobot-product' as const,
     model_id: 'product-configured-model',
     tool_capabilities: [],
   };
@@ -1568,7 +1568,7 @@ test('Cloud Handoff empty capability grants expose no implicit tool while ordina
 });
 
 test('Handoff stop uses a distinct revision fence, preserves the native input through actual suspend/eviction and never downgrades cancellation (product stop policy simulated)', async () => {
-  const authority = cloud.MINICLAW_AUTHORITY_SERVICE!;
+  const authority = cloud.EVOBOT_AUTHORITY_SERVICE!;
   await authority.fetch('https://authority.fixture/fixture/reset', {
     method: 'POST',
   });
@@ -1580,7 +1580,7 @@ test('Handoff stop uses a distinct revision fence, preserves the native input th
     b: SessionBinding = {
       ...binding(),
       model_id: 'product-configured-model',
-      execution_authority: 'miniclaw-product',
+      execution_authority: 'evobot-product',
       tool_capabilities: [],
       bot_handoff: marker,
     };
@@ -1652,14 +1652,14 @@ test('Handoff stop uses a distinct revision fence, preserves the native input th
 });
 
 async function handoffControlFixture() {
-  const authority = cloud.MINICLAW_AUTHORITY_SERVICE!;
+  const authority = cloud.EVOBOT_AUTHORITY_SERVICE!;
   await authority.fetch('https://authority.fixture/fixture/reset', {
     method: 'POST',
   });
   const b: SessionBinding = {
     ...binding(),
     model_id: 'product-configured-model',
-    execution_authority: 'miniclaw-product',
+    execution_authority: 'evobot-product',
     tool_capabilities: [],
     bot_handoff: {
       handoff_id: crypto.randomUUID(),
@@ -1993,14 +1993,14 @@ async function handoffModelRecoveryFixture(
   budget = 12,
   deadlineMs = 3600000,
 ) {
-  const authority = cloud.MINICLAW_AUTHORITY_SERVICE!;
+  const authority = cloud.EVOBOT_AUTHORITY_SERVICE!;
   await authority.fetch('https://authority.fixture/fixture/reset', {
     method: 'POST',
   });
   const b: SessionBinding = {
     ...binding(),
     model_id: 'product-configured-model',
-    execution_authority: 'miniclaw-product',
+    execution_authority: 'evobot-product',
     tool_capabilities: [],
     max_model_steps: budget,
     deadline_at: Date.now() + deadlineMs,
@@ -2324,7 +2324,7 @@ test('an interrupted Handoff request cannot renew its original deadline or start
 
 async function progressCounts() {
   return (await (
-    await cloud.MINICLAW_AUTHORITY_SERVICE!.fetch(
+    await cloud.EVOBOT_AUTHORITY_SERVICE!.fetch(
       'https://authority.fixture/fixture/progress-counts',
     )
   ).json()) as {
@@ -2342,7 +2342,7 @@ async function stopObservedHandoff(
     handoff_id: b.bot_handoff!.handoff_id,
     handoff_revision: revision,
   };
-  await cloud.MINICLAW_AUTHORITY_SERVICE!.fetch(
+  await cloud.EVOBOT_AUTHORITY_SERVICE!.fetch(
     'https://authority.fixture/fixture/handoff-stop',
     {
       method: 'POST',
@@ -2523,7 +2523,7 @@ test('Handoff progress projection errors exhaust a persisted receipt budget with
 });
 
 test('an idle revoked Session rejects a Lifecycle request without opening another native execution owner', async () => {
-  const authority = cloud.MINICLAW_AUTHORITY_SERVICE!;
+  const authority = cloud.EVOBOT_AUTHORITY_SERVICE!;
   await (
     await authority.fetch('https://authority.fixture/fixture/reset', {
       method: 'POST',
@@ -2531,7 +2531,7 @@ test('an idle revoked Session rejects a Lifecycle request without opening anothe
   ).json();
   const b: SessionBinding = {
     ...binding(),
-    execution_authority: 'miniclaw-product',
+    execution_authority: 'evobot-product',
     model_id: 'product-configured-model',
   };
   const created = await call(b, 'create', 'POST', b);

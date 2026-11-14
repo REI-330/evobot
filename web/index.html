@@ -6,7 +6,7 @@
       rel="icon"
       type="image/svg+xml"
       sizes="any"
-      href="%BASE_URL%opendot-robot.svg?v=97165320d544"
+      href="%BASE_URL%evobot-robot.svg?v=97165320d544"
     />
     <meta
       name="viewport"
@@ -18,7 +18,7 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content="OpenDot" />
+    <meta name="apple-mobile-web-app-title" content="EvoBot" />
     <link
       rel="apple-touch-icon"
       href="%BASE_URL%icons/apple-touch-icon-180.png?v=97165320d544"
@@ -43,30 +43,23 @@
       });
     </script>
 
-    <title>OpenDot</title>
+    <title>EvoBot</title>
   </head>
   <body>
     <script>
       (function () {
         var d = document.documentElement,
-          s =
-            localStorage.getItem('miniclaw-theme') ||
-            localStorage.getItem('miniclaw-theme');
+          s = localStorage.getItem('evobot-theme');
         if (
           s === 'dark' ||
           (s === 'system' &&
             window.matchMedia('(prefers-color-scheme: dark)').matches)
         )
           d.classList.add('dark');
-        var c =
-          localStorage.getItem('miniclaw-color-scheme') ||
-          localStorage.getItem('miniclaw-color-scheme');
+        var c = localStorage.getItem('evobot-color-scheme');
         if (c === 'orange') d.classList.add('theme-orange');
         if (c === 'neutral') d.classList.add('theme-neutral');
-        if (
-          (localStorage.getItem('miniclaw-font-style') ||
-            localStorage.getItem('miniclaw-font-style')) === 'anthropic'
-        )
+        if (localStorage.getItem('evobot-font-style') === 'anthropic')
           d.classList.add('font-anthropic');
       })();
     </script>

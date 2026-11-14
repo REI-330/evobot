@@ -32,7 +32,7 @@ The Durable dependency set is pinned to 1.3.0. Pi Durable is experimental and re
 
 Cloud placement was introduced in v78; the current product schema is v86. Version 80 added the opt-in [Bot Group domain](bot-groups.md); version 81 adds [native Handoff](bot-handoffs.md) grants/origins and immutable answer-producing Task provenance. Existing native Runtime bindings and version-79 Cloud grants remain unchanged.
 New Node Sessions may explicitly select Cloud
-only with `MINICLAW_CLOUD_RUNTIME=true` and trusted gateway/provider settings.
+only with `EVOBOT_CLOUD_RUNTIME=true` and trusted gateway/provider settings.
 The default selector and historical JSONL/Node mappings are unchanged. Cloud DO
 startup adds `mc_results` and `mc_controls` with immutable payload guards; no
 native checkpoint is rewritten or imported. The Durable Object class/namespace,
@@ -60,7 +60,7 @@ retagged or receive a new prompt as a migration. See
 2. Preserve any pilot database at `data/db/personal-agent.sqlite` and the formal per-Session databases at `data/db/durable-sessions/<UUID>.sqlite`; backup tooling snapshots both when present. Keep storage private.
 3. Deploy schema v71 and its immutable owner/runtime mapping. Existing JSONL sessions remain assigned to Pi Coding Agent.
 4. The formal path exposes a guarded replay-safe workspace read tool and the controlled private-artifact approval flow. General external writes remain unsupported.
-5. Configure an existing API-key model provider and enable `MINICLAW_DURABLE_RUNTIME=true` for a small set of new Host Sessions. The flag defaults off; Docker and existing Sessions retain their runtime.
+5. Configure an existing API-key model provider and enable `EVOBOT_DURABLE_RUNTIME=true` for a small set of new Host Sessions. The flag defaults off; Docker and existing Sessions retain their runtime.
 6. Run process-restart, provider interruption, side-effect, duplicate submission, approval, ACL, and multi-device tests before considering broader activation.
 
 ## Cloud Goal grants schema v79
@@ -91,17 +91,17 @@ was migrated and no Cloud resources were deployed during this work.
 
 ## Rollback
 
-Before user sessions are routed to Durable, rollback is to leave `MINICLAW_DURABLE_RUNTIME` unset/false and continue using the Pi Coding Agent runner. Do not delete Durable state. After routing begins, rollback must stop new Durable admissions and drain or explicitly fence active Durable work; switching a live session to JSONL would lose ownership/checkpoint semantics. Preserve the Durable database for later recovery/export. No automated live-session rollback or conversion is implemented yet.
+Before user sessions are routed to Durable, rollback is to leave `EVOBOT_DURABLE_RUNTIME` unset/false and continue using the Pi Coding Agent runner. Do not delete Durable state. After routing begins, rollback must stop new Durable admissions and drain or explicitly fence active Durable work; switching a live session to JSONL would lose ownership/checkpoint semantics. Preserve the Durable database for later recovery/export. No automated live-session rollback or conversion is implemented yet.
 
 Legacy JSONL is not converted by this migration. A Durable fork or import needs an explicit reviewed migration with provenance; replaying an old prompt is not checkpoint restoration.
 
-The adapter now writes `miniclaw.input-request` version-1 digest documents in the same Durable database. No legacy JSONL data is rewritten. Inputs admitted by an older pilot without a digest binding cannot be resubmitted under that ID: inspect/recover their existing submission explicitly. Never assign a fresh request ID automatically to bypass a conflict. After deploying the ledger, preserve the database and adapter together; reverting to an older adapter removes its payload-conflict enforcement even though the documents remain stored.
+The adapter now writes `evobot.input-request` version-1 digest documents in the same Durable database. No legacy JSONL data is rewritten. Inputs admitted by an older pilot without a digest binding cannot be resubmitted under that ID: inspect/recover their existing submission explicitly. Never assign a fresh request ID automatically to bypass a conflict. After deploying the ledger, preserve the database and adapter together; reverting to an older adapter removes its payload-conflict enforcement even though the documents remain stored.
 
 The ownership guard adds a private `<database>.owner.sqlite` coordinator with no task data. Deploy it to every executor before enabling any Durable production session. Stop all executors before moving/restoring the runtime database, changing its path, or rolling back to a binary without the guard. Do not remove the coordinator to steal ownership from a live process; stopped/crashed processes release OS locks automatically. Backups restore task state without this disposable coordinator, but restoration is permitted only while all executors are stopped.
 
 ## Goal Engine schema v70
 
-The stacked Goal Engine branch makes an additive v69→v70 migration in the existing MiniClaw database. Startup first creates and verifies the existing automatic private pre-migration backup. Tests verify that this snapshot remains v69, has no Goal tables, and preserves original tasks/session IDs. Existing tasks are not linked automatically. The feature defaults off; `MINICLAW_PERSONAL_GOALS=true` enables API/UI creation. Persisted Goal execution fences remain enforced when the UI flag is turned off, so disabling the UI cannot bypass budgets or revive cancelled work.
+The stacked Goal Engine branch makes an additive v69→v70 migration in the existing EvoBot database. Startup first creates and verifies the existing automatic private pre-migration backup. Tests verify that this snapshot remains v69, has no Goal tables, and preserves original tasks/session IDs. Existing tasks are not linked automatically. The feature defaults off; `EVOBOT_PERSONAL_GOALS=true` enables API/UI creation. Persisted Goal execution fences remain enforced when the UI flag is turned off, so disabling the UI cannot bypass budgets or revive cancelled work.
 
 Before a binary rollback, stop/fence Goal-linked executions and preserve the current database. An older schema-v69 binary intentionally refuses a v70 database. Restoring the pre-v70 backup is a separate operator action and loses later writes unless reconciled; do not silently reset the version marker or drop tables. No production database was migrated during implementation tests.
 
@@ -129,9 +129,9 @@ Tests strip a disposable database to v72, verify its private pre-migration backu
 
 The additive upgrade creates immutable `product_queue_controls` intents and `product_input_results` answer-message bindings. Existing runtime/conversation/input identities and JSONL data are retained. Control receipts are retained for deduplication; individual reorder commands accept at most 500 input IDs. No lifetime receipt quota prevents a user from stopping or cancelling work. v73 migration tests verify a private, integrity-checked pre-upgrade backup and original pending input identity.
 
-A control is first persisted in MiniClaw, then committed with its receipt and Inbox mutation in Harness. Recovery validates known control IDs/digests before activation and reconciles interrupted product acknowledgements. Current-task abort commits an intent bound to one task ID, then persists the native abort mark; recovery can only mark that original task and rejects a product acknowledgement ahead of its checkpoint. Multiple answered inputs can reference one actual product message.
+A control is first persisted in EvoBot, then committed with its receipt and Inbox mutation in Harness. Recovery validates known control IDs/digests before activation and reconciles interrupted product acknowledgements. Current-task abort commits an intent bound to one task ID, then persists the native abort mark; recovery can only mark that original task and rejects a product acknowledgement ahead of its checkpoint. Multiple answered inputs can reference one actual product message.
 
-A v73 binary refuses v74. Disabling the creation flag does not change persisted owners or undo controls. For rollback to PR #8, stop all executors, preserve the current MiniClaw database, every Durable Session store and private artifacts, and restore a coordinated pre-upgrade snapshot of **all** stores after reviewing later effects. Do not restore only the automatic pre-migration MiniClaw backup against later edited Durable queues. Resume is blocked on unmatched receipts; resolve uncertain writes explicitly. No production migration or restore was performed.
+A v73 binary refuses v74. Disabling the creation flag does not change persisted owners or undo controls. For rollback to PR #8, stop all executors, preserve the current EvoBot database, every Durable Session store and private artifacts, and restore a coordinated pre-upgrade snapshot of **all** stores after reviewing later effects. Do not restore only the automatic pre-migration EvoBot backup against later edited Durable queues. Resume is blocked on unmatched receipts; resolve uncertain writes explicitly. No production migration or restore was performed.
 
 ## GitHub event schema v75
 
@@ -142,7 +142,7 @@ tables, preserve the original Goal/Session/run identities, and inspect the v74
 backup's integrity and mode. Older migration fixtures also strip these tables,
 so they continue to represent their claimed historical schemas.
 
-`MINICLAW_GITHUB_GOALS` defaults off. Its deployment-local signing secret is
+`EVOBOT_GITHUB_GOALS` defaults off. Its deployment-local signing secret is
 separate from outbound Provider credentials. No public endpoint is registered
 or production data migrated by tests. Disabling intake does not cancel already
 committed Goals; pause/cancel through the authorized APIs before stopping a
@@ -164,7 +164,7 @@ items with native versions/provenance/tombstones. Existing facts are not promote
 or shared automatically. The v75 migration test inspects the private verified
 backup and preserves original Home content and revision history.
 
-`MINICLAW_PERSONAL_MEMORY` defaults off. Explicit saving permits Home use;
+`EVOBOT_PERSONAL_MEMORY` defaults off. Explicit saving permits Home use;
 additional owned Web workspaces require current-revision grants. Existing Home
 editor changes invalidate those grants without changing the editor API. Unknown
 mutation outcomes retain their original receipt and require explicit retry.
@@ -180,11 +180,11 @@ migration, data erasure or rollback was performed.
 
 ## Reproduce formal-page live acceptance
 
-Bind the authorized model key as the environment secret `MINICLAW_ZEN_API_KEY`; keep it out of shell command text and repository files. Set the explicitly chosen endpoint/model and run:
+Bind the authorized model key as the environment secret `EVOBOT_ZEN_API_KEY`; keep it out of shell command text and repository files. Set the explicitly chosen endpoint/model and run:
 
 ```sh
-MINICLAW_ZEN_BASE_URL=https://opencode.ai/zen/go/v1 \
-MINICLAW_ZEN_MODEL=cat-jam-free \
+EVOBOT_ZEN_BASE_URL=https://opencode.ai/zen/go/v1 \
+EVOBOT_ZEN_MODEL=cat-jam-free \
 PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium \
 npm run test:personal-agent-live
 ```
@@ -200,7 +200,7 @@ The existing startup migration verifies a private pre-upgrade SQLite backup befo
 changing the schema. The v76 fixture removes all v77 tables before upgrade and
 checks the backup has Personal Memory tables but no device registry.
 
-Default `MINICLAW_DEVICE_NODES` is off. Enable only on an already authorized Host
+Default `EVOBOT_DEVICE_NODES` is off. Enable only on an already authorized Host
 Durable/Goals rollout. Turning it off stops new admissions, not checkpoint recovery
 or revocation controls. Previously saved roots retain their original tools; create
 a new independent Session/Goal to use node tools. No JSONL conversion is performed.
@@ -243,7 +243,7 @@ original immutable binding; no other runtime takes ownership of the gap.
 No database schema bump or existing binding rewrite is required. New opt-in
 bindings carry an optional `tool_capabilities` field; absent fields preserve the
 original serialized binding/digest and tool configuration. Disable
-`MINICLAW_CLOUD_MEMORY` to stop further Cloud recalls and keep the capability-aware
+`EVOBOT_CLOUD_MEMORY` to stop further Cloud recalls and keep the capability-aware
 Worker/Node authority while retaining those Sessions. Older strict Worker
 versions reject the added field: a code downgrade does not convert those native
 checkpoints or safely remove consent metadata. Keep the namespace, product DB,
@@ -257,7 +257,7 @@ original bytes. New Cloud bindings can declare the artifact capability; old
 bindings do not change. The DO constructor creates additive `mc_approval_waits`
 records without rewriting Pi checkpoints, binding identity or migration tags.
 
-Disable `MINICLAW_CLOUD_APPROVALS` to fence Cloud tool calls, and retain the
+Disable `EVOBOT_CLOUD_APPROVALS` to fence Cloud tool calls, and retain the
 capability-aware Worker/Node code, product approvals, private artifacts, native
 memos, control records and wait table. An older strict Worker cannot interpret
 these new capabilities; deleting fields is not a rollback. Quiesce owners and
@@ -292,7 +292,7 @@ Groups/receipts, JSONL and native runtime ownership remain unchanged; old inputs
 are not converted to checkpoints. Committed Task-source rows can be backfilled
 only from the existing official Storage receipt, never inferred from text.
 
-Set `MINICLAW_BOT_HANDOFFS=false` to stop new message/delegation/grant admission.
+Set `EVOBOT_BOT_HANDOFFS=false` to stop new message/delegation/grant admission.
 Retain v81 code and both product/native stores for existing owners, historical
 receipts and restrictive pause/cancel/revocation. Disabling admission does not
 move tasks to another executor. A complete stop requires pausing/cancelling
@@ -324,7 +324,7 @@ migration, backup/restore and physical-device acceptance remain Pending.
 
 ## Explicit Cloud Goal admission
 
-`MINICLAW_CLOUD_GOALS=true` enables only explicitly selected new Cloud Goals,
+`EVOBOT_CLOUD_GOALS=true` enables only explicitly selected new Cloud Goals,
 alongside the existing Cloud runtime, Personal Goals and artifact approval flags.
 It defaults off. Missing `runtime` retains the legacy Goal request hash and Node
 selection. Creation atomically persists the Goal, immutable runtime mapping and
@@ -333,7 +333,7 @@ Sessions cannot be adopted or patched to another runtime. Cloud core-context and
 100-run limits apply only to Cloud; existing Node limits stay unchanged.
 
 There is no schema bump beyond v79, new Wrangler migration or rewrite of stored
-Pi checkpoints. Roll back admission by disabling `MINICLAW_CLOUD_GOALS`; retain
+Pi checkpoints. Roll back admission by disabling `EVOBOT_CLOUD_GOALS`; retain
 the grant/recovery-aware Node authority and Worker for already-created Goals.
 Idempotent retries still reconcile committed creation receipts after that flag
 is disabled. The local mobile acceptance verifies that an already-started Goal
@@ -409,7 +409,7 @@ Actual deployed backup/restore remains unverified; no production data changed.
 
 ## Formal Cloud Handoff admission
 
-The public Group path requires explicit `MINICLAW_CLOUD_BOT_HANDOFFS=true` plus
+The public Group path requires explicit `EVOBOT_CLOUD_BOT_HANDOFFS=true` plus
 existing Groups/Handoffs/Cloud Runtime flags and valid gateway/Provider setup.
 It defaults off, does not unlock Cloud Goals and introduces no schema beyond
 82, Worker change or native checkpoint conversion. Workspace scope, Provider
@@ -431,7 +431,7 @@ contracts. Pre-migration backup remains fail-closed; the private v82 upgrade
 case checks mode 0600, SQLite integrity and unchanged legacy Goal content/hash.
 No existing Goal, Group, runtime, prompt, approval or native checkpoint is adopted.
 
-Disable `MINICLAW_GOAL_TEAMS` to stop new associations. Existing Team execution
+Disable `EVOBOT_GOAL_TEAMS` to stop new associations. Existing Team execution
 remains governed by current Goal/Group/grant/lease authority, not the admission
 flag. Pause/cancel affected Goals before an incompatible rollback and retain a
 v83-compatible Node with all original Worker/Node data and receipts. Older Node
@@ -450,8 +450,8 @@ Startup takes the existing private integrity-checked pre-migration SQLite backup
 then adds `cloud_device_requests`, retained grant origins and bounded wake
 receipts. Existing Team data, generic device grants and legacy binding JSON/
 digests are unchanged. No old Session acquires Cloud device capabilities.
-Deploy the matching Node/Worker build before enabling `MINICLAW_CLOUD_DEVICES`;
-keep `MINICLAW_DEVICE_NODES` and existing Team/Handoff flags explicit. Without
+Deploy the matching Node/Worker build before enabling `EVOBOT_CLOUD_DEVICES`;
+keep `EVOBOT_DEVICE_NODES` and existing Team/Handoff flags explicit. Without
 the new flag, reviewed capabilities cannot create new Cloud read requests.
 
 For rollback, disable new admission, pause/cancel the affected Goals and retain
